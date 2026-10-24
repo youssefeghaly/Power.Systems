@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 3, 'module picker lists three modules', String($('module-select').options.length));
+ok($('module-select').options.length === 4, 'module picker lists four modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');
@@ -126,6 +126,52 @@ while (g3++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
   if (nx) nx.click();
 }
 ok(/All 12 solved/.test($('drill-body').textContent), 'module 3 drills complete');
+
+console.log('module 4 stepper');
+$('module-select').value = 'm4';
+fire($('module-select'), 'change');
+ok(/German grid connection/.test($('lesson').textContent), 'module 4 lesson renders');
+const steps = $('lesson').querySelectorAll('.step');
+ok(steps.length === 7, 'seven process gates', String(steps.length));
+fire(steps[0], 'click');
+ok(/Anschlussanfrage/.test($('lesson').querySelector('#step-detail').textContent), 'tapping a gate updates the detail');
+ok(steps[0].classList.contains('active'), 'active gate is marked');
+
+console.log('module 4 rule finder');
+$('tab-calc').click();
+const g = () => $('gc-out').textContent.replace(/\s+/g, ' ');
+ok(/4120/.test(g()), '110 kV → 4120', g().slice(0, 60));
+ok(/required/.test(g()), 'default plant needs certification');
+$('gc-power').value = '100';
+$('gc-volt').value = '0.4';
+fire($('gc-power'), 'input'); fire($('gc-volt'), 'input');
+ok(/4105/.test(g()), '100 kW at 400 V → 4105');
+ok(/not required — conformity/.test(g()), 'small plant needs no plant certificate', g().slice(0, 80));
+$('gc-power').value = '400';
+$('gc-feed').value = '270';
+$('gc-volt').value = '20';
+fire($('gc-power'), 'input'); fire($('gc-feed'), 'input'); fire($('gc-volt'), 'input');
+ok(/4110/.test(g()), '20 kV → 4110');
+ok(flat(g()).includes(flat('NELEV §2(4) simplificationavailable')), 'inside the envelope the simplification applies', g().slice(0, 120));
+$('gc-power').value = '900';
+fire($('gc-power'), 'input');
+ok(/not available/.test(g()), '900 kW falls outside the envelope');
+
+console.log('module 4 drills');
+$('tab-drill').click();
+const D4 = window.MODULES.find((m) => m.id === 'm4').drills;
+let g4 = 0;
+while (g4++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const d = D4.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
+  const nx = $('next');
+  if (nx) nx.click();
+}
+ok(/All 12 solved/.test($('drill-body').textContent), 'module 4 drills complete');
 
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);

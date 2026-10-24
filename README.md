@@ -13,6 +13,7 @@ produce or compute, not something you read.
 | 01 | Energy, power, time, money | Size a plant from a contract number; C-rate, units, grossing up losses |
 | 02 | The machine, end to end | Read and defend the single-line diagram; build a loss budget that lands on ~88 % RTE |
 | 03 | Degradation, augmentation, guarantees | Plan twenty years of capacity; decide overbuild vs augmentation; keep warranty and offtake apart |
+| 04 | German grid connection 4110/4120 | Find which TAR applies, which certificates and permits are needed, and what the DSO checks |
 
 Each module has three views:
 

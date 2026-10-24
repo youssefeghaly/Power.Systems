@@ -366,3 +366,69 @@ select {
   font-variant-numeric: tabular-nums;
   opacity: .7;
 }
+
+/* ---------- process stepper ---------- */
+.steps {
+  list-style: none;
+  margin: 16px 0 10px;
+  padding: 0 0 0 16px;
+  border-left: 2px solid var(--line);
+}
+
+.steps li { margin: 0 0 8px; }
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.step:hover { border-color: var(--accent); }
+
+.step.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--card));
+}
+
+.step-dot {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.step.active .step-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .step.active .step-dot { color: #08111f; }
+}
+
+.gc-note { margin-top: 10px; font-size: 14px; color: var(--muted); min-height: 18px; }
+
+.foot .ver {
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}

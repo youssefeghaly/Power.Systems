@@ -16,11 +16,11 @@ const ok = (cond, msg, detail) => {
 console.log('module registry');
 const ctx = { window: {}, Calc: C, console };
 vm.createContext(ctx);
-['content.js', 'm1.js', 'm2.js', 'm3.js'].forEach((f) => vm.runInContext(read(f), ctx));
+['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js'].forEach((f) => vm.runInContext(read(f), ctx));
 const MODULES = ctx.window.MODULES;
 ok(Array.isArray(MODULES), 'MODULES array built');
-ok(MODULES.length === 3, 'three modules registered', 'got ' + (MODULES || []).length);
-ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3', 'module order m1, m2, m3');
+ok(MODULES.length === 4, 'four modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4', 'module order m1 … m4');
 
 MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
@@ -81,6 +81,15 @@ ok(within(m3, 'm3-d7', 435 * pow(0.98, 7) + 60), 'm3-d7 = capacity just after au
 ok(within(m3, 'm3-d11', 8760 * 0.02), 'm3-d11 = unavailable hours at 98 %');
 ok(within(m3, 'm3-d12', 365 * 20), 'm3-d12 = cycles at one per day for 20 years');
 
+console.log('m4 thresholds');
+const m4 = MODULES.find((m) => m.id === 'm4');
+ok(within(m4, 'm4-d1', 135), 'm4-d1 = certification threshold 135 kW');
+ok(within(m4, 'm4-d8', 500), 'm4-d8 = NELEV envelope 500 kW');
+ok(within(m4, 'm4-d9', 0.90), 'm4-d9 = cos φ 0.90 at part load');
+ok(within(m4, 'm4-d10', 0.95), 'm4-d10 = cos φ 0.95 at rated power');
+ok(m4.sections.some((s) => /NELEV/.test(s.p.join(' '))), 'lesson explains NELEV');
+ok(typeof m4.renderExtra === 'function', 'module 4 renders the process stepper');
+
 console.log('dom ids');
 const html = read('index.html');
 const appjs = read('app.js');
@@ -98,7 +107,7 @@ used.forEach((id) => {
 
 console.log('scripts');
 const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]);
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });
