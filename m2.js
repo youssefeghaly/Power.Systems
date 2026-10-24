@@ -273,42 +273,78 @@
       {
         h: 'From a kilowatt-hour to a hundred megawatts',
         p: [
-          'A cell holds about 1 kWh. A 100 MW / 400 MWh plant holds 400,000 of them. The gap is bridged by three groupings — module, rack, enclosure — and then by equipment that turns DC into AC.',
-          'Series adds voltage and keeps amp-hours. Parallel adds amp-hours and keeps voltage. Every group in the plant is one of those two operations repeated.'
+          `A cell holds about one kilowatt-hour — a 3.2 V, 314 Ah prismatic cell holds 1.0048 kWh. A 100 MW / 400 MWh plant holds roughly four hundred thousand of them. The whole engineering problem is turning single cells into something a converter can use and a grid can accept.`,
+          `The chain is built by two operations only. In <strong>series</strong>, voltages add and amp-hours stay the same. In <strong>parallel</strong>, amp-hours add and voltages stay the same. Modules, racks and enclosures are nothing more than those two operations applied in a sensible order.`,
+          `The order matters because the converter expects a voltage window — typically 1000–1500 V DC — and the grid expects a current the cables can carry. Series builds the voltage; parallel builds the current and the energy.`
         ],
-        formula: 'Cells → modules → racks → enclosure (DC)\nEnclosure → PCS → MV transformer → collector → MPT → POI (AC)'
+        formula: 'Cells → modules → racks → enclosure (DC)\nSeries adds volts · parallel adds amp-hours',
+        example: {
+          title: 'Worked example — how many cells',
+          body: `A 5 MWh container built from 3.2 V / 314 Ah cells needs 5,000 ÷ 1.0048 ≈ 4,976 cells. If they are arranged as 416 in series, that is 416 × 3.2 = 1,331 V per string, and 4,976 ÷ 416 = 12 strings in parallel. The 400 MWh anchor plant scales that up: roughly 400,000 cells across 87 containers.`
+        },
+        mistake: `Adding amp-hours when cells are put in series. "Two 100 Ah cells in series give 200 Ah" is wrong — they give 100 Ah at twice the voltage. This error propagates into rack counts, cable sizing and protection settings.`,
+        check: `A 5 MWh container uses 3.2 V, 314 Ah cells. How many cells does it hold, and how many strings if each string is 416 cells? Answer: 4,976 cells and 12 strings.`
       },
       {
         h: 'Two product architectures',
         p: [
-          'A DC block ships batteries only; each block needs its own PCS, so the site has both DC and AC collection.',
-          'An AC block puts the PCS and MV transformer inside the container. The output is already medium voltage, so only AC collection is needed. Tesla and Sungrow build this way; most Chinese integrators sell DC blocks.'
+          `A <strong>DC block</strong> is a battery in a box: it delivers DC, and the PCS lives elsewhere on site. That means the plant needs both a DC collection system and an AC collection system, and the DC cabling between containers and converters becomes a real design item.`,
+          `An <strong>AC block</strong> puts the PCS and the medium-voltage transformer inside the enclosure, so each container delivers AC at medium voltage. Only AC collection is needed, which removes a whole layer of DC cable, joints and protection.`,
+          `Neither is better in the abstract. AC blocks simplify the site and reduce installation labour; DC blocks give you freedom to mix battery and converter suppliers, which matters when one of them is on allocation.`
         ],
-        formula: 'DC block: batteries only → external PCS\nAC block: batteries + PCS + MV transformer → AC out'
+        formula: 'DC block: batteries only → external PCS\nAC block: batteries + PCS + MV transformer → AC out',
+        example: {
+          title: 'Worked example — the anchor plant both ways',
+          body: `At 100 MW / 400 MWh with 5 MWh containers you need 87 containers either way. As AC blocks each might be 5 MW / 20 MWh, giving 20 blocks of four hours. As DC blocks you still need about 20 PCS units of 5 MW, but now each PCS needs its own DC cabling from four or five containers — more cable, more joints, more to inspect.`
+        },
+        mistake: `Ordering DC blocks and planning to add converters later without reserving space and cable routes for them. The PCS yard, the DC cable trench and the protection scheme all have to exist in the layout from day one.`,
+        check: `Which architecture needs a DC collection system, and why does that increase the number of things that can fail? Answer: the DC block — every DC cable, joint and fuse between container and converter is another failure point.`
       },
       {
         h: 'The converter is where the losses live',
         p: [
-          'The PCS is the single largest loss after the battery itself, and the only place where the plant\'s behaviour on the grid is defined — reactive power, frequency response, fault ride-through.',
-          'Grid-following PCS synchronises to an existing grid. Grid-forming PCS can create voltage and frequency on its own, which is what a microgrid or a weak grid needs.'
+          `The power conversion system is a bidirectional inverter: DC to AC on discharge, AC to DC on charge. It is the second-largest source of loss in the plant after the cells, and it is the only component that defines how the plant behaves on the grid — reactive power, frequency response, fault ride-through.`,
+          `A modern PCS converts at 97–98.5 % round-trip. That sounds excellent, and it is — but the missing 1.5–3 % is not a rounding error when you move 100 MW through it. It becomes heat inside the enclosure, and the HVAC has to remove it, which costs more energy.`,
+          `The converter also sets the plant's reactive capability. It can inject or absorb reactive power without cycling the battery, which is one of storage's quiet advantages — but every megavar uses converter headroom that cannot simultaneously carry active power.`
         ],
-        formula: 'PCS: DC ↔ AC, ~97–98.5 % round-trip'
+        formula: 'PCS: DC ↔ AC, ~97–98.5 % round-trip · Q without cycling, within converter headroom',
+        example: {
+          title: 'Worked example — where 2 MW goes',
+          body: `At 100 MW output through a 98 % converter, 2 MW becomes heat. Over a four-hour discharge that is 8 MWh that never reaches the grid, plus 2 MW of continuous cooling load. On a hot day auxiliary consumption alone can reach 1.5 % of throughput — which is why quoted RTE figures differ depending on whether auxiliaries are counted.`
+        },
+        mistake: `Sizing the PCS to exactly the plant rating and ignoring reactive capability. At unity power factor you have the full rating for active power; ask for reactive support at the same moment and you must either oversize the converter or curtail active output.`,
+        check: `A 100 MW plant with a 97.5 % converter: how much heat per hour at full output? Answer: 2.5 MW, so 2.5 MWh of heat per hour.`
       },
       {
         h: 'Efficiency multiplies. It never adds.',
         p: [
-          'Six stages of 94, 97, 99, 99.5, 99.5 and 98.5 % do not give 88 % by subtraction. They give 88.03 % by multiplication.',
-          'The difference looks academic until you price it: half a point on a 400 MWh contract is 2 MWh per cycle, for twenty years.'
+          `Each stage passes on a fraction of what it receives. The battery passes 94 %, the PCS 97 % of that, the transformer 99 % of that. No stage knows what the original input was — it only sees what arrived. So system efficiency is the product of the stages, not the sum of the shortfalls.`,
+          `This is the most consequential arithmetic in the module, because it is where a plant that "looks like 88 % on the datasheets" quietly becomes 85 % in reality — and because the error compounds over twenty years of cycling.`,
+          `Watch the boundary as well as the arithmetic. Some quoted efficiencies include auxiliary load and some exclude it; some are measured at the converter terminals and some at the transformer. Two datasheets can both say 88 % and mean different plants, so always ask where the measurement stops.`
         ],
-        formula: 'RTE = η₁ × η₂ × … × ηₙ\n(never 100 − Σ(100 − ηᵢ))'
+        formula: 'RTE = η₁ × η₂ × … × ηₙ   (never 100 − Σ(100 − ηᵢ))',
+        example: {
+          title: 'Worked example — the anchor plant end to end',
+          body: `435 MWh leaves the DC terminals. Multiply through: 435 × 0.94 × 0.97 × 0.99 × 0.995 × 0.995 × 0.985 = 382.9 MWh at the POI. 52.1 MWh became heat. Half a percentage point of RTE is 2.2 MWh per cycle — about 800 MWh a year at one cycle a day, roughly €32,000 a year at a €40/MWh spread, for twenty years.`
+        },
+        mistake: `Quoting a PCS datasheet efficiency as the plant RTE. A 98.5 % converter becomes an 88 % plant once the battery, transformers, cabling and auxiliary load are counted — and the contract is measured at the POI, not at the converter terminals.`,
+        check: `The transformer stage falls from 99 % to 98 %. How much does the anchor plant lose per year at one cycle a day? Answer: about 3.9 MWh per cycle, roughly 1,430 MWh a year — around €57,000 at a €40/MWh spread.`
       },
       {
         h: 'The meter is the boundary',
         p: [
-          'Everything upstream of the POI is your loss; everything downstream is someone else\'s. The revenue-grade meter sits at the POI, with certified CTs and VTs — not the BMS, not the PCS sensors.',
-          'This is why a plant can pass its DC capacity test and still fail its offtake obligation: they are measured in different places, through different losses.'
+          `Everything upstream of the POI is your loss; everything downstream is someone else's. The revenue-grade meter sits at the POI with certified current and voltage transformers — not the BMS, not the PCS sensors, however good they look in the dashboard.`,
+          `That single sentence explains the most common commercial dispute in storage: a plant that passes its capacity test at the DC terminals and still fails its offtake obligation, because the two are measured in different places through different losses.`,
+          `It also explains why the loss budget is a contract document rather than an engineering nicety. Every percentage point between the terminals and the meter is a percentage point of revenue you have agreed to give away.`,
+          `The meter itself is a small device with a large contract behind it: accuracy class, calibration interval, the CT and VT classes feeding it, and who seals it. Get any of those wrong and you are arguing about money with an instrument that was never installed to measure it.`
         ],
-        formula: 'Contract is measured at the POI. Design is specified at the DC terminals.'
+        formula: 'Contract measured at the POI · design specified at the DC terminals',
+        example: {
+          title: 'Worked example — the same plant, two numbers',
+          body: `A contract for 400 MWh at the POI with 8 % losses requires 434.8 MWh at the DC terminals. If the commissioning test measures 435 MWh at DC, the plant is exactly compliant — 400.0 MWh at the POI. Compare 435 against 400 without accounting for losses and it looks like 8.75 % of headroom that does not exist. One percentage point of measurement boundary on 400 MWh a day is 1,460 MWh a year, roughly €58,000.`
+        },
+        mistake: `Billing from BMS or PCS current readings. They are uncalibrated, not independently certified, and not at the contractual measurement point — an investigator will reject them and a lender will treat the revenue as unverified.`,
+        check: `You must deliver 400 MWh at the POI and losses are 8 %. What must the battery hold at the DC terminals? Answer: 434.8 MWh.`
       }
     ],
     calc: { html: calcHTML, init: initCalc },

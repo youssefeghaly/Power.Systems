@@ -69,6 +69,12 @@
       html += '<section class="card"><h2>' + s.h + '</h2>';
       s.p.forEach(function (p) { html += '<p>' + p + '</p>'; });
       if (s.formula) html += '<pre class="formula">' + s.formula + '</pre>';
+      if (s.example) {
+        html += '<div class="card-example"><p class="ex-title">' + s.example.title + '</p>' +
+                '<p>' + s.example.body + '</p></div>';
+      }
+      if (s.mistake) html += '<p class="card-mistake"><strong>The mistake to avoid.</strong> ' + s.mistake + '</p>';
+      if (s.check) html += '<p class="card-check"><strong>Check yourself.</strong> ' + s.check + '</p>';
       html += '</section>';
     });
 

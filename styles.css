@@ -77,9 +77,10 @@ main { max-width: 900px; margin: 0 auto; padding: 0 18px 40px; }
   position: sticky;
   top: 0;
   z-index: 5;
-  background: linear-gradient(var(--bg) 70%, transparent);
+  background: var(--bg);
   padding-top: 8px;
   padding-bottom: 10px;
+  box-shadow: 0 6px 12px -10px rgba(0, 0, 0, .35);
 }
 
 .tab {
@@ -475,4 +476,39 @@ select {
   stroke-dasharray: 5 4;
   fill: none;
   opacity: .8;
+}
+
+/* ---------- richer learn cards ---------- */
+.card-example {
+  margin: 16px 0 12px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+.card-example p { margin: 0; }
+
+.card-example .ex-title {
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.card-mistake {
+  margin: 14px 0 8px;
+  padding-left: 12px;
+  border-left: 3px solid var(--bad);
+}
+
+.card-check {
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px dashed var(--line);
+  font-size: 16px;
 }

@@ -26,6 +26,16 @@ MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
   ok(Array.isArray(m.sections) && m.sections.length >= 5, m.id + ': at least 5 lesson sections', 'got ' + (m.sections || []).length);
   ok(m.sections.every((s) => s.h && Array.isArray(s.p) && s.p.length), m.id + ': every section has a heading and prose');
+  if (m.id === 'm2') {
+    m.sections.forEach((s) => {
+      const words = (s.p.join(' ') + ' ' + (s.example ? s.example.body : '') + ' ' + (s.mistake || '') + ' ' + (s.check || ''))
+        .split(/\s+/).filter(Boolean).length;
+      ok(words >= 240, 'template depth: "' + s.h.slice(0, 30) + '" has ≥ 240 words', words + ' words');
+      ok(!!s.example, 'template: "' + s.h.slice(0, 30) + '" has a worked example');
+      ok(!!s.mistake, 'template: "' + s.h.slice(0, 30) + '" names a mistake');
+      ok(!!s.check, 'template: "' + s.h.slice(0, 30) + '" has a self-check');
+    });
+  }
   ok(Array.isArray(m.drills) && m.drills.length === 12, m.id + ': 12 drills', 'got ' + m.drills.length);
   ok(m.calc && typeof m.calc.html === 'string' && m.calc.init, m.id + ': has a calculator');
   const ids = m.drills.map((d) => d.id);
