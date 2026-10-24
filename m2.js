@@ -71,7 +71,7 @@
 
   function drawDiagram(host) {
     var parts = [];
-    parts.push('<svg viewBox="0 0 880 400" class="sld" role="img" aria-label="Single-line diagram from cell to point of interconnection">');
+    parts.push('<svg viewBox="0 0 880 358" class="sld" role="img" aria-label="Single-line diagram from cell to point of interconnection">');
     parts.push('<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">' +
                '<path d="M0,0 L8,4 L0,8 z" class="arrowhead"/></marker></defs>');
 
@@ -103,7 +103,7 @@
       parts.push('</g>');
     });
 
-    parts.push('<text x="868" y="300" class="sld-note" text-anchor="end">grid →</text>');
+    parts.push('<text x="862" y="296" class="sld-note" text-anchor="end">grid →</text>');
     parts.push('</svg>');
 
     host.innerHTML =
@@ -111,6 +111,7 @@
         '<h2>The plant, in one line</h2>' +
         '<p class="muted">Tap any stage. The chain is the whole module: each box is a place where energy is lost or measured.</p>' +
         '<div id="sld-wrap">' + parts.join('') + '</div>' +
+        '<p class="sld-hint">Swipe the diagram sideways on a narrow screen.</p>' +
         '<div id="node-detail" class="node-detail"></div>' +
       '</div>';
 
@@ -204,7 +205,7 @@
             '<div class="row"><span>Energy lost in the chain</span><strong>' + lost.toFixed(1) + ' MWh</strong></div>'
           : '') +
         '<div class="row"><span>Naive "add the losses" answer</span><strong class="bad-num">' + naive.toFixed(2) + ' %</strong></div>' +
-        '<div class="row"><span>Error of the naive method</span><strong>' + (naive - rte).toFixed(2) + ' pp</strong></div>';
+        '<div class="row"><span>Naive method is off by</span><strong>' + Math.abs(naive - rte).toFixed(2) + ' percentage points</strong></div>';
     }
 
     STAGES.forEach(function (s) { $('rte-' + s.id).addEventListener('input', update); });

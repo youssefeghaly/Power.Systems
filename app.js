@@ -220,7 +220,6 @@
     renderCalc();
     updateProgress();
     var m = current();
-    document.getElementById('module-title').textContent = 'Module ' + m.number + ' · ' + m.title;
     document.getElementById('module-select').value = m.id;
     show('learn');
   }

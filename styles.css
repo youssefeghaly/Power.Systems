@@ -329,3 +329,18 @@ select {
   .sld-node text { font-size: 17px; }
   .sld-band { font-size: 15px; }
 }
+
+/* ---------- diagram on narrow screens ---------- */
+#sld-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.sld { min-width: 720px; }
+
+.sld-hint { display: none; font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+
+@media (max-width: 760px) {
+  .sld-hint { display: block; }
+}
