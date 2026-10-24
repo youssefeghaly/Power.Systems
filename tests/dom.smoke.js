@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 7, 'module picker lists seven modules', String($('module-select').options.length));
+ok($('module-select').options.length === 8, 'module picker lists eight modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');
@@ -268,6 +268,39 @@ while (g7++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
   if (nx) nx.click();
 }
 ok(/All 12 solved/.test($('drill-body').textContent), 'module 7 drills complete');
+
+console.log('module 8 HV installation');
+$('module-select').value = 'm8';
+fire($('module-select'), 'change');
+ok(/The HV installation/.test($('lesson').textContent), 'module 8 lesson renders');
+const hvNodes = $('lesson').querySelectorAll('.sld-node');
+ok(hvNodes.length === 8, 'eight HV devices drawn', String(hvNodes.length));
+ok(/Circuit breaker/.test($('lesson').querySelector('#hv-detail').textContent), 'default detail shown');
+const ds = [...hvNodes].find((n) => n.getAttribute('data-node') === 'ds1');
+fire(ds, 'click');
+ok(/Disconnector/.test($('lesson').querySelector('#hv-detail').textContent), 'tapping a device updates the panel');
+$('tab-calc').click();
+const to = () => $('tx-out').textContent.replace(/\s+/g, ' ');
+ok(/4\.37 kA/.test(to()), '100 MVA / 110 kV / 12 % → 4.37 kA', to().slice(0, 60));
+$('tx-uk').value = '24';
+fire($('tx-uk'), 'input');
+ok(/2\.19 kA/.test(to()), 'doubling impedance halves the fault current');
+
+console.log('module 8 drills');
+$('tab-drill').click();
+const D8 = window.MODULES.find((m) => m.id === 'm8').drills;
+let g8 = 0;
+while (g8++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const d = D8.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
+  const nx = $('next');
+  if (nx) nx.click();
+}
+ok(/All 12 solved/.test($('drill-body').textContent), 'module 8 drills complete');
 
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);

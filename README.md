@@ -17,6 +17,7 @@ produce or compute, not something you read.
 | 05 | Protection and fault levels | Grade two relays on IEC curves, compute fault level, explain CT burden |
 | 06 | Earthing and EMC | Size an electrode, compute earth potential rise, compare against a touch-voltage limit |
 | 07 | Cables and laying | Size one cable against thermal, drop and short-circuit; apply derating and laying rules |
+| 08 | The HV installation | Read an HV bay, choose switchgear and transformer parameters, spec CTs and VTs |
 
 Each module has three views:
 

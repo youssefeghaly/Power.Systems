@@ -78,6 +78,11 @@ near(C.adiabaticArea(25000, 0.1, 143), 55.3, 0.1, 'adiabatic 25 kA / 0.1 s / k14
 near(C.adiabaticArea(16000, 0.3, 143), 61.3, 0.1, 'adiabatic 16 kA / 0.3 s');
 eq(C.cableR(35, 'cu', 70) < C.cableR(35, 'al', 70), true, 'copper beats aluminium for the same area');
 
+console.log('transformers');
+const txIk = (mva, kv, uk) => mva * 1e6 / (Math.sqrt(3) * kv * 1000 * (uk / 100)) / 1000;
+near(txIk(100, 110, 12), 4.3736, 0.001, '100 MVA, 110 kV, 12 % → 4.37 kA');
+eq(Math.abs(txIk(100, 110, 24) - txIk(100, 110, 12) / 2) < 1e-9, true, 'doubling u_k halves the current');
+
 console.log('guards');
 throws(() => C.cRate(0), 'C-rate rejects zero duration');
 throws(() => C.grossUp(100, 100), 'gross-up rejects 100 % loss');

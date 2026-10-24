@@ -463,3 +463,7 @@ select {
 .legend .sw-down { background: var(--accent); }
 .legend .sw-up { background: var(--bad); }
 .legend .muted { color: var(--muted); }
+
+/* ---------- HV busbar ---------- */
+.busbar { stroke: var(--ink); stroke-width: 6; stroke-linecap: round; }
+.sld-node rect.hl { stroke-dasharray: 5 3; }
