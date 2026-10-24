@@ -16,11 +16,11 @@ const ok = (cond, msg, detail) => {
 console.log('module registry');
 const ctx = { window: {}, Calc: C, console };
 vm.createContext(ctx);
-['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js'].forEach((f) => vm.runInContext(read(f), ctx));
+['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'm9.js'].forEach((f) => vm.runInContext(read(f), ctx));
 const MODULES = ctx.window.MODULES;
 ok(Array.isArray(MODULES), 'MODULES array built');
-ok(MODULES.length === 8, 'eight modules registered', 'got ' + (MODULES || []).length);
-ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5,m6,m7,m8', 'module order m1 … m8');
+ok(MODULES.length === 9, 'nine modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5,m6,m7,m8,m9', 'module order m1 … m9');
 
 MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
@@ -129,6 +129,18 @@ ok(within(m8, 'm8-d3', txIk(300, 220, 15)), 'm8-d3 = 300 MVA at 220 kV');
 ok(within(m8, 'm8-d10', txIk(80, 110, 9)), 'm8-d10 = 80 MVA, 9 %');
 ok(typeof m8.renderExtra === 'function', 'module 8 renders the substation diagram');
 
+console.log('m9 MV connection maths');
+const m9 = MODULES.find((m) => m.id === 'm9');
+const lvFault = (kva, uk) => kva * 1000 / (Math.sqrt(3) * 400 * (uk / 100)) / 1000;
+const mvAmps = (kva, kv) => kva * 1000 / (Math.sqrt(3) * kv * 1000);
+ok(within(m9, 'm9-d1', lvFault(5000, 6)), 'm9-d1 = LV fault behind a 5 MVA transformer');
+ok(within(m9, 'm9-d2', mvAmps(5000, 20)), 'm9-d2 = MV current at full rating');
+ok(within(m9, 'm9-d3', 4000 / 0.95), 'm9-d3 = apparent power at 0.95 pf');
+ok(within(m9, 'm9-d4', (4000 / 0.95) / 5000 * 100), 'm9-d4 = loading percentage');
+ok(within(m9, 'm9-d5', 120 * 5 / 200), 'm9-d5 = CT secondary current');
+ok(within(m9, 'm9-d11', lvFault(5000, 12)), 'm9-d11 = double u_k halves the LV fault');
+ok(typeof m9.renderExtra === 'function', 'module 9 renders the transfer station');
+
 console.log('dom ids');
 const html = read('index.html');
 const appjs = read('app.js');
@@ -146,7 +158,7 @@ used.forEach((id) => {
 
 console.log('scripts');
 const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]);
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'm9.js', 'app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });

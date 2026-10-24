@@ -467,3 +467,12 @@ select {
 /* ---------- HV busbar ---------- */
 .busbar { stroke: var(--ink); stroke-width: 6; stroke-linecap: round; }
 .sld-node rect.hl { stroke-dasharray: 5 3; }
+
+/* ---------- control / earthing connections ---------- */
+.sld-control {
+  stroke: var(--muted);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 4;
+  fill: none;
+  opacity: .8;
+}

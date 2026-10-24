@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'm9.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 8, 'module picker lists eight modules', String($('module-select').options.length));
+ok($('module-select').options.length === 9, 'module picker lists nine modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');
@@ -301,6 +301,37 @@ while (g8++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
   if (nx) nx.click();
 }
 ok(/All 12 solved/.test($('drill-body').textContent), 'module 8 drills complete');
+
+console.log('module 9 MV connection');
+$('module-select').value = 'm9';
+fire($('module-select'), 'change');
+ok(/The MV connection/.test($('lesson').textContent), 'module 9 lesson renders');
+const mvNodes = $('lesson').querySelectorAll('.sld-node');
+ok(mvNodes.length === 6, 'six station components drawn', String(mvNodes.length));
+ok(/customer transformer/i.test($('lesson').querySelector('#mv-detail').textContent), 'default detail is the transformer');
+$('tab-calc').click();
+const mo = () => $('mv-out').textContent.replace(/\s+/g, ' ');
+ok(/84\.2 %/.test(mo()), 'loading 84.2 % for 4 MW at 0.95 on 5 MVA', mo().slice(0, 80));
+ok(/120\.2\d kA/.test(mo()), 'LV fault 120 kA behind 5 MVA at 6 %', mo().slice(0, 120));
+$('mv-kva').value = '3000';
+fire($('mv-kva'), 'input');
+ok(/140\.4 %|140\.3 %/.test(mo()), 'undersized transformer shows overload', mo().slice(0, 80));
+
+console.log('module 9 drills');
+$('tab-drill').click();
+const D9 = window.MODULES.find((m) => m.id === 'm9').drills;
+let g9 = 0;
+while (g9++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const d = D9.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
+  const nx = $('next');
+  if (nx) nx.click();
+}
+ok(/All 12 solved/.test($('drill-body').textContent), 'module 9 drills complete');
 
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);
