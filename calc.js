@@ -70,6 +70,32 @@
       return 100 - lost;
     },
 
+
+    /** Three-phase fault current in kA: Ik = c · Un / (√3 · Z). */
+    faultCurrent: function (voltageKv, zOhm, c) {
+      if (!(voltageKv > 0) || !(zOhm > 0)) throw new Error('voltage and impedance must be > 0');
+      return ((c === undefined ? 1.1 : c) * voltageKv * 1000) / (Math.sqrt(3) * zOhm) / 1000;
+    },
+
+    /** IEC 60255 inverse-time curve: t = TMS · k / ((I/Is)^α − 1), in seconds. */
+    relayTime: function (curve, tms, is, current) {
+      var table = {
+        SI: [0.14, 0.02],
+        VI: [13.5, 1],
+        EI: [80, 2],
+        LTI: [120, 1]
+      };
+      var p = table[curve];
+      if (!p) throw new Error('unknown curve ' + curve);
+      if (!(is > 0) || !(current > is)) return Infinity;
+      return (tms * p[0]) / (Math.pow(current / is, p[1]) - 1);
+    },
+
+    /** Grading margin between two devices at a given current, in seconds. */
+    gradingMargin: function (downstream, upstream, current) {
+      return upstream - downstream;
+    },
+
     round: function (x, digits) {
       var f = Math.pow(10, digits === undefined ? 2 : digits);
       return Math.round(x * f) / f;

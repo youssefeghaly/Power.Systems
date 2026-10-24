@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 4, 'module picker lists four modules', String($('module-select').options.length));
+ok($('module-select').options.length === 5, 'module picker lists five modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');
@@ -172,6 +172,39 @@ while (g4++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
   if (nx) nx.click();
 }
 ok(/All 12 solved/.test($('drill-body').textContent), 'module 4 drills complete');
+
+console.log('module 5 protection');
+$('module-select').value = 'm5';
+fire($('module-select'), 'change');
+ok(/Protection and fault levels/.test($('lesson').textContent), 'module 5 lesson renders');
+$('tab-calc').click();
+ok(!!$('p-chart').querySelector('.tcc-down'), 'downstream curve drawn');
+ok(!!$('p-chart').querySelector('.tcc-up'), 'upstream curve drawn');
+const po = () => $('p-out').textContent.replace(/\s+/g, ' ');
+ok(/coordinated/.test(po()), 'default settings are coordinated', po().slice(0, 100));
+ok(/25\.40 kA/.test($('p-ik').textContent.replace(/\s+/g, ' ')), 'fault level 25.40 kA for 20 kV / 0.5 Ω', $('p-ik').textContent.slice(0, 60));
+$('p-up-tms').value = '0.02';
+fire($('p-up-tms'), 'input');
+ok(/not coordinated/.test(po()), 'too-fast upstream is rejected');
+$('p-fault').value = '150';
+fire($('p-fault'), 'input');
+ok(/not coordinated|does not trip/.test(po()), 'fault below pickup does not claim coordination');
+
+console.log('module 5 drills');
+$('tab-drill').click();
+const D5 = window.MODULES.find((m) => m.id === 'm5').drills;
+let g5 = 0;
+while (g5++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const d = D5.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
+  const nx = $('next');
+  if (nx) nx.click();
+}
+ok(/All 12 solved/.test($('drill-body').textContent), 'module 5 drills complete');
 
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);

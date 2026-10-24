@@ -16,11 +16,11 @@ const ok = (cond, msg, detail) => {
 console.log('module registry');
 const ctx = { window: {}, Calc: C, console };
 vm.createContext(ctx);
-['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js'].forEach((f) => vm.runInContext(read(f), ctx));
+['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js'].forEach((f) => vm.runInContext(read(f), ctx));
 const MODULES = ctx.window.MODULES;
 ok(Array.isArray(MODULES), 'MODULES array built');
-ok(MODULES.length === 4, 'four modules registered', 'got ' + (MODULES || []).length);
-ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4', 'module order m1 … m4');
+ok(MODULES.length === 5, 'five modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5', 'module order m1 … m5');
 
 MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
@@ -90,6 +90,17 @@ ok(within(m4, 'm4-d10', 0.95), 'm4-d10 = cos φ 0.95 at rated power');
 ok(m4.sections.some((s) => /NELEV/.test(s.p.join(' '))), 'lesson explains NELEV');
 ok(typeof m4.renderExtra === 'function', 'module 4 renders the process stepper');
 
+console.log('m5 protection maths');
+const m5 = MODULES.find((m) => m.id === 'm5');
+ok(within(m5, 'm5-d1', C.faultCurrent(20, 0.5)), 'm5-d1 = fault current at 20 kV, 0.5 Ω');
+ok(within(m5, 'm5-d2', C.faultCurrent(110, 2)), 'm5-d2 = fault current at 110 kV, 2 Ω');
+ok(within(m5, 'm5-d4', 600 * 0.8), 'm5-d4 = CT ratio scaling');
+ok(within(m5, 'm5-d5', 15 / (1 * 1)), 'm5-d5 = burden impedance');
+ok(within(m5, 'm5-d6', C.relayTime('SI', 0.2, 1, 10)), 'm5-d6 = SI curve at 10× pickup');
+ok(within(m5, 'm5-d7', C.relayTime('VI', 0.5, 1, 4)), 'm5-d7 = VI curve at 4× pickup');
+ok(within(m5, 'm5-d8', 0.4 + 0.3), 'm5-d8 = grading margin arithmetic');
+ok(C.relayTime('SI', 0.2, 1, 0.5) === Infinity, 'relay does not trip below pickup');
+
 console.log('dom ids');
 const html = read('index.html');
 const appjs = read('app.js');
@@ -107,7 +118,7 @@ used.forEach((id) => {
 
 console.log('scripts');
 const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]);
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });

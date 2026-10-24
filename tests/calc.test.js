@@ -46,6 +46,17 @@ eq(C.containers(435, 5), 87, 'exact multiple does not round up to 88');
 eq(C.containers(217.39, 5), 44, '217.39 MWh = 44 containers');
 near(C.overbuild(C.containers(C.grossUp(400, 8), 5) * 5, C.grossUp(400, 8)), 0.0005, 1e-4, 'overbuild of 87 x 5 MWh vs 434.78 = 0.05 %');
 
+console.log('protection');
+near(C.faultCurrent(20, 0.5), 25.4031, 0.01, '20 kV, 0.5 Ω → 25.40 kA');
+near(C.faultCurrent(110, 2), 34.9346, 0.01, '110 kV, 2 Ω → 34.93 kA');
+near(C.faultCurrent(20, 1.2), 10.5846, 0.01, '20 kV, 1.2 Ω → 10.58 kA');
+near(C.relayTime('SI', 0.2, 1, 10), 0.5941, 0.001, 'SI, TMS 0.2, 10× → 0.594 s');
+near(C.relayTime('VI', 0.5, 1, 4), 2.25, 0.001, 'VI, TMS 0.5, 4× → 2.25 s');
+near(C.relayTime('EI', 0.1, 1, 3), 1.0, 0.001, 'EI, TMS 0.1, 3× → 1.0 s');
+eq(C.relayTime('SI', 0.2, 1, 1), Infinity, 'no trip at pickup');
+throws(() => C.relayTime('XX', 0.2, 1, 10), 'unknown curve rejected');
+throws(() => C.faultCurrent(0, 1), 'zero voltage rejected');
+
 console.log('guards');
 throws(() => C.cRate(0), 'C-rate rejects zero duration');
 throws(() => C.grossUp(100, 100), 'gross-up rejects 100 % loss');
