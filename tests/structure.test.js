@@ -167,7 +167,7 @@ used.forEach((id) => {
 });
 
 console.log('scripts');
-const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]);
+const scripts = [...html.matchAll(/<script src="\.\/([^"?]+)\?v=\d+"/g)].map((m) => m[1]);
 ['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'm9.js', 'app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
@@ -177,6 +177,11 @@ const swVer = (swSrc.match(/bess-lab-v(\d+)/) || [])[1];
 ok(!!swVer, 'sw cache name present');
 const htmlVer = (html.match(/id="app-version">v(\d+)</) || [])[1];
 ok(htmlVer === swVer, 'visible version stamp matches the cache version', 'sw v' + swVer + ' vs page v' + htmlVer);
+const assetVersions = [...html.matchAll(/\?v=(\d+)"/g)].map((m) => m[1]);
+ok(assetVersions.length > 0, 'assets carry a version query');
+ok(assetVersions.every((v) => v === swVer), 'every asset query matches the cache version', assetVersions.join(','));
+const swAssets = [...swSrc.matchAll(/\?v=(\d+)'/g)].map((m) => m[1]);
+ok(swAssets.length > 0 && swAssets.every((v) => v === swVer), 'precache list uses the same version', swAssets.join(','));
 ok(/wantsHTML/.test(swSrc) && /network first|network-first/i.test(swSrc), 'shell is served network-first');
 const man = JSON.parse(read('manifest.webmanifest'));
 ok(man.display === 'standalone', 'manifest is standalone');
