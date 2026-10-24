@@ -1,0 +1,15 @@
+{
+  "name": "BESS — Module 1: Energy, power, time, money",
+  "short_name": "BESS M1",
+  "description": "Sizing, C-rate, units and losses for utility-scale battery storage.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1220",
+  "theme_color": "#0f172a",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

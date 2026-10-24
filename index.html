@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>BESS · Module 1 — Energy, power, time, money</title>
+  <meta name="description" content="Module 1 of a design-weighted BESS curriculum: sizing, C-rate, units and losses." />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <span>BESS <span class="muted">/ Module 1</span></span>
+    </div>
+    <div class="progress" title="Drill progress">
+      <div class="track"><div class="bar" id="bar"></div></div>
+      <span id="count" class="count">0 / 12 solved</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" id="tab-learn" role="tab" aria-selected="true" aria-controls="view-learn">Learn</button>
+    <button class="tab" id="tab-calc" role="tab" aria-selected="false" aria-controls="view-calc">Calculate</button>
+    <button class="tab" id="tab-drill" role="tab" aria-selected="false" aria-controls="view-drill">Drill</button>
+  </nav>
+
+  <main>
+    <section id="view-learn" role="tabpanel" aria-labelledby="tab-learn">
+      <div id="lesson"></div>
+    </section>
+
+    <section id="view-calc" role="tabpanel" aria-labelledby="tab-calc" hidden>
+      <div class="card">
+        <h2>Size a plant</h2>
+        <p class="muted">Contract numbers in, hardware out. Losses gross up — watch the DC figure exceed the POI figure.</p>
+        <div class="grid">
+          <label>Power at POI
+            <input id="in-mw" type="text" inputmode="decimal" value="100" />
+            <span class="hint">MW</span>
+          </label>
+          <label>Duration
+            <input id="in-hours" type="text" inputmode="decimal" value="4" />
+            <span class="hint">hours</span>
+          </label>
+          <label>Losses DC → POI
+            <input id="in-loss" type="text" inputmode="decimal" value="8" />
+            <span class="hint">%</span>
+          </label>
+          <label>Container size
+            <input id="in-box" type="text" inputmode="decimal" value="5" />
+            <span class="hint">MWh</span>
+          </label>
+        </div>
+        <div id="plant-out" class="results"></div>
+      </div>
+
+      <div class="card">
+        <h2>Cell and string</h2>
+        <p class="muted">Series adds voltage, keeps amp-hours. Parallel adds amp-hours, keeps voltage.</p>
+        <div class="grid">
+          <label>Cell voltage
+            <input id="in-volts" type="text" inputmode="decimal" value="3.2" />
+            <span class="hint">V</span>
+          </label>
+          <label>Cell capacity
+            <input id="in-ah" type="text" inputmode="decimal" value="314" />
+            <span class="hint">Ah</span>
+          </label>
+          <label>Cells in series
+            <input id="in-cells" type="text" inputmode="decimal" value="416" />
+            <span class="hint">pcs</span>
+          </label>
+        </div>
+        <div id="cell-out" class="results"></div>
+      </div>
+    </section>
+
+    <section id="view-drill" role="tabpanel" aria-labelledby="tab-drill" hidden>
+      <div id="drill-body"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Module 1 of 10 · anchor plant 100 MW / 400 MWh at 110 kV</span>
+  </footer>
+
+  <script src="./calc.js"></script>
+  <script src="./content.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
