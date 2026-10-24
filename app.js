@@ -152,35 +152,59 @@
   }
 
   function updateProgress() {
-    const n = solvedCount();
-    const pct = Math.round((n / DRILLS.length) * 100);
+    var n = solvedCount();
+    var pct = Math.round((n / DRILLS.length) * 100);
     document.getElementById('bar').style.width = pct + '%';
     document.getElementById('count').textContent = n + ' / ' + DRILLS.length + ' solved';
   }
 
-  function renderDrill() {
-    const host = document.getElementById('drill-body');
-    const d = DRILLS[state.current];
-    state.checked = false;
+  /* Next question that is still unsolved, searching forward from `from`. -1 when none. */
+  function nextUnsolved(from) {
+    for (var step = 1; step <= DRILLS.length; step++) {
+      var i = (from + step) % DRILLS.length;
+      if (!state.solved[DRILLS[i].id]) return i;
+    }
+    return -1;
+  }
 
-    if (solvedCount() === DRILLS.length && !state.forceShow) {
-      host.innerHTML =
-        '<div class="card center">' +
-        '<h2>All twelve solved.</h2>' +
-        '<p>You can now size a plant from a contract number. That is the whole point of Module 1.</p>' +
-        '<p class="muted">Re-run them any time — the ones you missed will feel different the second time.</p>' +
-        '<button class="btn" id="reset">Start over</button>' +
-        '</div>';
-      document.getElementById('reset').addEventListener('click', function () {
-        state.solved = {}; state.current = 0; state.forceShow = false;
-        save(); updateProgress(); renderDrill();
-      });
+  function renderDone(host) {
+    host.innerHTML =
+      '<div class="card center">' +
+      '<h2>All twelve solved.</h2>' +
+      '<p>You can now size a plant from a contract number — which is the whole point of Module 1.</p>' +
+      '<p class="muted">Run them again whenever you like. Solved questions come back from scratch, ' +
+      'so a second pass measures something different than the first.</p>' +
+      '<button class="btn" id="reset">Start over</button>' +
+      '</div>';
+    document.getElementById('reset').addEventListener('click', function () {
+      state.solved = {};
+      state.current = 0;
+      save();
+      updateProgress();
+      renderDrill();
+    });
+  }
+
+  function renderDrill() {
+    var host = document.getElementById('drill-body');
+
+    if (solvedCount() === DRILLS.length) {
+      renderDone(host);
       return;
     }
 
+    /* Never park the learner on a question they have already solved. */
+    if (state.solved[DRILLS[state.current].id]) {
+      var jump = nextUnsolved(state.current);
+      if (jump !== -1) state.current = jump;
+    }
+
+    var d = DRILLS[state.current];
+    var left = DRILLS.length - solvedCount();
+
     host.innerHTML =
       '<div class="card">' +
-      '<p class="kicker">Question ' + (state.current + 1) + ' of ' + DRILLS.length + '</p>' +
+      '<p class="kicker">' + (state.current + 1) + ' of ' + DRILLS.length + ' · ' + left + ' still open</p>' +
       '<p class="q">' + d.q + '</p>' +
       '<div class="answer-row">' +
       '<input id="answer" type="text" inputmode="decimal" autocomplete="off" ' +
@@ -191,26 +215,40 @@
       '<div id="feedback" class="feedback" hidden></div>' +
       '</div>';
 
-    const input = document.getElementById('answer');
-    const check = document.getElementById('check');
-    const fb = document.getElementById('feedback');
+    var input = document.getElementById('answer');
+    var check = document.getElementById('check');
+    var fb = document.getElementById('feedback');
 
     function judge() {
-      const given = num(input);
-      const ok = isFinite(given) && Math.abs(given - d.answer) <= d.tol;
-      state.checked = true;
-      if (ok) { state.solved[d.id] = true; save(); updateProgress(); }
+      var given = num(input);
+      var ok = isFinite(given) && Math.abs(given - d.answer) <= d.tol;
+
+      if (ok) {
+        state.solved[d.id] = true;
+        save();
+        updateProgress();
+      }
+
+      var allDone = solvedCount() === DRILLS.length;
+
       fb.hidden = false;
       fb.className = 'feedback ' + (ok ? 'good' : 'bad');
       fb.innerHTML =
         '<p><strong>' + (ok ? 'Correct.' : 'Not quite — ' + d.answer + ' ' + d.unit + '.') + '</strong></p>' +
-        '<p>' + d.why + '</p>' +
-        '<button class="btn" id="next">' + (state.current === DRILLS.length - 1 ? 'Finish' : 'Next') + '</button>';
+        '<p>' + (ok ? d.why : d.why + ' This one comes back until you get it.') + '</p>' +
+        '<button class="btn" id="next">' + (allDone ? 'Finish' : 'Next') + '</button>';
+
       document.getElementById('next').addEventListener('click', function () {
-        state.current = (state.current + 1) % DRILLS.length;
-        state.forceShow = true;
-        save(); renderDrill();
+        if (allDone) {
+          renderDrill();
+          return;
+        }
+        var n = nextUnsolved(state.current);
+        if (n !== -1) state.current = n;
+        save();
+        renderDrill();
       });
+
       input.disabled = true;
       check.disabled = true;
     }

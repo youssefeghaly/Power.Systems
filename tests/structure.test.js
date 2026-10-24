@@ -57,7 +57,7 @@ ok(near(byId.d12, 1.5 * 3), 'd12 = 1.5 MW x 3 h');
 console.log('shell');
 ok(/serviceWorker/.test(appjs), 'app registers a service worker');
 const sw = fs.readFileSync(path.join(dir, 'sw.js'), 'utf8');
-ok(/bess-module1-v1/.test(sw), 'sw cache name present');
+ok(/bess-module1-v\d+/.test(sw), 'sw cache name present');
 const man = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.webmanifest'), 'utf8'));
 ok(man.display === 'standalone', 'manifest is standalone');
 ok(man.icons.length >= 2, 'manifest has icons');

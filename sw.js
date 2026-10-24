@@ -1,5 +1,5 @@
 /* Offline shell. Bump CACHE when any shell file changes. */
-const CACHE = 'bess-module1-v1';
+const CACHE = 'bess-module1-v2';
 const ASSETS = [
   './',
   './index.html',

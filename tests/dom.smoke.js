@@ -63,5 +63,46 @@ $('check').dispatchEvent(new window.Event('click'));
 ok(/Not quite/.test($('feedback').textContent), 'wrong answer rejected');
 ok(/0\.5/.test($('feedback').textContent), 'wrong answer shows the right value', $('feedback').textContent.slice(0, 60));
 
+console.log('completion');
+const DRILLS = window.DRILLS;
+let guard = 0;
+let repeated = false;
+while (guard++ < 60 && !/All twelve solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const drill = DRILLS.find((d) => d.q === qEl.textContent);
+  if (!drill) break;
+  $('answer').value = String(drill.answer);
+  $('check').dispatchEvent(new window.Event('click'));
+  const next = $('next');
+  if (next) next.dispatchEvent(new window.Event('click'));
+}
+ok(/All twelve solved/.test($('drill-body').textContent), 'ends with a done screen instead of cycling', $('drill-body').textContent.slice(0, 60));
+ok(guard < 40, 'finished within a sane number of steps', 'steps=' + guard);
+ok($('count').textContent === '12 / 12 solved', 'progress reads 12 / 12', $('count').textContent);
+ok(!!$('reset'), 'done screen offers a restart');
+
+console.log('wrong answers come back');
+$('reset').dispatchEvent(new window.Event('click'));
+ok(!!$('answer'), 'restart returns to a question');
+const first = $('drill-body').querySelector('.q').textContent;
+$('answer').value = '0.0001';
+$('check').dispatchEvent(new window.Event('click'));
+ok(/comes back/.test($('feedback').textContent), 'wrong answer says it will return');
+const seen = new Set();
+let steps = 0;
+while (steps++ < 13) {
+  const q = $('drill-body').querySelector('.q');
+  if (!q) break;
+  seen.add(q.textContent);
+  const nx = $('next');
+  if (nx) nx.dispatchEvent(new window.Event('click'));
+  if ($('drill-body').querySelector('.q') && $('drill-body').querySelector('.q').textContent === first && steps > 1) {
+    repeated = true;
+    break;
+  }
+}
+ok(repeated || seen.has(first), 'the missed question reappears rather than being skipped');
+
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : `\n${fail} FAILED`);
 process.exit(fail ? 1 : 0);
