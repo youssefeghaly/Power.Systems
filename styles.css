@@ -361,3 +361,8 @@ select {
 .chart-line { fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linejoin: round; }
 
 .chart-bad { fill: var(--bad); }
+
+.ver {
+  font-variant-numeric: tabular-nums;
+  opacity: .7;
+}

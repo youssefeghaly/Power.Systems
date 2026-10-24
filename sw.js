@@ -1,5 +1,5 @@
 /* Offline shell. Bump CACHE when any shell file changes. */
-const CACHE = 'bess-lab-v5';
+const CACHE = 'bess-lab-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -30,18 +30,37 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  if (req.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(event.request).then((hit) => {
-      if (hit) return hit;
-      return fetch(event.request)
+  const wantsHTML = req.mode === 'navigate' ||
+    (req.headers.get('accept') || '').indexOf('text/html') >= 0;
+
+  /* The shell must never be stale: network first, cache only as fallback. */
+  if (wantsHTML) {
+    event.respondWith(
+      fetch(req)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE).then((cache) => cache.put(event.request, copy)).catch(() => {});
+          caches.open(CACHE).then((c) => c.put('./index.html', copy)).catch(() => {});
           return res;
         })
-        .catch(() => caches.match('./index.html'));
+        .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  /* Assets: serve from cache instantly, refresh in the background. */
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      const network = fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(() => cached);
+      return cached || network;
     })
   );
 });

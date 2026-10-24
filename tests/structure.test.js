@@ -102,7 +102,12 @@ const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });
-ok(/bess-lab-v\d+/.test(read('sw.js')), 'sw cache name present');
+const swSrc = read('sw.js');
+const swVer = (swSrc.match(/bess-lab-v(\d+)/) || [])[1];
+ok(!!swVer, 'sw cache name present');
+const htmlVer = (html.match(/id="app-version">v(\d+)</) || [])[1];
+ok(htmlVer === swVer, 'visible version stamp matches the cache version', 'sw v' + swVer + ' vs page v' + htmlVer);
+ok(/wantsHTML/.test(swSrc) && /network first|network-first/i.test(swSrc), 'shell is served network-first');
 const man = JSON.parse(read('manifest.webmanifest'));
 ok(man.display === 'standalone', 'manifest is standalone');
 man.icons.forEach((i) => ok(fs.existsSync(path.join(dir, i.src.replace('./', ''))), 'icon exists: ' + i.src));
