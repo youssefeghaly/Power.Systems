@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 6, 'module picker lists six modules', String($('module-select').options.length));
+ok($('module-select').options.length === 7, 'module picker lists seven modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');
@@ -238,6 +238,36 @@ while (g6++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
   if (nx) nx.click();
 }
 ok(/All 12 solved/.test($('drill-body').textContent), 'module 6 drills complete');
+
+console.log('module 7 cables');
+$('module-select').value = 'm7';
+fire($('module-select'), 'change');
+ok(/Cables and laying/.test($('lesson').textContent), 'module 7 lesson renders');
+$('tab-calc').click();
+const co = () => $('cb-out').textContent.replace(/\s+/g, ' ');
+ok(/108\.0 A/.test(co()), 'derated capacity 150 x 0.9 x 0.8 = 108 A', co().slice(0, 70));
+ok(/1\.30 %/.test(co()), 'drop shown as 1.30 % of 400 V', co().slice(0, 90));
+ok(/55\.3|55\.0/.test($('cb-sc').textContent.replace(/\s+/g, ' ')), 'adiabatic minimum area appears', $('cb-sc').textContent.slice(0, 60));
+$('cb-ib').value = '150';
+fire($('cb-ib'), 'input');
+ok(/fail/.test(co()), 'overloading flips the thermal verdict');
+ok(/thermal/.test(co()), 'binding constraint reports thermal');
+
+console.log('module 7 drills');
+$('tab-drill').click();
+const D7 = window.MODULES.find((m) => m.id === 'm7').drills;
+let g7 = 0;
+while (g7++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const d = D7.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
+  const nx = $('next');
+  if (nx) nx.click();
+}
+ok(/All 12 solved/.test($('drill-body').textContent), 'module 7 drills complete');
 
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);

@@ -67,6 +67,17 @@ eq(C.epr(500, 5), 2500, 'EPR 500 A × 5 Ω');
 eq(C.requiredEarth(1000, 500), 2, 'required resistance 2 Ω');
 near(C.wenner(4, 10), 251.33, 0.1, 'Wenner 2πaR');
 
+console.log('cables');
+near(C.cableR(35, 'cu', 70), 0.000598, 1e-6, '35 mm² copper at 70 °C');
+near(C.cableR(35, 'al', 70), 0.000964, 1e-6, '35 mm² aluminium at 70 °C (higher)');
+near(C.cableR(95, 'cu', 70), 0.000220, 1e-6, '95 mm² copper at 70 °C');
+eq(C.derate(200, [0.8, 0.7]), 112, 'factors multiply to 112 A');
+near(C.drop3ph(100, C.cableR(35, 'cu', 70), 50), 5.18, 0.01, 'three-phase drop 5.18 V');
+near(C.dropDC(200, C.cableR(95, 'cu', 70), 20), 1.76, 0.01, 'DC drop 1.76 V');
+near(C.adiabaticArea(25000, 0.1, 143), 55.3, 0.1, 'adiabatic 25 kA / 0.1 s / k143');
+near(C.adiabaticArea(16000, 0.3, 143), 61.3, 0.1, 'adiabatic 16 kA / 0.3 s');
+eq(C.cableR(35, 'cu', 70) < C.cableR(35, 'al', 70), true, 'copper beats aluminium for the same area');
+
 console.log('guards');
 throws(() => C.cRate(0), 'C-rate rejects zero duration');
 throws(() => C.grossUp(100, 100), 'gross-up rejects 100 % loss');

@@ -125,6 +125,37 @@
       return 2 * Math.PI * spacing * resistance;
     },
 
+
+    /** Conductor resistance in Ω/m at a given temperature. area in mm², material 'cu' or 'al'. */
+    cableR: function (areaMm2, material, tempC) {
+      var rho = material === 'al' ? 0.0282 : 0.0175;
+      var alpha = 0.00393;
+      var t = tempC === undefined ? 70 : tempC;
+      if (!(areaMm2 > 0)) throw new Error('area must be > 0');
+      return (rho * (1 + alpha * (t - 20))) / areaMm2;
+    },
+
+    /** Product of derating factors applied to a tabulated current. */
+    derate: function (base, factors) {
+      return factors.reduce(function (acc, f) { return acc * f; }, base);
+    },
+
+    /** Three-phase voltage drop in volts. */
+    drop3ph: function (current, rPerM, lengthM) {
+      return Math.sqrt(3) * current * rPerM * lengthM;
+    },
+
+    /** DC or single-phase voltage drop, counting the return conductor. */
+    dropDC: function (current, rPerM, lengthM) {
+      return 2 * current * rPerM * lengthM;
+    },
+
+    /** Minimum conductor area from the adiabatic check: S ≥ I√t / k. */
+    adiabaticArea: function (faultCurrent, clearingSeconds, k) {
+      if (!(k > 0)) throw new Error('k must be > 0');
+      return (faultCurrent * Math.sqrt(clearingSeconds)) / k;
+    },
+
     round: function (x, digits) {
       var f = Math.pow(10, digits === undefined ? 2 : digits);
       return Math.round(x * f) / f;
