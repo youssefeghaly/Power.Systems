@@ -68,7 +68,7 @@ var DRILLS = [
     id: 'd1',
     q: 'A battery is rated 3 MW / 12 MWh. What is its duration, in hours?',
     unit: 'h', answer: 4, tol: 0.001,
-    why: '12 ÷ 3 = 4 h.'
+    why: '12 ÷ 3 = 4 h. Energy divided by power is duration — the same relation you will use on every project.'
   },
   {
     id: 'd2',

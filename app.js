@@ -1,168 +1,116 @@
-/* Module 1 app shell: tabs, calculator, drills, local progress. */
+/* Shell: module registry, tabs, drills, local progress. */
 (function () {
   'use strict';
 
-  const STORE_KEY = 'bess.m1.v1';
+  var MODULES = window.MODULES || [];
+  var STORE_KEY = 'bess.v3';
+  var VIEWS = ['learn', 'calc', 'drill'];
 
-  /* ---------- state ---------- */
-  let state = { view: 'learn', solved: {}, current: 0, checked: false };
+  var state = { moduleId: MODULES[0] ? MODULES[0].id : 'm1', view: 'learn', progress: {} };
 
   try {
-    const raw = localStorage.getItem(STORE_KEY);
+    var raw = localStorage.getItem(STORE_KEY);
     if (raw) Object.assign(state, JSON.parse(raw));
-  } catch (e) { /* private mode — run without persistence */ }
+  } catch (e) { /* private mode */ }
 
   function save() {
-    try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ solved: state.solved, current: state.current }));
-    } catch (e) { /* ignore */ }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  function current() {
+    for (var i = 0; i < MODULES.length; i++) if (MODULES[i].id === state.moduleId) return MODULES[i];
+    return MODULES[0];
+  }
+
+  function prog() {
+    var id = current().id;
+    if (!state.progress[id]) state.progress[id] = { solved: {}, current: 0 };
+    return state.progress[id];
   }
 
   function num(el) {
-    const v = parseFloat(String(el.value).replace(',', '.'));
+    var v = parseFloat(String(el.value).replace(',', '.'));
     return isFinite(v) ? v : NaN;
   }
 
-  function fmt(x, d) {
-    if (!isFinite(x)) return '—';
-    return x.toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d });
+  function norm(s) {
+    return String(s).toLowerCase()
+      .replace(/[^a-z0-9äöüß ]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
-  /* ---------- tabs ---------- */
-  const views = ['learn', 'calc', 'drill'];
-
+  /* ---------- views ---------- */
   function show(view) {
     state.view = view;
-    views.forEach(function (v) {
+    VIEWS.forEach(function (v) {
       document.getElementById('view-' + v).hidden = v !== view;
-      const tab = document.getElementById('tab-' + v);
+      var tab = document.getElementById('tab-' + v);
       tab.classList.toggle('active', v === view);
       tab.setAttribute('aria-selected', v === view ? 'true' : 'false');
     });
     if (view === 'drill') renderDrill();
-    if (location.hash !== '#' + view) {
-      try { history.replaceState(null, '', '#' + view); } catch (e) { /* file:// */ }
-    }
-    if (typeof window.scrollTo === 'function') {
-      try { window.scrollTo(0, 0); } catch (e) { /* jsdom */ }
-    }
+    try { history.replaceState(null, '', '#' + current().id + '/' + view); } catch (e) { /* file:// */ }
+    try { window.scrollTo(0, 0); } catch (e) { /* jsdom */ }
   }
 
   /* ---------- learn ---------- */
-  function renderLesson() {
-    const host = document.getElementById('lesson');
-    const frag = document.createDocumentFragment();
+  function renderLearn() {
+    var m = current();
+    var host = document.getElementById('lesson');
+    var html = '';
 
-    const head = document.createElement('header');
-    head.className = 'lesson-head';
-    head.innerHTML = '<p class="kicker">Module ' + LESSON.number + '</p>' +
-      '<h1>' + LESSON.title + '</h1>' +
-      '<p class="lead">' + LESSON.lead + '</p>';
-    frag.appendChild(head);
+    html += '<header class="lesson-head">' +
+      '<p class="kicker">Module ' + m.number + '</p>' +
+      '<h1>' + m.title + '</h1>' +
+      '<p class="lead">' + m.lead + '</p></header>';
 
-    LESSON.sections.forEach(function (s) {
-      const sec = document.createElement('section');
-      sec.className = 'card';
-      const h = document.createElement('h2');
-      h.textContent = s.h;
-      sec.appendChild(h);
-      s.p.forEach(function (text) {
-        const p = document.createElement('p');
-        p.textContent = text;
-        sec.appendChild(p);
-      });
-      if (s.formula) {
-        const pre = document.createElement('pre');
-        pre.className = 'formula';
-        pre.textContent = s.formula;
-        sec.appendChild(pre);
-      }
-      frag.appendChild(sec);
+    m.sections.forEach(function (s) {
+      html += '<section class="card"><h2>' + s.h + '</h2>';
+      s.p.forEach(function (p) { html += '<p>' + p + '</p>'; });
+      if (s.formula) html += '<pre class="formula">' + s.formula + '</pre>';
+      html += '</section>';
     });
 
-    host.innerHTML = '';
-    host.appendChild(frag);
+    host.innerHTML = html;
+
+    if (typeof m.renderExtra === 'function') {
+      var extra = document.createElement('div');
+      extra.id = 'extra-host';
+      host.appendChild(extra);
+      m.renderExtra(extra);
+    }
   }
 
   /* ---------- calculator ---------- */
-  function readPlant() {
-    return {
-      mw: num(document.getElementById('in-mw')),
-      hours: num(document.getElementById('in-hours')),
-      loss: num(document.getElementById('in-loss')),
-      box: num(document.getElementById('in-box'))
-    };
-  }
-
-  function updatePlant() {
-    const v = readPlant();
-    const out = document.getElementById('plant-out');
-    const rows = [];
-    let ok = v.mw > 0 && v.hours > 0 && v.loss >= 0 && v.loss < 100 && v.box > 0;
-
-    if (ok) {
-      const ePoi = v.mw * v.hours;
-      const eDc = Calc.grossUp(ePoi, v.loss);
-      const c = Calc.cRate(v.hours);
-      const boxes = Calc.containers(eDc, v.box);
-      const installed = boxes * v.box;
-      const over = Calc.overbuild(installed, eDc);
-
-      rows.push(['Energy at POI', fmt(ePoi, 1) + ' MWh']);
-      rows.push(['Energy at DC terminals', fmt(eDc, 1) + ' MWh']);
-      rows.push(['C-rate', fmt(c, 3) + 'C']);
-      rows.push(['Containers needed', boxes + ' × ' + fmt(v.box, 1) + ' MWh']);
-      rows.push(['Installed DC energy', fmt(installed, 1) + ' MWh']);
-      rows.push(['Overbuild vs required', fmt(over * 100, 2) + ' %']);
-    } else {
-      rows.push(['Waiting for input', 'power, duration, loss 0–99 %, container size > 0']);
-    }
-
-    out.innerHTML = rows.map(function (r) {
-      return '<div class="row"><span>' + r[0] + '</span><strong>' + r[1] + '</strong></div>';
-    }).join('');
-  }
-
-  function updateCell() {
-    const volts = num(document.getElementById('in-volts'));
-    const ah = num(document.getElementById('in-ah'));
-    const cells = num(document.getElementById('in-cells'));
-    const out = document.getElementById('cell-out');
-    let rows = [];
-
-    if (volts > 0 && ah > 0) {
-      const wh = Calc.cellWh(volts, ah);
-      rows.push(['Cell energy', fmt(wh, 1) + ' Wh']);
-      rows.push(['… in kWh', fmt(wh / 1000, 4) + ' kWh']);
-      rows.push(['Energy of 1,000 cells', fmt(wh * 1000 / 1000000, 2) + ' MWh']);
-    }
-    if (volts > 0 && cells > 0) {
-      rows.push(['String voltage (' + cells + ' in series)', fmt(Calc.stringVoltage(cells, volts), 1) + ' V']);
-    }
-    if (!rows.length) rows.push(['Waiting for input', 'voltage and Ah']);
-
-    out.innerHTML = rows.map(function (r) {
-      return '<div class="row"><span>' + r[0] + '</span><strong>' + r[1] + '</strong></div>';
-    }).join('');
+  function renderCalc() {
+    var m = current();
+    var host = document.getElementById('calc-host');
+    if (!m.calc) { host.innerHTML = '<div class="card"><p class="muted">No calculator in this module.</p></div>'; return; }
+    host.innerHTML = m.calc.html;
+    if (typeof m.calc.init === 'function') m.calc.init(host);
   }
 
   /* ---------- drills ---------- */
+  function drills() { return current().drills || []; }
+
   function solvedCount() {
-    return DRILLS.filter(function (d) { return state.solved[d.id]; }).length;
+    var p = prog();
+    return drills().filter(function (d) { return p.solved[d.id]; }).length;
   }
 
   function updateProgress() {
+    var total = drills().length || 1;
     var n = solvedCount();
-    var pct = Math.round((n / DRILLS.length) * 100);
-    document.getElementById('bar').style.width = pct + '%';
-    document.getElementById('count').textContent = n + ' / ' + DRILLS.length + ' solved';
+    document.getElementById('bar').style.width = Math.round((n / total) * 100) + '%';
+    document.getElementById('count').textContent = n + ' / ' + drills().length + ' solved';
   }
 
-  /* Next question that is still unsolved, searching forward from `from`. -1 when none. */
   function nextUnsolved(from) {
-    for (var step = 1; step <= DRILLS.length; step++) {
-      var i = (from + step) % DRILLS.length;
-      if (!state.solved[DRILLS[i].id]) return i;
+    var list = drills(), p = prog();
+    for (var step = 1; step <= list.length; step++) {
+      var i = (from + step) % list.length;
+      if (!p.solved[list[i].id]) return i;
     }
     return -1;
   }
@@ -170,15 +118,14 @@
   function renderDone(host) {
     host.innerHTML =
       '<div class="card center">' +
-      '<h2>All twelve solved.</h2>' +
-      '<p>You can now size a plant from a contract number — which is the whole point of Module 1.</p>' +
-      '<p class="muted">Run them again whenever you like. Solved questions come back from scratch, ' +
-      'so a second pass measures something different than the first.</p>' +
+      '<h2>All ' + drills().length + ' solved.</h2>' +
+      '<p>Module ' + current().number + ' is done. Anything you missed is worth a second pass before you move on.</p>' +
+      '<p class="muted">Next module is in the menu at the top.</p>' +
       '<button class="btn" id="reset">Start over</button>' +
       '</div>';
     document.getElementById('reset').addEventListener('click', function () {
-      state.solved = {};
-      state.current = 0;
+      prog().solved = {};
+      prog().current = 0;
       save();
       updateProgress();
       renderDrill();
@@ -187,29 +134,27 @@
 
   function renderDrill() {
     var host = document.getElementById('drill-body');
+    var list = drills(), p = prog();
 
-    if (solvedCount() === DRILLS.length) {
-      renderDone(host);
-      return;
+    if (!list.length) { host.innerHTML = '<div class="card"><p class="muted">No drills yet.</p></div>'; return; }
+    if (solvedCount() === list.length) { renderDone(host); return; }
+
+    if (p.solved[list[p.current].id]) {
+      var jump = nextUnsolved(p.current);
+      if (jump !== -1) p.current = jump;
     }
 
-    /* Never park the learner on a question they have already solved. */
-    if (state.solved[DRILLS[state.current].id]) {
-      var jump = nextUnsolved(state.current);
-      if (jump !== -1) state.current = jump;
-    }
-
-    var d = DRILLS[state.current];
-    var left = DRILLS.length - solvedCount();
+    var d = list[p.current];
+    var left = list.length - solvedCount();
 
     host.innerHTML =
       '<div class="card">' +
-      '<p class="kicker">' + (state.current + 1) + ' of ' + DRILLS.length + ' · ' + left + ' still open</p>' +
+      '<p class="kicker">' + (p.current + 1) + ' of ' + list.length + ' · ' + left + ' still open</p>' +
       '<p class="q">' + d.q + '</p>' +
       '<div class="answer-row">' +
-      '<input id="answer" type="text" inputmode="decimal" autocomplete="off" ' +
-      'aria-label="Your answer" placeholder="number" />' +
-      '<span class="unit">' + d.unit + '</span>' +
+      '<input id="answer" type="text" inputmode="' + (d.type === 'text' ? 'text' : 'decimal') + '" ' +
+      'autocomplete="off" aria-label="Your answer" placeholder="' + (d.type === 'text' ? 'answer' : 'number') + '" />' +
+      (d.unit ? '<span class="unit">' + d.unit + '</span>' : '') +
       '<button class="btn" id="check">Check</button>' +
       '</div>' +
       '<div id="feedback" class="feedback" hidden></div>' +
@@ -220,31 +165,40 @@
     var fb = document.getElementById('feedback');
 
     function judge() {
-      var given = num(input);
-      var ok = isFinite(given) && Math.abs(given - d.answer) <= d.tol;
+      var ok, shown;
+
+      if (d.type === 'text') {
+        var given = norm(input.value);
+        ok = given.length > 0 && d.accept.some(function (a) {
+          var na = norm(a);
+          return given === na || given.indexOf(na) >= 0;
+        });
+        shown = d.accept[0];
+      } else {
+        var v = num(input);
+        ok = isFinite(v) && Math.abs(v - d.answer) <= d.tol;
+        shown = d.answer + ' ' + (d.unit || '');
+      }
 
       if (ok) {
-        state.solved[d.id] = true;
+        p.solved[d.id] = true;
         save();
         updateProgress();
       }
 
-      var allDone = solvedCount() === DRILLS.length;
+      var allDone = solvedCount() === list.length;
 
       fb.hidden = false;
       fb.className = 'feedback ' + (ok ? 'good' : 'bad');
       fb.innerHTML =
-        '<p><strong>' + (ok ? 'Correct.' : 'Not quite — ' + d.answer + ' ' + d.unit + '.') + '</strong></p>' +
-        '<p>' + (ok ? d.why : d.why + ' This one comes back until you get it.') + '</p>' +
+        '<p><strong>' + (ok ? 'Correct.' : 'Not quite — ' + shown + '.') + '</strong></p>' +
+        '<p>' + d.why + (ok ? '' : ' This one comes back until you get it.') + '</p>' +
         '<button class="btn" id="next">' + (allDone ? 'Finish' : 'Next') + '</button>';
 
       document.getElementById('next').addEventListener('click', function () {
-        if (allDone) {
-          renderDrill();
-          return;
-        }
-        var n = nextUnsolved(state.current);
-        if (n !== -1) state.current = n;
+        if (allDone) { renderDrill(); return; }
+        var n = nextUnsolved(p.current);
+        if (n !== -1) p.current = n;
         save();
         renderDrill();
       });
@@ -258,33 +212,39 @@
     input.focus();
   }
 
-  /* ---------- boot ---------- */
-  function boot() {
-    renderLesson();
-    updatePlant();
-    updateCell();
+  /* ---------- module switching ---------- */
+  function selectModule(id) {
+    state.moduleId = id;
+    save();
+    renderLearn();
+    renderCalc();
     updateProgress();
+    var m = current();
+    document.getElementById('module-title').textContent = 'Module ' + m.number + ' · ' + m.title;
+    document.getElementById('module-select').value = m.id;
+    show('learn');
+  }
 
-    ['mw', 'hours', 'loss', 'box'].forEach(function (id) {
-      document.getElementById('in-' + id).addEventListener('input', updatePlant);
-    });
-    ['volts', 'ah', 'cells'].forEach(function (id) {
-      document.getElementById('in-' + id).addEventListener('input', updateCell);
-    });
+  function boot() {
+    var select = document.getElementById('module-select');
+    select.innerHTML = MODULES.map(function (m) {
+      return '<option value="' + m.id + '">Module ' + m.number + ' — ' + m.title + '</option>';
+    }).join('');
+    select.value = current().id;
+    select.addEventListener('change', function () { selectModule(select.value); });
 
-    views.forEach(function (v) {
+    VIEWS.forEach(function (v) {
       document.getElementById('tab-' + v).addEventListener('click', function () { show(v); });
     });
 
-    var initial = (location.hash || '').replace('#', '');
-    show(views.indexOf(initial) >= 0 ? initial : 'learn');
-    window.addEventListener('hashchange', function () {
-      var v = (location.hash || '').replace('#', '');
-      if (views.indexOf(v) >= 0 && v !== state.view) show(v);
-    });
+    var hash = (location.hash || '').replace('#', '').split('/');
+    if (hash[0] && MODULES.some(function (m) { return m.id === hash[0]; })) state.moduleId = hash[0];
 
-    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-      navigator.serviceWorker.register('./sw.js').catch(function () { /* offline still works next visit */ });
+    selectModule(current().id);
+    if (hash[1] && VIEWS.indexOf(hash[1]) >= 0) show(hash[1]);
+
+    if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+      navigator.serviceWorker.register('./sw.js').catch(function () {});
     }
   }
 

@@ -43,6 +43,33 @@
       return installed / required - 1;
     },
 
+
+    /** Round-trip efficiency of a chain of stages, each given in percent. */
+    chainRTE: function (stages) {
+      if (!stages || !stages.length) throw new Error('stages required');
+      return stages.reduce(function (acc, p) {
+        if (!(p > 0 && p <= 100)) throw new Error('each stage must be 0..100 %');
+        return acc * (p / 100);
+      }, 1) * 100;
+    },
+
+    /** Energy delivered at the POI for a given DC energy and round-trip efficiency (%). */
+    energyAtPoi: function (dcMWh, rtePercent) {
+      return dcMWh * (rtePercent / 100);
+    },
+
+    /** DC energy needed to deliver a given POI energy at a round-trip efficiency (%). */
+    dcForPoi: function (poiMWh, rtePercent) {
+      if (!(rtePercent > 0)) throw new Error('rte must be > 0');
+      return poiMWh / (rtePercent / 100);
+    },
+
+    /** Naive "add the losses up" answer, for contrast with the real product. */
+    naiveRTE: function (stages) {
+      var lost = stages.reduce(function (acc, p) { return acc + (100 - p); }, 0);
+      return 100 - lost;
+    },
+
     round: function (x, digits) {
       var f = Math.pow(10, digits === undefined ? 2 : digits);
       return Math.round(x * f) / f;

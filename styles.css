@@ -233,3 +233,99 @@ input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
   body { font-size: 19px; }
   .lesson-head h1 { font-size: 34px; }
 }
+
+/* ---------- module bar ---------- */
+.modulebar {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 18px 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.select-wrap { flex: 1 1 320px; }
+
+select {
+  width: 100%;
+  min-height: 52px;
+  font: inherit;
+  font-size: 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+}
+
+.module-title { font-size: 13px; color: var(--muted); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- single-line diagram ---------- */
+.sld { width: 100%; height: auto; display: block; margin: 8px 0 4px; }
+
+.sld-band {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  fill: var(--muted);
+}
+
+.sld-line { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+
+.arrowhead { fill: var(--muted); }
+
+.sld-note { font-size: 12px; fill: var(--muted); }
+
+.sld-node { cursor: pointer; }
+
+.sld-node rect {
+  fill: var(--card);
+  stroke: var(--line);
+  stroke-width: 1.6;
+  transition: stroke .15s ease, fill .15s ease;
+}
+
+.sld-node text {
+  fill: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.sld-node:hover rect { stroke: var(--accent); }
+
+.sld-node:focus { outline: none; }
+.sld-node:focus rect { stroke: var(--accent); stroke-width: 2.4; }
+
+.sld-node.active rect {
+  stroke: var(--accent);
+  stroke-width: 2.6;
+  fill: color-mix(in srgb, var(--accent) 10%, var(--card));
+}
+
+.node-detail {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  border: 1px solid var(--line);
+  min-height: 96px;
+}
+
+.node-detail h3 { margin: 0 0 6px; font-size: 18px; }
+.node-detail p { margin: 0 0 8px; }
+.node-detail .eff { font-size: 15px; }
+
+.bad-num { color: var(--bad); }
+
+@media (max-width: 560px) {
+  .sld-node text { font-size: 17px; }
+  .sld-band { font-size: 15px; }
+}

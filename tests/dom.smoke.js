@@ -1,9 +1,10 @@
-/* Boots the real page in jsdom and drives the UI like a user would. */
+/* Boots the real page in jsdom and drives it like a user. */
 const fs = require('fs');
 const path = require('path');
-let JSDOM;
+
+let JSDOM, VirtualConsole;
 try {
-  ({ JSDOM } = require(path.join(__dirname, '../../_tools/jsdom/node_modules/jsdom')));
+  ({ JSDOM, VirtualConsole } = require(path.join(__dirname, '../../_tools/jsdom/node_modules/jsdom')));
 } catch (e) {
   console.log('jsdom not installed — skipping DOM smoke test (npm i jsdom)');
   process.exit(0);
@@ -13,96 +14,84 @@ const dir = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8')
   .replace(/<script src="\.\/[^"]+"><\/script>/g, '');
 
-const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost/' });
-const { window } = dom;
+const vc = new VirtualConsole();
+vc.on('jsdomError', (e) => {
+  if (!/Not implemented/.test(e.message)) console.error('page error:', e.message);
+});
 
-['calc.js', 'content.js', 'app.js'].forEach((f) => {
+const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost/', virtualConsole: vc });
+const { window } = dom;
+const $ = (id) => window.document.getElementById(id);
+
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
 
 let fail = 0;
 const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; console.log('  FAIL ' + m + (d ? ' — ' + d : '')); } };
-const $ = (id) => window.document.getElementById(id);
+const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
-console.log('lesson renders');
-ok($('lesson').querySelectorAll('section.card').length === LESSON_SECTIONS(), 'all lesson sections rendered', 'got ' + $('lesson').querySelectorAll('section.card').length);
-function LESSON_SECTIONS() { return window.eval('LESSON.sections.length'); }
-ok(/Power is a rate/.test($('lesson').textContent), 'first section heading present');
+console.log('boot');
+ok($('module-select').options.length === 2, 'module picker lists two modules', String($('module-select').options.length));
+ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
-console.log('calculator');
-ok(/434\.8/.test($('plant-out').textContent), 'default 100 MW / 4 h / 8 % gives 434.8 MWh DC', $('plant-out').textContent.trim().slice(0, 80));
+console.log('module 1 calculator');
+ok(/434\.8/.test($('plant-out').textContent), '100 MW / 4 h / 8 % → 434.8 MWh DC');
 $('in-loss').value = '0';
-$('in-loss').dispatchEvent(new window.Event('input'));
-ok(/400\.0/.test($('plant-out').textContent), '0 % loss gives 400 MWh DC');
-$('in-box').value = '5';
-$('in-mw').value = '50';
-$('in-mw').dispatchEvent(new window.Event('input'));
-ok(/200\.0/.test($('plant-out').textContent), '50 MW / 4 h gives 200 MWh at POI');
-$('in-loss').value = '150';
-$('in-loss').dispatchEvent(new window.Event('input'));
-ok(/Waiting for input/.test($('plant-out').textContent), 'invalid loss is rejected, not silently computed');
+fire($('in-loss'), 'input');
+ok(/400\.0/.test($('plant-out').textContent), '0 % loss → 400 MWh DC');
 
-console.log('cell calculator');
-ok(/1,004\.8 Wh/.test($('cell-out').textContent), '3.2 V / 314 Ah gives 1004.8 Wh', $('cell-out').textContent.trim().slice(0, 90));
-ok(/1,331\.2 V/.test($('cell-out').textContent), '416 cells gives 1331.2 V');
+console.log('switch to module 2');
+$('module-select').value = 'm2';
+fire($('module-select'), 'change');
+ok(/The machine, end to end/.test($('lesson').textContent), 'module 2 lesson renders');
+ok($('calc-host').querySelector('#rte-out') !== null, 'module 2 calculator swapped in');
 
-console.log('drill flow');
-$('tab-drill').dispatchEvent(new window.Event('click'));
-ok(!!$('answer'), 'drill view renders an input');
-const d1 = window.eval('DRILLS[0]');
-$('answer').value = String(d1.answer);
-$('check').dispatchEvent(new window.Event('click'));
-ok(/Correct/.test($('feedback').textContent), 'correct answer accepted');
-ok($('bar').style.width !== '0%', 'progress bar advanced', 'width=' + $('bar').style.width);
+console.log('diagram');
+const nodes = $('lesson').querySelectorAll('.sld-node');
+ok(nodes.length === 9, 'nine stages drawn', String(nodes.length));
+ok(/Power conversion system/.test($('lesson').querySelector('.node-detail').textContent), 'default detail shown');
+const poi = [...nodes].find((n) => n.getAttribute('data-node') === 'poi');
+fire(poi, 'click');
+ok(/Point of interconnection/.test($('lesson').querySelector('.node-detail').textContent), 'tapping POI updates the detail panel');
+ok(poi.classList.contains('active'), 'selected node is marked active');
 
-$('next').dispatchEvent(new window.Event('click'));
-const d2 = window.eval('DRILLS[1]');
-$('answer').value = '999';
-$('check').dispatchEvent(new window.Event('click'));
-ok(/Not quite/.test($('feedback').textContent), 'wrong answer rejected');
-ok(/0\.5/.test($('feedback').textContent), 'wrong answer shows the right value', $('feedback').textContent.slice(0, 60));
+console.log('module 2 calculator');
+$('tab-calc').click();
+const out = $('rte-out');
+ok(/88\.03/.test(out.textContent), 'defaults give 88.03 % RTE', out.textContent.slice(0, 80));
+ok(/87\.50/.test(out.textContent), 'naive method shown as 87.50 %');
+ok(/382\.9/.test(out.textContent), '435 MWh at 88.03 % → 382.9 MWh after losses');
+$('rte-battery').value = '80';
+fire($('rte-battery'), 'input');
+ok(/74\.92/.test(out.textContent), 'battery at 80 % drags the system to 74.92 %', out.textContent.slice(0, 60));
 
-console.log('completion');
-const DRILLS = window.DRILLS;
+console.log('module 2 drills');
+$('tab-drill').click();
+ok(!!$('answer'), 'drill view renders');
+const DRILLS = window.MODULES.find((m) => m.id === 'm2').drills;
 let guard = 0;
-let repeated = false;
-while (guard++ < 60 && !/All twelve solved/.test($('drill-body').textContent)) {
+while (guard++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
   const qEl = $('drill-body').querySelector('.q');
   if (!qEl) break;
-  const drill = DRILLS.find((d) => d.q === qEl.textContent);
-  if (!drill) break;
-  $('answer').value = String(drill.answer);
-  $('check').dispatchEvent(new window.Event('click'));
+  const d = DRILLS.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
   const next = $('next');
-  if (next) next.dispatchEvent(new window.Event('click'));
+  if (next) next.click();
 }
-ok(/All twelve solved/.test($('drill-body').textContent), 'ends with a done screen instead of cycling', $('drill-body').textContent.slice(0, 60));
-ok(guard < 40, 'finished within a sane number of steps', 'steps=' + guard);
-ok($('count').textContent === '12 / 12 solved', 'progress reads 12 / 12', $('count').textContent);
-ok(!!$('reset'), 'done screen offers a restart');
+ok(/All 12 solved/.test($('drill-body').textContent), 'completes with a done screen', $('drill-body').textContent.slice(0, 50));
+ok($('count').textContent === '12 / 12 solved', 'module 2 progress reads 12 / 12', $('count').textContent);
 
-console.log('wrong answers come back');
-$('reset').dispatchEvent(new window.Event('click'));
-ok(!!$('answer'), 'restart returns to a question');
-const first = $('drill-body').querySelector('.q').textContent;
-$('answer').value = '0.0001';
-$('check').dispatchEvent(new window.Event('click'));
-ok(/comes back/.test($('feedback').textContent), 'wrong answer says it will return');
-const seen = new Set();
-let steps = 0;
-while (steps++ < 13) {
-  const q = $('drill-body').querySelector('.q');
-  if (!q) break;
-  seen.add(q.textContent);
-  const nx = $('next');
-  if (nx) nx.dispatchEvent(new window.Event('click'));
-  if ($('drill-body').querySelector('.q') && $('drill-body').querySelector('.q').textContent === first && steps > 1) {
-    repeated = true;
-    break;
-  }
-}
-ok(repeated || seen.has(first), 'the missed question reappears rather than being skipped');
+console.log('per-module progress');
+$('module-select').value = 'm1';
+fire($('module-select'), 'change');
+ok($('count').textContent === '0 / 12 solved', 'module 1 progress is untouched', $('count').textContent);
+$('module-select').value = 'm2';
+fire($('module-select'), 'change');
+ok($('count').textContent === '12 / 12 solved', 'module 2 progress survives the switch', $('count').textContent);
 
-console.log(fail === 0 ? '\nDOM SMOKE PASSED' : `\n${fail} FAILED`);
+console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);

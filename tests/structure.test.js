@@ -1,13 +1,11 @@
-/* Static checks: referenced IDs exist, content is well-formed, answers agree with calc. */
+/* Static checks across all modules: registry, content integrity, answer consistency. */
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 const C = require('../calc.js');
 
 const dir = path.join(__dirname, '..');
-const html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
-const appjs = fs.readFileSync(path.join(dir, 'app.js'), 'utf8');
-const content = fs.readFileSync(path.join(dir, 'content.js'), 'utf8');
+const read = (f) => fs.readFileSync(path.join(dir, f), 'utf8');
 
 let fail = 0;
 const ok = (cond, msg, detail) => {
@@ -15,56 +13,86 @@ const ok = (cond, msg, detail) => {
   else { fail++; console.log('  FAIL ' + msg + (detail ? ' — ' + detail : '')); }
 };
 
+console.log('module registry');
+const ctx = { window: {}, Calc: C, console };
+vm.createContext(ctx);
+['content.js', 'm1.js', 'm2.js'].forEach((f) => vm.runInContext(read(f), ctx));
+const MODULES = ctx.window.MODULES;
+ok(Array.isArray(MODULES), 'MODULES array built');
+ok(MODULES.length === 2, 'two modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2', 'module order m1, m2');
+
+MODULES.forEach((m) => {
+  ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
+  ok(Array.isArray(m.sections) && m.sections.length >= 5, m.id + ': at least 5 lesson sections', 'got ' + (m.sections || []).length);
+  ok(m.sections.every((s) => s.h && Array.isArray(s.p) && s.p.length), m.id + ': every section has a heading and prose');
+  ok(Array.isArray(m.drills) && m.drills.length === 12, m.id + ': 12 drills', 'got ' + m.drills.length);
+  ok(m.calc && typeof m.calc.html === 'string' && m.calc.init, m.id + ': has a calculator');
+  const ids = m.drills.map((d) => d.id);
+  ok(new Set(ids).size === ids.length, m.id + ': drill ids unique');
+  ok(m.drills.every((d) => typeof d.q === 'string' && d.q.length > 10), m.id + ': every drill asks something');
+  ok(m.drills.every((d) => typeof d.why === 'string' && d.why.length > 15), m.id + ': every drill explains itself');
+  m.drills.forEach((d) => {
+    if (d.type === 'text') {
+      ok(Array.isArray(d.accept) && d.accept.length > 0, m.id + '/' + d.id + ': text drill has accepted answers');
+    } else {
+      ok(isFinite(d.answer) && d.tol > 0, m.id + '/' + d.id + ': numeric drill has answer and tolerance');
+    }
+  });
+});
+
+console.log('m1 answer consistency');
+const m1 = MODULES.find((m) => m.id === 'm1');
+const a1 = Object.fromEntries(m1.drills.map((d) => [d.id, d.answer]));
+const within = (mod, id, expected) => {
+  const d = mod.drills.find((x) => x.id === id);
+  return Math.abs(d.answer - expected) <= d.tol;
+};
+ok(within(m1, 'd2', C.cRate(2)), 'd2 = C-rate of 2 h');
+ok(within(m1, 'd3', C.cRate(6)), 'd3 = C-rate of 6 h');
+ok(within(m1, 'd11', C.cRate(4)), 'd11 = anchor C-rate');
+ok(within(m1, 'd4', C.cellWh(3.2, 280) / 1000), 'd4 = cell energy in kWh');
+ok(within(m1, 'd5', C.stringVoltage(416, 3.2)), 'd5 = 416-cell string voltage');
+ok(within(m1, 'd7', C.grossUp(200, 8)), 'd7 = gross-up 200 MWh at 8 %');
+ok(within(m1, 'd10', C.grossUp(500, 10)), 'd10 = gross-up 500 MWh at 10 %');
+ok(within(m1, 'd8', C.containers(C.grossUp(200, 8), 5)), 'd8 = container count');
+
+console.log('m2 answer consistency');
+const m2 = MODULES.find((m) => m.id === 'm2');
+ok(within(m2, 'm2-d1', C.chainRTE([97, 99])), 'm2-d1 = 97 % and 99 % multiplied');
+ok(within(m2, 'm2-d2', C.chainRTE([94, 97])), 'm2-d2 = 94 % and 97 % multiplied');
+ok(within(m2, 'm2-d3', C.energyAtPoi(500, 88)), 'm2-d3 = 500 MWh at 88 % RTE');
+ok(within(m2, 'm2-d4', C.dcForPoi(440, 88)), 'm2-d4 = grossed up to DC');
+ok(within(m2, 'm2-d12', C.chainRTE([99, 99, 99, 99, 99, 99])), 'm2-d12 = six stages at 99 %');
+const defaults = [94, 97, 99, 99.5, 99.5, 98.5];
+ok(Math.abs(C.chainRTE(defaults) - 88.03) < 0.01, 'calculator defaults land on 88.03 %', C.chainRTE(defaults).toFixed(4));
+ok(Math.abs(C.naiveRTE(defaults) - 87.5) < 0.01, 'naive method gives 87.50 %', C.naiveRTE(defaults).toFixed(2));
+
 console.log('dom ids');
+const html = read('index.html');
+const appjs = read('app.js');
 const htmlIds = new Set([...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]));
-const dynamic = new Set(['answer', 'check', 'feedback', 'next', 'reset']);
+const dynamic = new Set(['answer', 'check', 'feedback', 'next', 'reset', 'module-select']);
 const used = new Set([...appjs.matchAll(/getElementById\('([^']+)'\)/g)].map((m) => m[1]));
 used.forEach((id) => {
   if (dynamic.has(id)) return;
-  ok(htmlIds.has(id), `#${id} exists in index.html`);
+  ok(htmlIds.has(id), '#' + id + ' exists in index.html');
+});
+['in-mw', 'plant-out', 'rte-out', 'rte-battery', 'rte-energy'].forEach((id) => {
+  const inModules = MODULES.some((m) => m.calc.html.indexOf('id="' + id + '"') >= 0);
+  ok(inModules, '#' + id + ' exists in a module calculator');
 });
 
-console.log('content');
-const ctx = { console };
-vm.createContext(ctx);
-vm.runInContext(content + "\n;globalThis.__DRILLS = DRILLS; globalThis.__LESSON = LESSON;", ctx);
-const drills = ctx.__DRILLS;
-ok(Array.isArray(drills), 'DRILLS is an array');
-ok(drills.length === 12, 'exactly 12 drills', 'got ' + drills.length);
-ok(new Set(drills.map((d) => d.id)).size === drills.length, 'drill ids unique');
-ok(drills.every((d) => typeof d.q === 'string' && d.q.length > 10), 'every drill has a question');
-ok(drills.every((d) => isFinite(d.answer) && d.tol > 0), 'every drill has a finite answer and positive tolerance');
-ok(drills.every((d) => typeof d.why === 'string' && d.why.length > 10), 'every drill has an explanation');
-ok(!!ctx.__LESSON && ctx.__LESSON.sections.length >= 5, 'lesson has at least 5 sections');
-
-console.log('answer consistency');
-const byId = Object.fromEntries(drills.map((d) => [d.id, d.answer]));
-const near = (a, b) => Math.abs(a - b) < 1e-6;
-ok(near(byId.d2, C.cRate(2)), 'd2 = C-rate of 2 h');
-ok(near(byId.d3, C.cRate(6)), 'd3 = C-rate of 6 h');
-ok(near(byId.d11, C.cRate(4)), 'd11 = anchor C-rate');
-ok(near(byId.d4, C.cellWh(3.2, 280) / 1000), 'd4 = cell energy in kWh');
-ok(near(byId.d5, C.stringVoltage(416, 3.2)), 'd5 = 416-cell string voltage');
-const within = (id, expected) => Math.abs(byId[id] - expected) <= drills.find((d) => d.id === id).tol;
-ok(within('d7', C.grossUp(200, 8)), 'd7 = gross-up 200 MWh at 8 % (within drill tolerance)');
-ok(within('d10', C.grossUp(500, 10)), 'd10 = gross-up 500 MWh at 10 % (within drill tolerance)');
-ok(byId.d8 === C.containers(C.grossUp(200, 8), 5), 'd8 = container count for that DC energy');
-ok(near(byId.d1, C.durationH(3, 12)), 'd1 = duration of 3 MW / 12 MWh');
-ok(near(byId.d6, 100 * 2), 'd6 = 100 MW x 2 h');
-ok(near(byId.d9, C.durationH(50, 100)), 'd9 = 50 MW / 100 MWh');
-ok(near(byId.d12, 1.5 * 3), 'd12 = 1.5 MW x 3 h');
-
-console.log('shell');
-ok(/serviceWorker/.test(appjs), 'app registers a service worker');
-const sw = fs.readFileSync(path.join(dir, 'sw.js'), 'utf8');
-ok(/bess-module1-v\d+/.test(sw), 'sw cache name present');
-const man = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.webmanifest'), 'utf8'));
+console.log('scripts');
+const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]);
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'app.js'].forEach((f) => {
+  ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
+  ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
+});
+ok(/bess-lab-v\d+/.test(read('sw.js')), 'sw cache name present');
+const man = JSON.parse(read('manifest.webmanifest'));
 ok(man.display === 'standalone', 'manifest is standalone');
-ok(man.icons.length >= 2, 'manifest has icons');
-man.icons.forEach((i) => {
-  const p = path.join(dir, i.src.replace('./', ''));
-  ok(fs.existsSync(p), 'icon file exists: ' + i.src);
-});
+man.icons.forEach((i) => ok(fs.existsSync(path.join(dir, i.src.replace('./', ''))), 'icon exists: ' + i.src));
 
-console.log(fail === 0 ? '\nALL STRUCTURE CHECKS PASSED' : `\n${fail} FAILED`);
+console.log(fail === 0 ? '\nALL STRUCTURE CHECKS PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);

@@ -1,32 +1,52 @@
-# BESS Module 1 — Energy, power, time, money
+# BESS lab
 
-A single-page, offline-capable drill app for the first module of a design-weighted
-BESS curriculum (German market).
+An offline-capable, single-page training app for utility-scale battery storage, aimed at
+the German market. Built as a design curriculum: every module ends with something you
+produce or compute, not something you read.
 
-- **Learn** — power vs energy, duration and C-rate, units, grossing up losses
-- **Calculate** — plant sizing and cell/string arithmetic, live
-- **Drill** — 12 questions with an explanation after each answer
-- Progress is stored locally; nothing leaves the device.
+**Anchor plant:** 100 MW / 400 MWh, 110 kV, 20 years, augmentation in years 7 and 14.
 
-Anchor example: 100 MW / 400 MWh at 110 kV.
+## Modules
+
+| # | Module | What it makes you able to do |
+|---|---|---|
+| 01 | Energy, power, time, money | Size a plant from a contract number; C-rate, units, grossing up losses |
+| 02 | The machine, end to end | Read and defend the single-line diagram; build a loss budget that lands on ~88 % RTE |
+
+Each module has three views:
+
+- **Learn** — short sections, one formula each, plus (in module 2) an interactive single-line diagram
+- **Calculate** — a live calculator, not a form: change an input and the consequence is visible
+- **Drill** — 12 questions; a wrong answer returns until it is right, and the set ends when nothing is left
+
+Progress is stored per module in `localStorage`. Nothing leaves the device.
 
 ## Run locally
 
     python3 -m http.server 8787 --directory .
-    # then open http://127.0.0.1:8787
+    # open http://127.0.0.1:8787
 
 ## Test
 
-    node tests/calc.test.js        # arithmetic
-    node tests/structure.test.js   # DOM ids, content integrity, answer consistency
-    node tests/dom.smoke.js        # boots the page in jsdom (needs: npm i jsdom)
+    node tests/calc.test.js        # arithmetic (21 checks)
+    node tests/structure.test.js   # module registry, content integrity, answer consistency
+    node tests/dom.smoke.js        # boots the page in jsdom and drives it (needs: npm i jsdom)
 
 ## Install on Android
 
 Open the site in Chrome → menu → *Add to Home screen*. The service worker caches the
 shell, so it keeps working offline.
 
-## Stack
+## Structure
 
-No framework, no build step, no dependencies at runtime. Four files do the work:
-`calc.js` (pure arithmetic), `content.js` (lesson and drills), `app.js` (UI), `sw.js` (offline).
+No framework, no build step, no runtime dependencies.
+
+    calc.js       pure arithmetic, shared by every module
+    content.js    module 1 data (lesson text and drills)
+    m1.js         module 1 registration + calculator
+    m2.js         module 2: lesson, diagram, loss calculator, drills
+    app.js        shell: module picker, tabs, drill engine, progress
+    sw.js         offline cache
+
+To add a module: push an object onto `window.MODULES` with `{id, number, title, lead,
+sections, calc:{html,init}, drills}`. The shell picks it up.
