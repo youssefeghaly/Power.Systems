@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'm9.js', 'app.js'].forEach((f) => {
+['calc.js','content.js','m1.js','m2.js','m3.js','m4.js','m5.js','m6.js','m7.js','m8.js','m9.js','m10.js','m11.js','m12.js','m13.js','m14.js','m15.js','m16.js','app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 9, 'module picker lists nine modules', String($('module-select').options.length));
+ok($('module-select').options.length === 16, 'module picker lists sixteen modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');

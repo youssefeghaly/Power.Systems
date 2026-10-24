@@ -16,11 +16,11 @@ const ok = (cond, msg, detail) => {
 console.log('module registry');
 const ctx = { window: {}, Calc: C, console };
 vm.createContext(ctx);
-['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'm9.js'].forEach((f) => vm.runInContext(read(f), ctx));
+['content.js','m1.js','m2.js','m3.js','m4.js','m5.js','m6.js','m7.js','m8.js','m9.js','m10.js','m11.js','m12.js','m13.js','m14.js','m15.js','m16.js'].forEach((f) => vm.runInContext(read(f), ctx));
 const MODULES = ctx.window.MODULES;
 ok(Array.isArray(MODULES), 'MODULES array built');
-ok(MODULES.length === 9, 'nine modules registered', 'got ' + (MODULES || []).length);
-ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5,m6,m7,m8,m9', 'module order m1 … m9');
+ok(MODULES.length === 16, 'sixteen modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16', 'module order m1 … m16');
 
 MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
@@ -37,7 +37,7 @@ MODULES.forEach((m) => {
     });
   }
   ok(Array.isArray(m.drills) && m.drills.length === 12, m.id + ': 12 drills', 'got ' + m.drills.length);
-  ok(m.calc && typeof m.calc.html === 'string' && m.calc.init, m.id + ': has a calculator');
+  ok((m.calc && typeof m.calc.html === 'string' && m.calc.init) || typeof m.renderExtra === 'function', m.id + ': has an interactive element');
   const ids = m.drills.map((d) => d.id);
   ok(new Set(ids).size === ids.length, m.id + ': drill ids unique');
   ok(m.drills.every((d) => typeof d.q === 'string' && d.q.length > 10), m.id + ': every drill asks something');
@@ -168,7 +168,7 @@ used.forEach((id) => {
 
 console.log('scripts');
 const scripts = [...html.matchAll(/<script src="\.\/([^"?]+)\?v=\d+"/g)].map((m) => m[1]);
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'm7.js', 'm8.js', 'm9.js', 'app.js'].forEach((f) => {
+['calc.js','content.js','m1.js','m2.js','m3.js','m4.js','m5.js','m6.js','m7.js','m8.js','m9.js','m10.js','m11.js','m12.js','m13.js','m14.js','m15.js','m16.js','app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });

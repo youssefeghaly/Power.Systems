@@ -19,6 +19,15 @@ produce or compute, not something you read.
 | 07 | Cables and laying | Size one cable against thermal, drop and short-circuit; apply derating and laying rules |
 | 08 | The HV installation | Read an HV bay, choose switchgear and transformer parameters, spec CTs and VTs |
 | 09 | The MV connection | Specify the transfer station: switchgear, metering, NA protection, transformer, earthing |
+| 10 | Distribution | Hosting capacity, voltage rise, DSO constraints |
+| 11 | Transmission | TSOs, n-1, redispatch, balancing products, inertia |
+| 12 | Generation | Synchronous machines, merit order, EEG |
+| 13 | Safety, fire and permitting | Thermal runaway, containment layers, German permission path |
+| 14 | German markets and revenue | Reserve and arbitrage revenue, stacking, dispatch |
+| 15 | Testing, commissioning and O&M | Capacity tests, RTE, availability, guarantees |
+| 16 | Capstone design review | Ten-point scorecard and the errors real packs contain |
+
+Each module has three views: **Learn** (cards), **Calculate** (a live tool) and **Drill** (12 questions).
 
 Each module has three views:
 
