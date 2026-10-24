@@ -15,6 +15,7 @@ produce or compute, not something you read.
 | 03 | Degradation, augmentation, guarantees | Plan twenty years of capacity; decide overbuild vs augmentation; keep warranty and offtake apart |
 | 04 | German grid connection 4110/4120 | Find which TAR applies, which certificates and permits are needed, and what the DSO checks |
 | 05 | Protection and fault levels | Grade two relays on IEC curves, compute fault level, explain CT burden |
+| 06 | Earthing and EMC | Size an electrode, compute earth potential rise, compare against a touch-voltage limit |
 
 Each module has three views:
 

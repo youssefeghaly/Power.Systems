@@ -16,11 +16,11 @@ const ok = (cond, msg, detail) => {
 console.log('module registry');
 const ctx = { window: {}, Calc: C, console };
 vm.createContext(ctx);
-['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js'].forEach((f) => vm.runInContext(read(f), ctx));
+['content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js'].forEach((f) => vm.runInContext(read(f), ctx));
 const MODULES = ctx.window.MODULES;
 ok(Array.isArray(MODULES), 'MODULES array built');
-ok(MODULES.length === 5, 'five modules registered', 'got ' + (MODULES || []).length);
-ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5', 'module order m1 … m5');
+ok(MODULES.length === 6, 'six modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5,m6', 'module order m1 … m6');
 
 MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
@@ -101,6 +101,16 @@ ok(within(m5, 'm5-d7', C.relayTime('VI', 0.5, 1, 4)), 'm5-d7 = VI curve at 4× p
 ok(within(m5, 'm5-d8', 0.4 + 0.3), 'm5-d8 = grading margin arithmetic');
 ok(C.relayTime('SI', 0.2, 1, 0.5) === Infinity, 'relay does not trip below pickup');
 
+console.log('m6 earthing maths');
+const m6 = MODULES.find((m) => m.id === 'm6');
+ok(within(m6, 'm6-d1', C.earthRod(100, 3, 0.008)), 'm6-d1 = rod 3 m in 100 Ω·m');
+ok(within(m6, 'm6-d2', C.earthRod(300, 3, 0.008)), 'm6-d2 = same rod in 300 Ω·m');
+ok(within(m6, 'm6-d3', C.epr(500, 5)), 'm6-d3 = EPR');
+ok(within(m6, 'm6-d4', C.requiredEarth(1000, 500)), 'm6-d4 = required earth resistance');
+ok(within(m6, 'm6-d5', C.earthRing(100, 10, 0.008)), 'm6-d5 = ring 10 m');
+ok(within(m6, 'm6-d6', C.wenner(4, 10)), 'm6-d6 = Wenner resistivity');
+ok(within(m6, 'm6-d12', 2500 / 1000), 'm6-d12 = reduction factor');
+
 console.log('dom ids');
 const html = read('index.html');
 const appjs = read('app.js');
@@ -118,7 +128,7 @@ used.forEach((id) => {
 
 console.log('scripts');
 const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]);
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });

@@ -57,6 +57,16 @@ eq(C.relayTime('SI', 0.2, 1, 1), Infinity, 'no trip at pickup');
 throws(() => C.relayTime('XX', 0.2, 1, 10), 'unknown curve rejected');
 throws(() => C.faultCurrent(0, 1), 'zero voltage rejected');
 
+console.log('earthing');
+near(C.earthRod(100, 3, 0.008), 33.49, 0.05, 'rod 3 m, 16 mm, 100 Ω·m → 33.5 Ω');
+near(C.earthRod(300, 3, 0.008), 100.48, 0.1, 'tripling resistivity triples resistance');
+near(C.earthRod(100, 6, 0.008), 18.58, 0.05, 'doubling length halves resistance');
+near(C.earthRing(100, 10, 0.008), 4.67, 0.05, 'ring 10 m → 4.67 Ω');
+near(C.earthRing(100, 20, 0.008), 2.51, 0.05, 'ring 20 m → 2.51 Ω');
+eq(C.epr(500, 5), 2500, 'EPR 500 A × 5 Ω');
+eq(C.requiredEarth(1000, 500), 2, 'required resistance 2 Ω');
+near(C.wenner(4, 10), 251.33, 0.1, 'Wenner 2πaR');
+
 console.log('guards');
 throws(() => C.cRate(0), 'C-rate rejects zero duration');
 throws(() => C.grossUp(100, 100), 'gross-up rejects 100 % loss');

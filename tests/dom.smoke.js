@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'm4.js', 'm5.js', 'm6.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 5, 'module picker lists five modules', String($('module-select').options.length));
+ok($('module-select').options.length === 6, 'module picker lists six modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');
@@ -205,6 +205,39 @@ while (g5++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
   if (nx) nx.click();
 }
 ok(/All 12 solved/.test($('drill-body').textContent), 'module 5 drills complete');
+
+console.log('module 6 earthing');
+$('module-select').value = 'm6';
+fire($('module-select'), 'change');
+ok(/Earthing and EMC/.test($('lesson').textContent), 'module 6 lesson renders');
+$('tab-calc').click();
+const eo = () => $('e-out').textContent.replace(/\s+/g, ' ');
+ok(/33\.49 Ω/.test(eo()), 'default rod gives 33.49 Ω', eo().slice(0, 60));
+const expectedEPR = Math.round(window.Calc.epr(500, window.Calc.earthRod(100, 3, 0.008)));
+ok(eo().replace(/,/g, '').includes(String(expectedEPR) + ' V'), 'EPR equals 500 A x the computed resistance', 'expected ' + expectedEPR + ', got ' + eo().slice(0, 90));
+$('e-type').value = 'ring';
+$('e-size').value = '10';
+fire($('e-type'), 'change'); fire($('e-size'), 'input');
+ok(/4\.67 Ω/.test(eo()), 'ring gives 4.67 Ω', eo().slice(0, 60));
+$('e-limit').value = '100';
+fire($('e-limit'), 'input');
+ok(/Above the limit/.test($('e-note').textContent), 'a low limit is flagged as a design problem', $('e-note').textContent.slice(0, 50));
+
+console.log('module 6 drills');
+$('tab-drill').click();
+const D6 = window.MODULES.find((m) => m.id === 'm6').drills;
+let g6 = 0;
+while (g6++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const d = D6.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
+  const nx = $('next');
+  if (nx) nx.click();
+}
+ok(/All 12 solved/.test($('drill-body').textContent), 'module 6 drills complete');
 
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);

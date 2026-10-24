@@ -96,6 +96,35 @@
       return upstream - downstream;
     },
 
+
+    /** Earth resistance of a vertical rod, Dwight. rho in Ω·m, L in m, a = radius in m. */
+    earthRod: function (rho, L, a) {
+      if (!(rho > 0) || !(L > 0) || !(a > 0)) throw new Error('rho, L and radius must be > 0');
+      return (rho / (2 * Math.PI * L)) * (Math.log((4 * L) / a) - 1);
+    },
+
+    /** Earth resistance of a buried ring, Dwight. r = ring radius in m, a = conductor radius in m. */
+    earthRing: function (rho, r, a) {
+      if (!(rho > 0) || !(r > 0) || !(a > 0)) throw new Error('rho, r and radius must be > 0');
+      return (rho / (2 * Math.PI * Math.PI * r)) * Math.log((8 * r) / a);
+    },
+
+    /** Earth potential rise, in volts. */
+    epr: function (faultCurrent, rEarth) {
+      return faultCurrent * rEarth;
+    },
+
+    /** Earth resistance needed to keep the rise below a permissible touch voltage. */
+    requiredEarth: function (permissibleVolts, faultCurrent) {
+      if (!(faultCurrent > 0)) throw new Error('fault current must be > 0');
+      return permissibleVolts / faultCurrent;
+    },
+
+    /** Soils resistivity from a Wenner measurement: rho = 2 pi a R. */
+    wenner: function (spacing, resistance) {
+      return 2 * Math.PI * spacing * resistance;
+    },
+
     round: function (x, digits) {
       var f = Math.pow(10, digits === undefined ? 2 : digits);
       return Math.round(x * f) / f;
