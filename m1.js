@@ -100,12 +100,40 @@
     updateCell();
   }
 
+
+  function drawTanks(host) {
+    function tank(x, pipeW, label) {
+      var p = [];
+      p.push('<rect x="' + x + '" y="60" width="220" height="170" rx="10" class="tank"/>');
+      p.push('<rect x="' + (x + 6) + '" y="66" width="208" height="140" rx="6" class="water"/>');
+      p.push('<text x="' + (x + 110) + '" y="44" class="sld-note" text-anchor="middle">400 MWh</text>');
+      p.push('<rect x="' + (x + 160) + '" y="236" width="' + pipeW + '" height="22" rx="4" class="pipe"/>');
+      p.push('<line x1="' + (x + 160 + pipeW) + '" y1="247" x2="' + (x + 160 + pipeW + 46) + '" y2="247" class="sld-line" marker-end="url(#tank-arrow)"/>');
+      p.push('<text x="' + (x + 160 + pipeW + 52) + '" y="252" class="sld-note">' + label + '</text>');
+      return p.join('');
+    }
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>Same tank, two pipe widths</h2>' +
+        '<p class="muted">Energy is the water. Power is the pipe. The tank holds the same 400 MWh in both drawings — only the rate changes.</p>' +
+        '<svg viewBox="0 0 880 300" class="sld" role="img" aria-label="Two tanks of equal energy with different outlet widths">' +
+          '<defs><marker id="tank-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">' +
+          '<path d="M0,0 L8,4 L0,8 z" class="arrowhead"/></marker></defs>' +
+          tank(60, 26, '100 MW · 4 h') +
+          tank(500, 70, '200 MW · 2 h') +
+        '</svg>' +
+        '<p class="muted">Left: a narrow pipe empties the tank slowly, so the plant can deliver only 100 MW and lasts four hours. Right: a wide pipe empties it twice as fast — same energy, twice the power, half the duration.</p>' +
+      '</div>';
+  }
+
   window.MODULES.push({
     id: 'm1',
     number: '01',
     title: 'Energy, power, time, money',
     lead: 'The arithmetic that every later module sits on. If this is solid, everything else is vocabulary.',
     sections: LESSON.sections,
+    renderExtra: drawTanks,
     calc: { html: calcHTML, init: init },
     drills: DRILLS
   });

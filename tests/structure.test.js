@@ -26,7 +26,7 @@ MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
   ok(Array.isArray(m.sections) && m.sections.length >= 5, m.id + ': at least 5 lesson sections', 'got ' + (m.sections || []).length);
   ok(m.sections.every((s) => s.h && Array.isArray(s.p) && s.p.length), m.id + ': every section has a heading and prose');
-  if (m.id === 'm2') {
+  if (m.id === 'm1' || m.id === 'm2') {
     m.sections.forEach((s) => {
       const words = (s.p.join(' ') + ' ' + (s.example ? s.example.body : '') + ' ' + (s.mistake || '') + ' ' + (s.check || ''))
         .split(/\s+/).filter(Boolean).length;
