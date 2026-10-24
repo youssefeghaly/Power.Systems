@@ -16,11 +16,11 @@ const ok = (cond, msg, detail) => {
 console.log('module registry');
 const ctx = { window: {}, Calc: C, console };
 vm.createContext(ctx);
-['content.js', 'm1.js', 'm2.js'].forEach((f) => vm.runInContext(read(f), ctx));
+['content.js', 'm1.js', 'm2.js', 'm3.js'].forEach((f) => vm.runInContext(read(f), ctx));
 const MODULES = ctx.window.MODULES;
 ok(Array.isArray(MODULES), 'MODULES array built');
-ok(MODULES.length === 2, 'two modules registered', 'got ' + (MODULES || []).length);
-ok(MODULES.map((m) => m.id).join(',') === 'm1,m2', 'module order m1, m2');
+ok(MODULES.length === 3, 'three modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3', 'module order m1, m2, m3');
 
 MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
@@ -68,6 +68,19 @@ const defaults = [94, 97, 99, 99.5, 99.5, 98.5];
 ok(Math.abs(C.chainRTE(defaults) - 88.03) < 0.01, 'calculator defaults land on 88.03 %', C.chainRTE(defaults).toFixed(4));
 ok(Math.abs(C.naiveRTE(defaults) - 87.5) < 0.01, 'naive method gives 87.50 %', C.naiveRTE(defaults).toFixed(2));
 
+console.log('m3 answer consistency');
+const m3 = MODULES.find((m) => m.id === 'm3');
+const pow = (b, e) => Math.pow(b, e);
+ok(within(m3, 'm3-d1', 400 * pow(0.98, 10)), 'm3-d1 = 400 MWh at 2 %/yr, year 10');
+ok(within(m3, 'm3-d2', 400 * pow(0.98, 20)), 'm3-d2 = same at year 20');
+ok(within(m3, 'm3-d3', 100 * pow(0.985, 20)), 'm3-d3 = 1.5 %/yr at year 20');
+ok(within(m3, 'm3-d4', 400 / pow(0.98, 20)), 'm3-d4 = BOL needed for pure overbuild');
+ok(within(m3, 'm3-d5', (400 / pow(0.98, 20) / 400 - 1) * 100), 'm3-d5 = overbuild percentage');
+ok(within(m3, 'm3-d6', 400 - 435 * pow(0.98, 7)), 'm3-d6 = shortfall at year 7');
+ok(within(m3, 'm3-d7', 435 * pow(0.98, 7) + 60), 'm3-d7 = capacity just after augmenting');
+ok(within(m3, 'm3-d11', 8760 * 0.02), 'm3-d11 = unavailable hours at 98 %');
+ok(within(m3, 'm3-d12', 365 * 20), 'm3-d12 = cycles at one per day for 20 years');
+
 console.log('dom ids');
 const html = read('index.html');
 const appjs = read('app.js');
@@ -85,7 +98,7 @@ used.forEach((id) => {
 
 console.log('scripts');
 const scripts = [...html.matchAll(/<script src="\.\/([^"]+)"/g)].map((m) => m[1]);
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });

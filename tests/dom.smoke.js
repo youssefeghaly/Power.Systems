@@ -23,7 +23,7 @@ const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost
 const { window } = dom;
 const $ = (id) => window.document.getElementById(id);
 
-['calc.js', 'content.js', 'm1.js', 'm2.js', 'app.js'].forEach((f) => {
+['calc.js', 'content.js', 'm1.js', 'm2.js', 'm3.js', 'app.js'].forEach((f) => {
   window.eval(fs.readFileSync(path.join(dir, f), 'utf8'));
 });
 window.document.dispatchEvent(new window.Event('DOMContentLoaded', { bubbles: true }));
@@ -33,7 +33,7 @@ const ok = (c, m, d) => { if (c) console.log('  ok   ' + m); else { fail++; cons
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 
 console.log('boot');
-ok($('module-select').options.length === 2, 'module picker lists two modules', String($('module-select').options.length));
+ok($('module-select').options.length === 3, 'module picker lists three modules', String($('module-select').options.length));
 ok(/Energy, power, time, money/.test($('lesson').textContent), 'module 1 lesson renders first');
 
 console.log('module 1 calculator');
@@ -92,6 +92,40 @@ ok($('count').textContent === '0 / 12 solved', 'module 1 progress is untouched',
 $('module-select').value = 'm2';
 fire($('module-select'), 'change');
 ok($('count').textContent === '12 / 12 solved', 'module 2 progress survives the switch', $('count').textContent);
+
+console.log('module 3 planner');
+$('module-select').value = 'm3';
+fire($('module-select'), 'change');
+ok(/Degradation, augmentation, guarantees/.test($('lesson').textContent), 'module 3 lesson renders');
+ok(!!$('lesson').querySelector('.card'), 'lesson sections render');
+$('tab-calc').click();
+ok(!!$('dg-chart').querySelector('.chart-line'), 'planner draws a capacity line');
+ok(/433\.1/.test($('dg-out').textContent), 'defaults reach 433.1 MWh at year 20', $('dg-out').textContent.slice(0, 90));
+const flat = (x) => x.replace(/\s+/g, '');
+ok(flat($('dg-out').textContent).includes(flat('Years below contract0')), 'no breach with both augmentations', flat($('dg-out').textContent).slice(0, 80));
+$('dg-years').value = '';
+fire($('dg-years'), 'input');
+ok(flat($('dg-out').textContent).includes(flat('Years below contract9')), 'removing augmentation causes nine breach years', flat($('dg-out').textContent).slice(0, 80));
+ok($('dg-chart').querySelectorAll('.chart-bad').length > 0, 'breach years are marked in red');
+$('dg-rate').value = '0';
+fire($('dg-rate'), 'input');
+ok(flat($('dg-out').textContent).includes(flat('Years below contract0')), 'zero degradation never breaches');
+
+console.log('module 3 drills');
+$('tab-drill').click();
+const D3 = window.MODULES.find((m) => m.id === 'm3').drills;
+let g3 = 0;
+while (g3++ < 60 && !/All 12 solved/.test($('drill-body').textContent)) {
+  const qEl = $('drill-body').querySelector('.q');
+  if (!qEl) break;
+  const d = D3.find((x) => x.q === qEl.textContent);
+  if (!d) break;
+  $('answer').value = d.type === 'text' ? d.accept[0] : String(d.answer);
+  $('check').click();
+  const nx = $('next');
+  if (nx) nx.click();
+}
+ok(/All 12 solved/.test($('drill-body').textContent), 'module 3 drills complete');
 
 console.log(fail === 0 ? '\nDOM SMOKE PASSED' : '\n' + fail + ' FAILED');
 process.exit(fail ? 1 : 0);
