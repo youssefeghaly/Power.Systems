@@ -116,47 +116,77 @@
       {
         h: 'A review is a hunt, not a presentation',
         p: [
-          'The developer presents; you look for what is missing. The two activities are different, and the second is the one you are paid for. A review that ends with "looks good" has usually failed.',
-          'The pack will be long, confident and mostly right. Your job is the small number of places where confidence outruns evidence — a number without a calculation, a diagram that disagrees with the schedule, a guarantee measured somewhere other than the contract.',
-          'You do not need to check everything. You need to check the things that, if wrong, invalidate the rest: sizing boundary, fault level, protection grading, guarantee boundary.'
+          `The developer presents; you look for what is missing. Those are different activities, and the second is the one you are paid for. A review that ends with "looks good" has usually failed, even when the project is genuinely good.`,
+          `The pack will be long, confident and mostly right. Your job is the small number of places where confidence outruns evidence: a number without a calculation, a diagram that disagrees with the schedule, a guarantee measured somewhere other than the contract.`,
+          `You do not need to check everything. You need to check the things that, if wrong, invalidate the rest — the sizing boundary, the fault level, the protection grading, the guarantee boundary. Those four account for most of the expensive findings.`
         ],
-        formula: 'Look for missing evidence, not for mistakes in arithmetic'
+        formula: 'Look for missing evidence, not for mistakes in arithmetic',
+        example: {
+          title: 'Worked example — the finding nobody wants to hear',
+          body: `A pack with a beautifully produced 200-page design report and no earthing calculation fails review, because the EPR has not been compared against a touch-voltage limit. The report is not wrong; it is incomplete in the one place where incompleteness is a safety issue. A review that raises only this, and raises it clearly, has earned its fee.`
+        },
+        mistake: `Reviewing the arithmetic instead of the evidence. Arithmetic errors are rare and cheap; missing evidence is common and expensive, because it means nobody has done the thinking — and the arithmetic you can check in an afternoon is not where the risk lives, however satisfying it is to correct.`,
+        check: `What is the most useful question in a review? Answer: show me the calculation.`
       },
       {
         h: 'The ten checks that matter',
         p: [
-          'Sizing from POI back to DC. The SLD against the equipment schedule. Protection graded at maximum and minimum fault. Earthing justified by EPR against a stated limit.',
-          'Cable derating, drop and fault withstand. Switchgear ratings against calculated fault level. A grid-code matrix of clause, answer and evidence. Guarantees consistent across BESA, LTSA and offtake. Safety signed by the AHJ. A revenue model that does not double-count.',
-          'Ten items, and any single failure means the pack is not signable — not "needs minor work", not "subject to clarification". Not signable.'
+          `Sizing from the POI back to the DC terminals. The single-line diagram against the equipment schedule. Protection graded at both maximum and minimum fault level. Earthing justified by an EPR calculation against a stated limit.`,
+          `Cable derating, voltage drop and short-circuit withstand. Switchgear ratings against the calculated fault level. A grid-code matrix of clause, design answer and evidence document. Guarantees consistent across BESA, LTSA and offtake. A safety concept signed by the AHJ. A revenue model that does not double-count.`,
+          `Ten items, and any single failure means the pack is not signable — not "needs minor work", not "subject to clarification". Signable or not signable is the only honest binary, and the scorecard in this module enforces it, because a review that grades itself generously is worse than no review at all.`
         ],
-        formula: 'Ten checks · one failure blocks the signature'
+        formula: 'Ten checks · one failure blocks the signature',
+        example: {
+          title: 'Worked example — the check that is always skipped',
+          body: `The grid-code matrix is the one most often missing, because it is tedious and because everyone believes they know the requirements. Then a DSO reviewer asks which evidence document proves the reactive-power capability at the connection point, and the answer is not in the pack. Build the matrix early in the project and it fills itself in; build it at review stage and it becomes an archaeology exercise.`
+        },
+        mistake: `Treating the checks as a checklist to be satisfied rather than a set of questions to be answered with documents. A tick without a reference is an opinion.`,
+        check: `How many of the ten checks must pass before sign-off? Answer: all ten.`
       },
       {
         h: 'Reading a pack in ninety minutes',
         p: [
-          'Start with the single-line diagram and the equipment schedule side by side. Disagreements between a drawing and a list are the cheapest findings and they predict the expensive ones.',
-          'Then the sizing sheet: follow one number — the contracted POI energy — all the way back to cells. If it cannot be traced, nothing downstream can be trusted.',
-          'Then the guarantees. Find the boundary on which each metric is measured and check it matches the contract. Most commercial surprises live in this step.'
+          `Start with the single-line diagram and the equipment schedule side by side. Disagreements between a drawing and a list are the cheapest findings and they predict the expensive ones, because they show where the document set was assembled rather than engineered.`,
+          `Then the sizing sheet: follow one number — the contracted POI energy — all the way back to cells. If it cannot be traced, nothing downstream can be trusted, and you can stop reading in detail and start asking questions.`,
+          `Then the guarantees. Find the boundary on which each metric is measured and check it matches the contract. Most commercial surprises live in this step, and it takes ten minutes once you know to look.`
         ],
-        formula: 'SLD ↔ schedule · trace one number · check every boundary'
+        formula: 'SLD ↔ schedule · trace one number · check every boundary',
+        example: {
+          title: 'Worked example — tracing 400 MWh',
+          body: `Follow 400 MWh from the offtake: at the POI, so 434.8 at DC with 8 % losses, so 87 containers of 5 MWh, so about 400,000 cells, so a bill of materials. If any step in that chain is missing a number, that is the finding — and it is found in ten minutes, not two days. Do it once, and the rest of the review is a matter of confirming that the other numbers are as traceable as that one.`
+        },
+        mistake: `Reading the pack front to back like a report. It was written to be read that way, which is exactly why the contradictions between sections survive until someone reads them against each other.`,
+        check: `What do you compare first? Answer: the single-line diagram and the equipment schedule.`
       },
       {
         h: 'Red flags that predict trouble',
         p: [
-          'Efficiency quoted to two decimal places but no loss budget. A fault level with no impedance basis. Availability defined in a footnote. "To be confirmed by supplier" for anything that affects protection.',
-          'Any number that cannot be reproduced from the documents is a finding, even if it happens to be right. The point of a review is that the next person can check it.',
-          'And the quiet one: a design that is technically fine but assumes an interface someone else will provide, with nothing in writing from that someone.'
+          `Efficiency quoted to two decimal places with no loss budget. A fault level with no impedance basis. Availability defined in a footnote. "To be confirmed by supplier" attached to anything that affects protection.`,
+          `Any number that cannot be reproduced from the documents is a finding, even if it happens to be right — because the point of a review is that the next person can check it without asking you.`,
+          `And the quiet one: a design that is technically fine but assumes an interface someone else will provide, with nothing in writing from that someone. Those are the findings that surface as schedule slippage six months later, when the interface turns out to need a firmware option nobody scoped, and the plant is complete except for six weeks of waiting, with the battery installed and the meter unread, with the revenue clock not yet started.`
         ],
-        formula: 'Precision without basis · interfaces without owners'
+        formula: 'Precision without basis · interfaces without owners',
+        example: {
+          title: 'Worked example — the interface with no owner',
+          body: `The protection interface to the DSO sits between the PCS supplier, the EPC and the network operator. It is nobody's deliverable unless someone writes it into a scope, and it is on the critical path to energisation. A single line in the interface schedule prevents a six-week delay. Write it into the EPC scope as a deliverable with a date, not as an assumption with a hope.`
+        },
+        mistake: `Assuming that a competent contractor covers the interfaces. Interfaces are exactly where competent contractors assume someone else is responsible.`,
+        check: `Which finding is quietest and most expensive? Answer: an interface nobody owns.`
       },
       {
         h: 'Findings that change something',
         p: [
-          'A finding states what is missing, why it matters, what evidence would close it, and who owns it. "Insufficient detail on protection" is not a finding; it is a complaint.',
-          'Rank by consequence, not by ease. A missing calculation that invalidates the switchgear rating outranks ten typos, even though the typos take five minutes to list.',
-          'Close the loop: a review is finished when each finding is either evidenced or accepted as a risk by someone with the authority to accept it. Everything else is an open item, and open items are what delay financial close.'
+          `A finding states what is missing, why it matters, what evidence would close it, and who owns it. "Insufficient detail on protection" is not a finding; it is a complaint, and it will be answered with a paragraph rather than a calculation.`,
+          `Rank by consequence, not by ease. A missing calculation that invalidates the switchgear rating outranks ten typos, even though the typos take five minutes to list — and a report that leads with typos tells the reader you did not find the important thing.`,
+          `Close the loop. A review is finished when each finding is either evidenced or accepted as a risk by someone with the authority to accept it. Everything else is an open item, and open items are what delay financial close, because no lender signs a pack with unresolved findings in it, and nobody wants to be the reviewer who signed one off.`
         ],
-        formula: 'Gap → why it matters → evidence that closes it → owner'
+        formula: 'Gap → why it matters → evidence that closes it → owner',
+        example: {
+          title: 'Worked example — the finding that got fixed in a day',
+          body: `"Earthing: no EPR calculation. Without it the touch-voltage requirement is unverified, which blocks the safety sign-off. Provide the calculation at the specified fault current against the permissible voltage for the clearing time, owner: electrical lead." That is a finding someone can act on before lunch. Compare that with 'protection needs more detail', which produces a meeting, a revised section and another review.`
+        },
+        mistake: `Writing findings that describe a feeling rather than a gap. If the reader cannot tell what document would close the item, it will stay open for months.`,
+        check: `What four elements does a finding need? Answer: gap, consequence, evidence, owner.`
       }
     ],
     renderExtra: renderScorecard,

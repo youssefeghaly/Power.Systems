@@ -154,47 +154,77 @@
       {
         h: 'What thermal runaway actually is',
         p: [
-          'A cell heated past its limit enters an exothermic reaction it cannot stop: temperature climbs to several hundred degrees, the electrolyte vaporises, and flammable and toxic gases vent.',
-          'The gases are the underrated hazard. In a closed container they accumulate, and ignition produces a deflagration rather than a fire — which is what injured responders at McMicken in 2019.',
-          'Propagation is the real risk to the business: one container is a loss, a row of containers is a disaster and a planning scandal.'
+          `A cell heated past its limit enters an exothermic reaction it cannot stop. Temperature climbs to several hundred degrees, the electrolyte vaporises, and the cell vents a mixture of flammable and toxic gases — hydrogen, carbon monoxide, hydrogen fluoride among them.`,
+          `The gases are the underrated hazard. In a closed container they accumulate, and ignition produces a deflagration rather than a fire: a pressure event that can injure responders before they reach the door. That is what happened at McMicken in 2019, and it changed the way containers are designed.`,
+          `Propagation is the risk to the business. One container is a loss; a row of containers is a disaster, a planning scandal and an insurance dispute that outlives the project team.`
         ],
-        formula: 'Heat → venting → flammable gas → deflagration → propagation'
+        formula: 'Heat → venting → flammable gas → deflagration → propagation',
+        example: {
+          title: 'Worked example — the ten minutes',
+          body: `In the McMicken incident the cell temperature went from about 30 °C to over 700 °C in under ten minutes, after an internal short caused by dendrites. Nothing the controls could do would have stopped it once the short formed — which is why the design effort goes into detection, venting and keeping the next container cool rather than into extinguishing this one. The practical lesson for design is that the timeline of a cell event is shorter than any human response, so the layout must assume the container is lost.`
+        },
+        mistake: `Designing for fire and forgetting gas. Most of the serious injuries in this industry come from deflagration and toxic exposure, not from flames reaching people.`,
+        check: `What creates the explosion risk in a container? Answer: accumulation of flammable vented gas.`
       },
       {
         h: 'The standards landscape, honestly',
         p: [
-          '<strong>IEC 62933-5-2</strong> covers safety of grid-integrated storage; <strong>IEC 62619</strong> covers cells for industrial use. <strong>UL 9540A</strong> is the American propagation test whose data now informs fire codes worldwide.',
-          '<strong>NFPA 855</strong> is the US installation standard and is often quoted in Europe by analogy — it is not law here. In Germany, <strong>VdS 3103</strong> is the practical fire guideline, alongside the building codes and the industrial building directive.',
-          'We hold neither VdS 3103 nor 62933-5-2, so this module teaches the structure and marks the numbers. Anyone quoting a distance in metres without naming the source deserves a second question.'
+          `<strong>IEC 62933-5-2</strong> covers safety of grid-integrated storage; <strong>IEC 62619</strong> covers cells for industrial use. <strong>UL 9540A</strong> is the American propagation test whose data now informs fire codes worldwide, and <strong>NFPA 855</strong> is the US installation standard often quoted in Europe by analogy.`,
+          `In Germany, <strong>VdS 3103</strong> is the practical fire guideline, sitting alongside the building codes and the industrial building directive. It is a guideline rather than law, but it is what insurers and fire departments actually reference when they form a view.`,
+          `We hold neither VdS 3103 nor 62933-5-2, so this module teaches the structure and marks the numbers. Anyone quoting a distance in metres without naming the document, the edition and the authority deserves a second question — including me.`
         ],
-        formula: '62933-5-2 system · 62619 cells · UL 9540A propagation · VdS 3103 German practice'
+        formula: '62933-5-2 system · 62619 cells · UL 9540A propagation · VdS 3103 German practice',
+        example: {
+          title: 'Worked example — why UL 9540A data matters in Germany',
+          body: `A German authority may not apply NFPA 855, but it will ask what happens when one module goes into runaway. The UL 9540A test answers exactly that question with measured data — temperatures, gas composition, whether propagation occurred — and that data is often the only quantitative evidence available to the fire department. Ask suppliers for the module-level results, not the headline summary; the summary is marketing and the data is evidence. Present it as supporting evidence attached to the fire concept, not as a claim of compliance.`
+        },
+        mistake: `Treating the American standard as legally applicable in Germany. It is evidence, not law — useful evidence, but the permission comes from the Landesbauordnung and the AHJ.`,
+        check: `Which German guideline covers fire protection for lithium storage? Answer: VdS 3103.`
       },
       {
         h: 'Design measures that actually matter',
         p: [
-          'Spacing and orientation, fire walls, deflagration venting, gas detection, and a layout that lets one container burn without heating the next. Suppression is useful; containment is decisive.',
-          'Access for fire vehicles, a water supply the AHJ accepts, and a fire command post are all site-level requirements that are cheap early and impossible late.',
-          'Every one of these is inspected. They are also the items most often installed "provisionally" and never finished.'
+          `Spacing and orientation, fire walls, deflagration venting, gas detection, and a layout that lets one container burn without heating the next. Suppression is useful; containment is decisive, because the industry generally accepts the loss of a single container.`,
+          `Access for fire vehicles, a water supply the AHJ accepts, and a fire command post are site-level requirements that are cheap early and impossible late. They also determine the layout of everything else, because a fire engine needs a turning circle.`,
+          `Every one of these is inspected before energisation. They are also the items most often installed provisionally and never finished, because by the time the inspection comes the contractor has demobilised.`
         ],
-        formula: 'Contain the container, protect the site'
+        formula: 'Contain the container, protect the site',
+        example: {
+          title: 'Worked example — spacing beats suppression',
+          body: `Two layouts with identical suppression: one with containers 3 m apart, one with 6 m. The first propagates in a wind-driven fire; the second loses one container and keeps the plant. The extra 3 m costs land; the propagation costs the asset, the insurance and possibly the planning consent for the next project. Fire engineering can sometimes justify closer spacing with a barrier and a calculation, but that argument is made with the authority before the layout is drawn, not after. Land is the constraint in most German industrial estates, which is why this argument is usually won or lost at site selection.`
+        },
+        mistake: `Buying a more elaborate suppression system to compensate for tight spacing. Suppression acts after the event has started; spacing prevents the event from becoming a site emergency.`,
+        check: `What limits propagation between containers most reliably? Answer: spacing and physical barriers.`
       },
       {
         h: 'The German permission path',
         p: [
-          'Land use first: is the site inside a built-up area (Innenbereich) or outside (Außenbereich)? Under BauGB §35, privileged outdoor use is a narrow category and a BESS does not obviously fit it.',
-          'Then building law: a BESS is usually a structure requiring a permit under the Landesbauordnung. BImSchG may apply for larger or certain installations — that question is asked early because it changes the timeline by a year.',
-          'Then the fire authority signs off the concept, and the DSO signs off the connection. Neither is a formality, and neither can be fixed after construction.'
+          `Land use first: is the site inside a built-up area or outside it? Under BauGB §35 the privileged outdoor category is narrow, and a battery storage plant does not obviously fit it — which is why the first legal question is often the one that decides the project.`,
+          `Then building law: a BESS is usually a structure requiring a permit under the Landesbauordnung. BImSchG may apply for certain installations, and that question is asked early because a positive answer changes the timeline by a year and the evidence pack by a filing cabinet.`,
+          `Then the fire authority signs off the concept and the DSO signs off the connection. Neither is a formality, and neither can be fixed after construction — both are design inputs pretending to be approvals.`
         ],
-        formula: 'BauGB → LBO (and possibly BImSchG) → fire authority → DSO'
+        formula: 'BauGB → LBO (and possibly BImSchG) → fire authority → DSO',
+        example: {
+          title: 'Worked example — the paragraph that decides the site',
+          body: `A site outside a village, on agricultural land, looks cheap and is often the one that fails at §35: the plant is not agriculture, not forestry, and not a privileged utility in the narrow sense the paragraph uses. A site inside an industrial estate costs more per square metre and saves a year of legal argument. The same logic applies to grid connection: the cheapest land is often the most expensive project.`
+        },
+        mistake: `Buying or optioning land before establishing the planning category. Land cost is visible and planning risk is not, which is exactly why the cheap site wins the spreadsheet and loses the project.`,
+        check: `Which paragraph governs privileged construction outside built-up areas? Answer: BauGB §35.`
       },
       {
         h: 'Emergency response is a design input',
         p: [
-          'An emergency response plan written for lithium storage, shared with the fire brigade before commissioning, changes what you build: hydrant positions, access roads, isolation points, and a gate that a fire engine can pass.',
-          'The doctrine for a container in runaway is usually to let it burn and cool the neighbours. Design decisions that make that possible — spacing, venting, remote isolation — are worth more than a larger extinguisher.',
-          'Rehearse it. A plan nobody has walked through is a document, not a capability.'
+          `An emergency response plan written for lithium storage, shared with the fire brigade before commissioning, changes what you build: hydrant positions, access roads, isolation points, and a gate wide enough for a fire engine.`,
+          `The doctrine for a container already in runaway is usually to let it burn and cool the neighbours. Design decisions that make that possible — spacing, venting, remote isolation — are worth more than a larger extinguisher, and they are decisions taken in the layout, not in the response plan.`,
+          `Rehearse it. A plan nobody has walked through is a document, not a capability, and the fire brigade will discover the difference at three in the morning, on your site, with your name on the fire concept.`
         ],
-        formula: 'Write it with the brigade · rehearse it · design for it'
+        formula: 'Write it with the brigade · rehearse it · design for it',
+        example: {
+          title: 'Worked example — the gate that was too narrow',
+          body: `A site with a 3.5 m gate and a 6 m turning circle looks adequate until the local brigade arrives with its largest appliance and cannot enter. Rebuilding the entrance after commissioning costs a variation, a delay and a conversation with the authority who now doubts everything else in the pack. Walk the route with the brigade before the fence goes up; they will tell you what their largest appliance needs, and it is never what the drawing assumes.`
+        },
+        mistake: `Writing the emergency plan after construction, to match what was built. It should be written with the brigade before the layout is frozen.`,
+        check: `What is the usual doctrine for a container in runaway? Answer: let it burn while cooling neighbours.`
       }
     ],
     renderExtra: drawLayers,

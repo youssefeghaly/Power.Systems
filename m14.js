@@ -133,47 +133,77 @@
       {
         h: 'Two kinds of income',
         p: [
-          '<strong>Contracted</strong> revenue comes from an agreement: a capacity payment, a tolling fee, a PPA. It is bankable and it is what lenders underwrite.',
-          '<strong>Merchant</strong> revenue comes from markets: day-ahead, intraday, balancing. It can be larger, and it is the part that makes a lender nervous.',
-          'Most German storage today is a blend: a floor from reserve or capacity, upside from arbitrage. The blend is a design decision, not just a commercial one.'
+          `<strong>Contracted</strong> revenue comes from an agreement: a capacity payment, a tolling fee, a power purchase agreement. It is bankable, it is what lenders underwrite, and it is usually smaller than the merchant upside it sits beneath.`,
+          `<strong>Merchant</strong> revenue comes from markets — day-ahead, intraday, balancing. It can be much larger, and it is the part that makes a lender nervous, because it depends on prices nobody can forecast twenty years out.`,
+          `Most German storage today is a blend: a floor from reserve or capacity with arbitrage on top. That blend is a design decision as much as a commercial one, because a plant built for reserve is not the same plant as one built for spread — different duration, different PCS rating, different degradation profile.`
         ],
-        formula: 'Contracted floor + merchant upside = the usual stack'
+        formula: 'Contracted floor + merchant upside = the usual stack',
+        example: {
+          title: 'Worked example — the same asset, two business cases',
+          body: `A 2-hour plant in a high reserve price market can cover most of its fixed costs from capacity payments and treat arbitrage as upside. A 4-hour plant in the same market might earn less per MW of reserve but far more from spreads. Neither is better; they are different bets on which market stays scarce. The useful discipline is to model both durations with the same revenue assumptions and see which survives a bad year, not which wins a good one.`
+        },
+        mistake: `Building the financial model around whichever revenue stream was highest last year. Storage revenue is cyclical and policy-sensitive, and a one-year sample is not a forecast.`,
+        check: `Which revenue stream do lenders underwrite? Answer: contracted revenue.`
       },
       {
         h: 'The reserve markets',
         p: [
-          'FCR pays for capacity that responds to frequency within 30 seconds, symmetrically. aFRR pays for signalled response within 5 minutes. mFRR, within 15 minutes.',
-          'Reserve revenue is per MW per hour of availability — so it scales with power, not energy. That favours short-duration, high-power assets, and it is why 2-hour batteries dominate some markets.',
-          'The catch: reserve requires headroom in both directions and continuous availability, which removes energy from arbitrage and exposes you to availability penalties.'
+          `FCR pays for capacity that responds to frequency within 30 seconds, symmetrically. aFRR pays for signalled response within 5 minutes, and mFRR within 15. All three are capacity products: you are paid for being ready, not for the energy you eventually deliver.`,
+          `That is why reserve revenue scales with power rather than energy, and why short-duration high-power assets dominate markets where reserve prices are high. A 2-hour battery can hold a large reserve block; a 4-hour battery of the same MW costs more and earns the same per MW of reserve.`,
+          `The catch is availability. Reserve requires continuous readiness, headroom in both directions and prequalification of the control interface — and every hour you are unavailable is a penalty or a lost payment, and the definition of unavailable is a contract term.`
         ],
-        formula: 'Reserve revenue ≈ MW × €/MW/h × 8 760 h × availability'
+        formula: 'Reserve revenue ≈ MW × €/MW/h × 8 760 h × availability',
+        example: {
+          title: 'Worked example — the arithmetic of a reserve block',
+          body: `10 MW of FCR at €15/MW/h for a full year is 10 × 15 × 8,760 = €1.31 M. On a 10 MW plant that is €131/kW/yr — a number an investor can compare directly against the capital cost per kW, which is exactly why the industry quotes revenue this way. Note that this figure assumes 100 % availability; a realistic 97 % removes about €4/kW/yr and a bad year removes more.`
+        },
+        mistake: `Assuming the battery can be in reserve and arbitraging at the same time. Reserve reserves the megawatt; the energy it could have moved is the cost of the contract.`,
+        check: `What does FCR pay for? Answer: capacity that responds within 30 seconds.`
       },
       {
         h: 'Arbitrage, and what the spread really is',
         p: [
-          'Arbitrage is buying low and selling high, minus losses. At 88 % round-trip, delivering 400 MWh requires buying 454.5 MWh — so the effective spread is smaller than the market spread by a third of the difference.',
-          'Perfect capture is a fiction: the price you see in the day-ahead auction is not the price you get for a cycle that starts and ends at slightly different times.',
-          'Negative prices are a gift: you are paid to charge. Markets with high renewable penetration produce them regularly, and they reward fast, automated dispatch.'
+          `Arbitrage is buying low and selling high, minus losses. At 88 % round-trip, delivering 400 MWh requires buying 454.5 MWh, so the effective spread is smaller than the market spread by the cost of that difference.`,
+          `Perfect capture is a fiction. The price you see in the day-ahead auction is not the price you get for a cycle that starts before the trough and ends after the peak, and the optimisation that captures most of a spread with a battery of finite energy is a genuinely hard problem.`,
+          `Negative prices are a gift: you are paid to consume. Markets with high renewable penetration produce them regularly, and they reward fast automated dispatch over human judgement.`
         ],
-        formula: 'Margin = spread − losses − degradation cost'
+        formula: 'Margin = spread − losses − degradation cost',
+        example: {
+          title: 'Worked example — 5.8 million, before reality',
+          body: `A 400 MWh battery capturing a €40/MWh spread once a day for 365 days would earn 400 × 40 × 365 = €5.84 M. That assumes perfect capture every single day, no losses, no degradation and no outages — which is why a model that produces exactly that number is the first thing a reviewer discounts. A defensible model applies a capture rate — typically 60–80 % of the theoretical spread — and shows it as an explicit assumption rather than hiding it in the price curve.`
+        },
+        mistake: `Multiplying the average daily spread by 365. Spreads are correlated with volatility, and the days with the biggest spreads are also the days when the plant is most likely to be constrained by energy or by a reserve obligation.`,
+        check: `To deliver 400 MWh at 88 % RTE, how much must you buy? Answer: 454.5 MWh.`
       },
       {
         h: 'Stacking, and the physics that limits it',
         p: [
-          'Stacking means earning from more than one market with the same asset — sequentially, not simultaneously. A battery can do reserve in the morning and arbitrage in the evening.',
-          'What it cannot do is sell the same megawatt twice. Models that add every revenue stream at full capacity are the most common error in storage business cases.',
-          'The dispatch algorithm is therefore the real product: it decides, hour by hour, which market the asset is in. Two operators with identical hardware earn very different amounts.'
+          `Stacking means earning from more than one market with the same asset — sequentially, not simultaneously. A battery can hold reserve in the morning and arbitrage in the evening, and the dispatch algorithm decides which, hour by hour.`,
+          `What it cannot do is sell the same megawatt twice. Models that add every revenue stream at full capacity are the most common and most expensive error in storage business cases, and they survive review because the spreadsheet does not show the reservation.`,
+          `The dispatch algorithm is therefore the real product. Two operators with identical hardware earn very different amounts because one has a better forecast of the next day's prices and a better rule for when to stop holding reserve and start chasing a spread, and that rule is worth more than a few percent of round-trip efficiency.`
         ],
-        formula: 'Same asset, sequential markets — never simultaneous'
+        formula: 'Same asset, sequential markets — never simultaneous',
+        example: {
+          title: 'Worked example — the impossible model',
+          body: `A model showing 100 % of the plant in FCR and 100 % of the plant arbitraging every evening is claiming 200 % of one asset. Capping the sum of committed capacity at 100 % typically removes a third of the projected revenue — which is the difference between a fundable project and a brochure. The fix is a constraint in the optimiser, not a percentage haircut applied afterwards, because a haircut hides which market is actually being starved.`
+        },
+        mistake: `Treating stacking as free revenue rather than as an allocation problem. Every market you enter takes capacity away from the others.`,
+        check: `Can a battery be in reserve and discharging for arbitrage at the same moment? Answer: no.`
       },
       {
         h: 'German specifics that shape the business case',
         p: [
-          'Registration in the MaStR is obligatory; §14a lets the DSO dim controllable loads in exchange for reduced grid fees; grid-fee exemptions for storage have been time-limited and repeatedly amended.',
-          'The capacity mechanism debate returns every winter. If one arrives, contracted revenue rises and merchant exposure falls — which changes what gets financed.',
-          'None of these are stable facts. Any business case older than a year should be treated as a draft.'
+          `Registration in the MaStR is obligatory and blocks payment if missed. §14a lets the DSO dim controllable loads in exchange for reduced grid fees. Grid-fee exemptions for storage have been time-limited and repeatedly amended, which makes them a modelling risk rather than a constant.`,
+          `The capacity mechanism debate returns every winter. If one arrives, contracted revenue rises and merchant exposure falls, which changes what gets financed and therefore what gets built.`,
+          `None of these are stable facts. Any business case older than a year should be treated as a draft, and any business case that does not name its policy assumptions cannot be argued with — which usually means it cannot be trusted, because nobody can tell you which belief it depends on, or what would have to be true for it to hold.`
         ],
-        formula: 'MaStR · §14a · grid-fee rules · capacity mechanism — all moving'
+        formula: 'MaStR · §14a · grid-fee rules · capacity mechanism — all moving',
+        example: {
+          title: 'Worked example — the assumption that carries the model',
+          body: `A model assuming grid-fee exemption for the whole twenty years, written before the exemption was time-limited, overstates revenue in the later years by a figure that compounds. When the assumption is corrected, the project may still work — but the equity return moves by enough to change the financing structure. Date every assumption in the model and review the ones older than twelve months; a business case is a set of beliefs with arithmetic attached.`
+        },
+        mistake: `Burying policy assumptions in a footnote. They are the assumptions most likely to be wrong and most likely to be forgotten, and they deserve their own line in the model.`,
+        check: `Which register must a plant be entered in? Answer: the MaStR.`
       }
     ],
     calc: { html: calcHTML, init: initCalc },

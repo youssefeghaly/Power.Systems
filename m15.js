@@ -111,47 +111,77 @@
       {
         h: 'Commissioning is a sequence, not an event',
         p: [
-          'Mechanical completion, then energisation, then subsystem tests, then integrated tests, then the capacity test, then commercial operation. Each gate has documents, and the DSO is present at the ones that matter.',
-          'The capacity test is the anchor: discharge to 0 %, charge fully, rest, discharge at rated power. Energy out is the capacity; the ratio in-to-out is the RTE.',
-          'Everything measured at commissioning becomes the baseline for twenty years of warranty argument. Agree the procedure in writing before the test, not after.'
+          `Mechanical completion, energisation, subsystem tests, integrated tests, the capacity test, commercial operation. Each gate has documents, and the DSO is present at the ones that matter. A plant does not "get commissioned" in an afternoon; it passes through a series of doors, and each door has a keeper.`,
+          `The capacity test is the anchor: discharge to 0 % state of charge, charge fully, rest, then discharge at rated power. The energy out is the capacity; the ratio of energy in to energy out is the round-trip efficiency. Everything measured here becomes the baseline for twenty years of warranty argument.`,
+          `The most valuable thing you can do in this phase is agree the procedure in writing before the test — including where it is measured, at what temperature, and what counts as a pass. Arguments about method after the result are always more expensive than arguments about method before it.`
         ],
-        formula: 'Energise → subsystem → integrated → capacity test → COD'
+        formula: 'Energise → subsystem → integrated → capacity test → COD',
+        example: {
+          title: 'Worked example — the test that defines the next twenty years',
+          body: `A plant measured at 435 MWh at the DC terminals at commissioning has that number written into its warranty baseline. If the test had been run at the POI instead, the baseline would be 400 MWh and every later comparison would shift by the losses — a difference that never leaves the contract.`
+        },
+        mistake: `Running the capacity test before the thermal system is stable, then accepting a number the plant will never reproduce. A test under abnormal conditions is not a baseline, it is a data point.`,
+        check: `What is the first step of a capacity test? Answer: discharge to 0 % state of charge.`
       },
       {
         h: 'Two numbers, two different fates',
         p: [
-          'Capacity degrades and can be restored by augmentation. RTE degrades and cannot — it is dominated by cell internal resistance, and adding batteries does not fix it.',
-          'That asymmetry is why contracts treat them differently: capacity shortfalls trigger augmentation or damages, while RTE shortfalls usually end in liquidated damages because there is no engineering remedy.',
-          'It is also why a sensible owner leaves a buffer between expected and guaranteed RTE at COD.'
+          `Capacity degrades and can be restored by augmentation. RTE degrades and cannot — it is dominated by cell internal resistance, and adding batteries does not improve it. That asymmetry governs how contracts treat the two.`,
+          `A capacity shortfall triggers augmentation or damages, and augmentation is a known cost that can be planned and financed. An RTE shortfall has no engineering remedy at all: the plant either meets the number or pays liquidated damages for the rest of its life.`,
+          `It is also why a sensible owner leaves a buffer between expected and guaranteed RTE at COD. The guarantee is a promise about year twenty made in year zero, and the margin you leave is the price of that promise — paid once at the factory, instead of every year for two decades.`
         ],
-        formula: 'Capacity: fixable · RTE: not fixable'
+        formula: 'Capacity: fixable · RTE: not fixable',
+        example: {
+          title: 'Worked example — the guarantee you cannot fix',
+          body: `A plant guaranteeing 86 % RTE at end of life, measuring 85.2 % at year 15, has no lever: augmenting adds capacity but not efficiency, and re-powering the cells is a capital project. The damages run for the remaining five years — typically a few percent of revenue, every year, with no way to stop the clock. The only real protection is to buy margin at the design stage, when a slightly larger transformer or a better-cooled container can still be specified.`
+        },
+        mistake: `Treating RTE and capacity as equivalent performance guarantees. One is an operating cost you can manage; the other is a defect you can only compensate for.`,
+        check: `Which guarantee has no engineering remedy? Answer: RTE.`
       },
       {
         h: 'Availability, and the definition fight',
         p: [
-          'Availability is available time over total time — but "available" is defined in the contract: full power? partial? excluding grid outages? excluding force majeure?',
-          'A 98 % guarantee on 8 760 hours allows 175 hours down. One inverter replacement and a grid-operator outage can consume that.',
-          'The definition is worth more than the number. Two contracts both at 98 % can differ by a week of allowed downtime.'
+          `Availability is available time divided by total time — but "available" is defined in the contract: at full power or partial, excluding grid-operator outages, excluding force majeure, starting from when. The definition is worth more than the number.`,
+          `A 98 % guarantee over 8,760 hours allows 175 hours down. One inverter replacement and one grid-operator outage can consume that allowance before the year is half gone, and then every subsequent hour is chargeable.`,
+          `Two contracts both saying 98 % can differ by a week of permitted downtime. When you review a guarantee, read the exclusions first — the headline percentage is the least informative part of the clause, and the exclusions are where the negotiation actually happened. Read them with the same attention you would give a price, because they are a price, and the headline number is only an advertisement for it.`
         ],
-        formula: 'Availability = available hours / 8 760 · definition beats value'
+        formula: 'Availability = available hours / 8 760 · definition beats value',
+        example: {
+          title: 'Worked example — 175 hours',
+          body: `8,760 × 2 % = 175.2 hours. A single container fire, a transformer failure or a two-week grid outage exceeds it. That is why serious contracts define partial availability, pro-rata capacity and outage exclusions rather than a single number. Ask the broker or the offtaker how they count a partial outage; the answer changes the value of the guarantee more than the percentage does.`
+        },
+        mistake: `Negotiating the percentage and conceding the definition. The definition is where the money is, and it is usually settled by whoever drafted the clause.`,
+        check: `A 98 % guarantee on 8,760 hours allows how many hours down? Answer: 175.2.`
       },
       {
         h: 'Operations: what actually happens day to day',
         p: [
-          'Monitoring, alarm triage, monthly performance review, and the discipline of chasing small deviations before they become claims. Most of the job is data, not spanners.',
-          'Dispatch decisions sit with operations: which market, when to charge, when to hold reserve. That is where revenue is made or lost, and it is a commercial skill informed by engineering.',
-          'Maintenance is preventive (HVAC, filters, torque checks, firmware) and corrective (failed modules, sensors, contactors). The LTSA defines who does what and how fast.'
+          `Monitoring, alarm triage, monthly performance review, and the discipline of chasing small deviations before they become claims. Most of the job is data, not spanners — and the operators who add value are the ones who notice a 2 % drift in RTE before it becomes a warranty dispute.`,
+          `Dispatch decisions sit with operations: which market, when to charge, when to hold reserve. That is where revenue is made or lost, and it is a commercial skill informed by engineering rather than either one alone.`,
+          `Maintenance is preventive (HVAC, filters, torque checks, firmware) and corrective (failed modules, sensors, contactors). The LTSA defines who does what, how fast, and who pays — and its response-time table is more operationally important than its price.`
         ],
-        formula: 'Monitor · triage · dispatch · maintain · document'
+        formula: 'Monitor · triage · dispatch · maintain · document',
+        example: {
+          title: 'Worked example — the 2 % drift',
+          body: `A plant losing 0.2 percentage points of RTE per year instead of 0.1 looks unremarkable at any single test. Over five years it is 5 % of revenue, and by the time it is obvious the warranty period for the affected components may have expired. Monthly review is what catches it while there is still a claim. Set the monthly review to compare against the previous twelve months rather than against the datasheet, so the trend is visible before the absolute number is alarming.`
+        },
+        mistake: `Treating O&M as a cost line rather than a revenue function. The dispatch decisions taken by the operations team are worth more than the difference between two maintenance contracts.`,
+        check: `What does the LTSA define? Answer: who maintains what, how fast, and who pays.`
       },
       {
         h: 'The end, and the second life',
         p: [
-          'At end of life the plant is re-powered (new cells, same infrastructure), decommissioned, or sold. Re-powering is increasingly attractive because the grid connection is the scarce asset.',
-          'Decommissioning costs belong in the model from day one — and in Germany the recycling and transport rules apply to every tonne of cells.',
-          'The best operators plan the re-powering decision years ahead, because it changes the augmentation strategy in the final third of asset life.'
+          `At end of life the plant is re-powered with new cells in the same infrastructure, decommissioned, or sold. Re-powering is increasingly attractive because the grid connection is the scarce asset — a new connection may take five years and cannot be bought at any price.`,
+          `Decommissioning costs belong in the model from day one, and in Germany the recycling and transport rules apply to every tonne of cells. A plant whose end-of-life cost was never provisioned is a liability that lands on whoever owns it last.`,
+          `The best operators plan the re-powering decision years ahead, because it changes the augmentation strategy in the final third of asset life: why augment capacity you are about to replace?`
         ],
-        formula: 'Re-power · decommission · or sell — decide years early'
+        formula: 'Re-power · decommission · or sell — decide years early',
+        example: {
+          title: 'Worked example — the connection is the asset',
+          body: `A 100 MW plant reaching end of life in 2045 holds a 110 kV connection that a new project might wait years for. Re-powering the containers costs a fraction of a new build and keeps the connection — which is why the residual value of a BESS may sit more in its paperwork than in its cells. Treat the connection agreement as an asset in the financial model, with a value and a remaining life, because that is how a buyer will treat it.`
+        },
+        mistake: `Planning augmentation to year 20 without asking whether the plant will be re-powered at year 18. The last augmentation is often the one that should not happen.`,
+        check: `Why is re-powering often better than a new build? Answer: it reuses the grid connection, which is the scarce asset.`
       }
     ],
     calc: { html: calcHTML, init: initCalc },
