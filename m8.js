@@ -255,56 +255,92 @@
       {
         h: 'The chain, and why the order matters',
         p: [
-          'An HV bay is a sequence: <strong>disconnector → circuit breaker → current transformer → busbar</strong>. Each device exists because the one before it cannot do its job.',
-          'The disconnector isolates for work but cannot break load. The breaker breaks load and fault current but does not provide a visible isolation gap. The CT measures, so protection has something to act on.',
-          'Reversing or omitting a device is not a layout preference — it changes what is safe to operate and what the protection can see.'
+          `An HV bay is a sequence: disconnector, circuit breaker, current transformer, busbar. Each device exists because the one before it cannot do the next job, and the order is what makes the installation safe to work on as well as safe to operate.`,
+          `The disconnector isolates for work but cannot break load current — open it under load and it draws an arc it has no way to extinguish. The breaker breaks load and fault current but leaves no visible isolation gap. The CT measures, so that the protection has something to act on.`,
+          `Reversing or omitting a device is not a layout preference. It changes what is safe to operate, what the protection can see, and what a technician can prove is dead before touching it.`
         ],
-        formula: 'Isolate → break → measure → distribute'
+        formula: 'Isolate → break → measure → distribute',
+        example: {
+          title: 'Worked example — the sequence under fault',
+          body: `A fault on the transformer bay is detected by the CT, cleared by the breaker in tens of milliseconds, and only then is the disconnector opened to create a visible gap for the maintenance team. If the disconnector had to break the fault itself, the bay would be destroyed and the operator would be standing next to it. What makes the bay safe to work on is that the isolation is visible and the proof of dead is physical, not inferred from a lamp on a panel.`
+        },
+        mistake: `Designing the bay around the equipment list rather than the operating sequence, then discovering at commissioning that there is no way to isolate the breaker for maintenance without taking the busbar out.`,
+        check: `Which device may break fault current? Answer: the circuit breaker.`
       },
       {
         h: 'Switchgear: AIS, GIS, and what you are buying',
         p: [
-          '<strong>AIS</strong> (air-insulated) is the outdoor yard with visible gaps: cheap, maintainable, and large. <strong>GIS</strong> (gas-insulated) is compact, enclosed and expensive, used indoors or where space is scarce.',
-          'Every bay needs the same functional set: breaker, disconnectors on both sides, earthing switches, CTs, VTs, and interlocks that make the wrong sequence impossible.',
-          'Interlocking is the safety case, not a convenience. A defeated interlock is how a maintenance technician closes an earthing switch onto a live circuit.'
+          `<strong>AIS</strong> is the outdoor yard with visible gaps between phases: cheap, maintainable, and physically large. <strong>GIS</strong> is gas-insulated and enclosed: compact, expensive, and the default indoors or where land is scarce. The difference in footprint is dramatic, and so is the difference in civil works.`,
+          `Every bay needs the same functional set regardless of technology: a breaker, disconnectors on both sides, earthing switches, CTs, VTs and the interlocks that make the wrong sequence impossible.`,
+          `Interlocking is the safety case, not a convenience. A defeated interlock is how a maintenance technician closes an earthing switch onto a live circuit — and the investigation afterwards will find that the defeat was recorded as a temporary measure.`
         ],
-        formula: 'AIS: space and visibility · GIS: compact and enclosed'
+        formula: 'AIS: space and visibility · GIS: compact and enclosed',
+        example: {
+          title: 'Worked example — why the footprint decides early',
+          body: `A 110 kV AIS substation for a 100 MW plant occupies a significant fraction of the site, and its clearances set the fence line, the access road and the cable routes. Choosing GIS later to save space means redesigning everything that was laid out around the yard — which is why the switchgear decision is made in the first month, not the sixth. In practice the yard is sized before the equipment is ordered, which means the switchgear type is effectively chosen by the site layout drawing. It also fixes the fence line, and a fence line moved after permitting is a new application.`
+        },
+        mistake: `Treating the switchgear choice as a procurement decision. It is a site-planning decision that happens to be bought from a supplier.`,
+        check: `Which type is used where space is tight? Answer: GIS, gas-insulated.`
       },
       {
         h: 'Busbars and redundancy',
         p: [
-          'A single busbar is cheapest and means any busbar fault takes the whole station off. A double busbar lets a bay be transferred so a bar or breaker can be maintained without an outage.',
-          'Sectionalised busbars limit how much is lost when one section trips. Each step up in redundancy is a step up in cost, switchgear count and complexity.',
-          'For a BESS, the question is what the offtake and the DSO require: availability obligations decide the arrangement, not engineering taste.'
+          `A single busbar is the cheapest arrangement, and any busbar fault takes the whole station off. A double busbar lets a bay be transferred to the other bar so that a bar or a breaker can be maintained without an outage. Sectionalised busbars limit how much is lost when one section trips.`,
+          `Each step up in redundancy is a step up in cost, switchgear count, protection complexity and space. None of that is free, and none of it is justified by wishing the plant were more reliable.`,
+          `For a BESS the question is what the offtake and the DSO require. Availability obligations decide the arrangement; engineering taste does not, and neither does the supplier's standard product.`
         ],
-        formula: 'Single → double → sectionalised: availability bought with copper'
+        formula: 'Single → double → sectionalised: availability bought with copper',
+        example: {
+          title: 'Worked example — what an outage costs',
+          body: `A plant earning most of its revenue from capacity payments loses that revenue the moment it is unavailable, and may owe liquidated damages on top. If a busbar maintenance outage would cost more than the double-busbar arrangement, the redundancy pays for itself before the first fault — that is the calculation, not a preference for robustness. The number to compute is not the cost of the extra bay but the revenue lost per day of unavailability, multiplied by the days the arrangement saves.`
+        },
+        mistake: `Buying redundancy for the busbar while leaving a single transformer, a single auxiliary supply or a single protection battery as the actual single point of failure.`,
+        check: `What does a double busbar let you do? Answer: maintain a bar or breaker without an outage.`
       },
       {
         h: 'Transformers: four parameters that decide everything',
         p: [
-          '<strong>Rating</strong> (MVA), <strong>impedance</strong> (u_k %), <strong>vector group</strong> (e.g. YNd5) and <strong>cooling class</strong> (ONAN/ONAF). Get these right and the transformer is boring for thirty years.',
-          'Impedance sets the fault current on the LV side — <code>I_k = S / (√3 · U · u_k)</code>. Lower impedance means better voltage regulation and more expensive switchgear downstream.',
-          'Vector group decides what can be paralleled and whether the LV phasors match the network. Cooling class decides which rating you may actually use, and for how long.'
+          `<strong>Rating</strong> in MVA, <strong>impedance</strong> u_k in percent, <strong>vector group</strong> such as YNd5, and <strong>cooling class</strong> such as ONAN/ONAF. Get these four right and the transformer is boring for thirty years; get one wrong and it is a dispute that outlives the project team.`,
+          `Impedance sets the fault current on the LV side: <code>I_k = S / (√3 · U · u_k)</code>. A lower value gives better voltage regulation and a stiffer network, but it forces more expensive switchgear downstream. Higher impedance is gentler on equipment and worse for voltage.`,
+          `Vector group decides what can be paralleled and whether the LV phasors match the network you are connecting to. Cooling class decides which rating you may actually use and for how long — the nameplate figure is usually the forced-cooled one.`
         ],
-        formula: 'I_k = S / (√3 · U · u_k)   ·   u_k 12 % → 4.37 kA from 100 MVA at 110 kV'
+        formula: 'I_k = S / (√3 · U · u_k)   ·   100 MVA at 110 kV, u_k 12 % → 4.37 kA',
+        example: {
+          title: 'Worked example — the same transformer at two impedances',
+          body: `100 MVA at 110 kV with u_k = 12 % gives 4.37 kA; at 24 % it gives 2.19 kA. The second transformer costs less downstream and regulates worse. That single number is the lever that decides what the LV switchgear has to withstand, so it is worth arguing about before the order is placed. Ask the supplier for the impedance tolerance as well as the nominal value, because a 10 % band on 12 % moves the fault current by more than the difference between two designs.`
+        },
+        mistake: `Specifying impedance for losses rather than for fault level. The loss difference between 12 % and 24 % is real but small; the switchgear difference is a category.`,
+        check: `What does doubling u_k do to the LV fault current? Answer: it halves it.`
       },
       {
         h: 'Instrument transformers',
         p: [
-          'CTs step current down; VTs step voltage down. Both must be accurate at normal current and honest at fault current — which is why one device rarely does both jobs.',
-          'Metering cores use accuracy classes (0.2S, 0.5S) defined near rated current. Protection cores use 5P or 10P, defined by composite error at the fault current. Separate cores, separate wires, separate terminals.',
-          'Burden — the total impedance of the secondary loop — must stay below the rated value, or the CT saturates exactly when the relay needs it.'
+          `CTs step current down, VTs step voltage down. Both must be accurate at normal current and honest at fault current, which is why one device rarely does both jobs — metering and protection are separate cores with separate wires and separate terminals.`,
+          `Metering cores use accuracy classes (0.2S, 0.5S) defined near rated current. Protection cores use 5P or 10P, defined by composite error at the fault current. Mixing them produces either a bill you cannot defend or a protection that under-reads exactly when it matters.`,
+          `Burden — the total impedance of the secondary loop including wiring and test links — must stay below the rated value, or the CT saturates and the relay sees a fraction of the fault.`
         ],
-        formula: '0.2S for money · 5P/10P for protection · burden decides honesty'
+        formula: '0.2S for money · 5P/10P for protection · burden decides honesty',
+        example: {
+          title: 'Worked example — two cores, one CT',
+          body: `A 600/1 CT with a 15 VA burden at 1 A is rated for 15 Ω. If the panel wiring and relay present 18 Ω, the protection core saturates before the fault current and the relay reads low — so the breaker trips late, or not at all, on precisely the fault the design was meant to clear. The same arithmetic applies to the VT: a fuse that has blown silently removes the voltage reference and disables every protection that depends on it. Specify the burden with the wiring included, not just the relay's VA.`
+        },
+        mistake: `Using the metering core for protection because it is "the accurate one". Accuracy near rated current and fidelity at fault current are different specifications.`,
+        check: `Which class is used for billing? Answer: 0.2S (or 0.5S).`
       },
       {
         h: 'Layout, clearances, and where the DSO enters',
         p: [
-          'Clearances are set by voltage, by the standard and by the DSO — and they drive the size of the yard. Phase spacing, safety distances to fences and buildings, and access roads are all fixed early and expensive to change.',
-          'The interface to the DSO is the metering point and the protection signalling. Your relay must trip their breaker or signal theirs, and the coordination of the two protection worlds is agreed in writing before commissioning.',
-          'We do not hold DIN EN 61936-1 or VDE 0101, so this module teaches composition and selection, and leaves clearance tables to the standard and the DSO\'s TAB.'
+          `Clearances are set by voltage, by the standard and by the DSO, and they drive the size of the yard. Phase spacing, safety distances to fences and buildings, and access roads are fixed early and expensive to change — which is why the layout is argued about in month one and signed in month two.`,
+          `The interface to the DSO is metering and protection signalling. Your relay must trip their breaker or signal theirs, and the coordination of the two protection worlds is agreed in writing before commissioning.`,
+          `We do not hold DIN EN 61936-1 or VDE 0101, so this module teaches composition and selection and leaves clearance tables to the standard and the DSO's TAB.`
         ],
-        formula: 'Clearances fix the layout early · protection interface agreed in writing'
+        formula: 'Clearances fix the layout early · protection interface agreed in writing',
+        example: {
+          title: 'Worked example — the interface that delays energisation',
+          body: `The DSO's protection engineer wants a signal your PCS does not output by default. It is a firmware option, available in six weeks. Everything else is complete and the plant sits idle, because a written interface list was not agreed before the hardware was ordered. The fix is a one-page interface schedule, agreed with the DSO's protection engineer, listing every signal in each direction and who supplies the terminal. Ask for it in writing at the connection study stage, when the DSO still has an incentive to answer. Every week of delay is revenue lost and, in a contracted plant, availability penalties.`
+        },
+        mistake: `Leaving the protection interface to commissioning. It is a design deliverable, usually owned by nobody, and it is on the critical path.`,
+        check: `Which document sets the local clearance and interface requirements? Answer: the DSO's TAB.`
       }
     ],
     renderExtra: drawSubstation,

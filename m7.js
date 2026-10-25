@@ -159,6 +159,53 @@
       why: 'Bonding both ends creates a loop in which the screen current circulates, heating the cable and wasting energy. One-ended bonding removes the loop — at the cost of standing voltage on the screen.' }
   ];
 
+
+  function drawCascade(host) {
+    var steps = [
+      { label: 'tabulated', value: 150, note: 'reference conditions' },
+      { label: '× 0.9', value: 135, note: 'ambient' },
+      { label: '× 0.8', value: 108, note: 'grouping' },
+      { label: '× 1.0', value: 108, note: 'laying' }
+    ];
+    var W = 860, H = 300, padL = 70, padB = 70, padT = 30;
+    var max = 160;
+    var bw = (W - padL - 40) / steps.length;
+    var y = function (v) { return padT + (1 - v / max) * (H - padT - padB); };
+    var base = H - padB;
+
+    var p = [];
+    p.push('<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart" role="img" aria-label="Derating cascade from tabulated capacity to installed capacity">');
+
+    [0, 50, 100, 150].forEach(function (t) {
+      p.push('<line x1="' + padL + '" y1="' + y(t) + '" x2="' + (W - 20) + '" y2="' + y(t) + '" class="chart-grid"/>');
+      p.push('<text x="' + (padL - 8) + '" y="' + (y(t) + 4) + '" class="chart-axis" text-anchor="end">' + t + '</text>');
+    });
+
+    steps.forEach(function (s, i) {
+      var x0 = padL + i * bw + 12;
+      var w = bw - 24;
+      p.push('<rect x="' + x0 + '" y="' + y(s.value) + '" width="' + w + '" height="' + (base - y(s.value)) + '" rx="6" class="cascade-bar"/>');
+      p.push('<text x="' + (x0 + w / 2) + '" y="' + (y(s.value) - 8) + '" class="chart-axis" text-anchor="middle">' + s.value + ' A</text>');
+      p.push('<text x="' + (x0 + w / 2) + '" y="' + (base + 20) + '" class="chart-axis" text-anchor="middle">' + s.label + '</text>');
+      p.push('<text x="' + (x0 + w / 2) + '" y="' + (base + 38) + '" class="chart-axis" text-anchor="middle">' + s.note + '</text>');
+    });
+
+    /* design current */
+    p.push('<line x1="' + padL + '" y1="' + y(100) + '" x2="' + (W - 20) + '" y2="' + y(100) + '" class="chart-threshold"/>');
+
+
+    p.push('</svg>');
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>150 A on the table, 108 A in the tray</h2>' +
+        '<p class="muted">Each factor is a multiplication, not a subtraction. The bar on the left is what the catalogue promised; the one on the right is what the installation delivers.</p>' +
+        '<div class="legend"><span><i class="sw-a"></i>derated capacity</span><span><i class="sw-contract"></i>design current 100 A</span></div>' +
+        '<div class="chart-wrap">' + p.join('') + '</div>' +
+        '<p class="muted">The 100 A design current survives here by 8 A. One more circuit in the tray, or a hotter summer, and the cable is running beyond its rating — quietly, for years.</p>' +
+      '</div>';
+  }
+
   window.MODULES.push({
     id: 'm7',
     number: '07',
@@ -168,57 +215,104 @@
       {
         h: 'Three checks, and they are not equal',
         p: [
-          'Every cable must pass <strong>thermal</strong> (<code>I_b ≤ I_n ≤ I_z</code>), <strong>voltage drop</strong>, and <strong>short-circuit withstand</strong>. Whichever binds first sizes the cable.',
-          'On short runs at high current, thermal governs. On long low-voltage runs, drop governs — which is why LV feeders are often two sizes larger than thermals alone would allow. On MV, the short-circuit duty or the screen arrangement often decides.',
-          'The protective device sits between the two currents: the cable must be protected by something that trips before the cable is damaged.'
+          `Every cable must pass <strong>thermal</strong> where the protective device sits between design current and cable capacity (<code>I_b ≤ I_n ≤ I_z</code>), <strong>voltage drop</strong> across the run, and <strong>short-circuit withstand</strong> for the fault it must survive. Whichever binds first sizes the cable.`,
+          `On short runs at high current, thermal governs. On long low-voltage runs, drop governs, which is why LV feeders are often two sizes larger than thermals alone would allow. On MV, the short-circuit duty or the screen arrangement frequently decides.`,
+          `A design that checks only one of the three is not a cheap design; it is an unfinished one, and which of the other two it fails depends on the site.`,
+          `The practical order is: calculate all three, then take the largest result. Engineers who enjoy the problem do it in that order; engineers who are busy do thermal first and discover the other two during commissioning.`
         ],
-        formula: 'I_b ≤ I_n ≤ I_z   ·   ΔU ≤ limit   ·   S ≥ I√t / k'
+        formula: 'I_b ≤ I_n ≤ I_z   ·   ΔU ≤ limit   ·   S ≥ I√t / k',
+        example: {
+          title: 'Worked example — the cable that passes two checks',
+          body: `A 35 mm² copper feeder carries 100 A over 50 m: thermal passes, drop is 5.18 V or 1.30 % of 400 V and passes too. Then the adiabatic check: a 25 kA fault clearing in 0.1 s needs 55.3 mm², so the cable is undersized for the fault it will actually see. Same cable, three verdicts.`
+        },
+        mistake: `Sizing on ampacity and treating the other two as formalities. On a 400 V run of 100 m the drop alone can force a jump of two sizes, and no thermal table will tell you that.`,
+        check: `Which check usually binds on a long LV run? Answer: voltage drop.`
       },
       {
         h: 'Derating is a chain of multiplications',
         p: [
-          'The tabulated capacity assumes reference conditions: a defined ambient, a defined installation, a single circuit. Real installations satisfy none of those.',
-          'Ambient temperature, grouping with other circuits, soil thermal resistivity, burial depth, duct vs direct burial vs tray — each contributes a factor between roughly 0.5 and 1.0.',
-          'They multiply. Two factors of 0.8 cost you 36 % of the capacity, not 20 %. This is the single most common sizing error, and the one that shows up as a warm cable three summers later.'
+          `The tabulated capacity assumes reference conditions: a defined ambient, a defined installation, a single circuit. Real installations satisfy none of those, so each deviation contributes a factor between roughly 0.5 and 1.0.`,
+          `Ambient temperature, grouping with other circuits, soil thermal resistivity, burial depth, duct versus direct burial versus tray — they multiply. Two factors of 0.8 cost you 36 % of capacity, not 20 %.`,
+          `This is the single most common sizing error in the field, and it does not fail immediately. It fails on the third hot summer, when a cable that was "about right" has been running at 15 K above design for years.`,
+          `Insulation ages by a rule of thumb that doubles its rate for every 8–10 K above rating, so a cable at 15 K over is not mildly stressed — it is on a completely different lifetime curve.`
         ],
-        formula: 'I_z,actual = I_z,table × f_ambient × f_grouping × f_soil × f_depth'
+        formula: 'I_z,actual = I_z,table × f_ambient × f_grouping × f_soil × f_depth',
+        example: {
+          title: 'Worked example — a chain of three factors',
+          body: `A cable tabulated at 150 A with an ambient factor of 0.9, a grouping factor of 0.8 and no soil correction: 150 × 0.9 × 0.8 = 108 A. Its 100 A design current leaves 8 A of margin, which one more circuit in the tray or a warmer summer will erase.`
+        },
+        mistake: `Adding the derating percentages — "10 % for ambient plus 20 % for grouping, so 30 % off". The real reduction is 28 %, and with four or five factors the difference becomes a size.`,
+        check: `150 A derated by 0.9 and 0.8: what capacity remains? Answer: 108 A.`
       },
       {
         h: 'DC is not AC with a different label',
         p: [
-          'BESS DC runs sit at up to 1,500 V, carry hundreds of amps per rack, and have no natural zero crossing — so an arc does not self-extinguish at a current zero the way it does in AC.',
-          'Voltage drop counts the return conductor: <code>ΔU = 2 · I · R · L</code>. Forgetting the factor 2 understates loss by half, which is a common and expensive mistake in container routing.',
-          'The DC system is unearthed and monitored by an insulation monitoring device. The first earth fault is a warning; the second creates a fault path through the rack.'
+          `BESS DC runs sit at up to 1,500 V, carry hundreds of amps per rack, and have no natural current zero — so an arc does not self-extinguish the way it does in AC. Every switching and protective device on that side must be rated for DC, at the stated voltage and time constant.`,
+          `Voltage drop counts the return conductor: <code>ΔU = 2 · I · R · L</code>. Forgetting the factor 2 halves the calculated loss, which is a common and expensive omission in container routing.`,
+          `The DC system is unearthed and monitored. The first earth fault is a warning; the second creates a fault path through the rack, which is why the insulation monitoring device is a safety system, not a diagnostic nicety.`,
+          `Size DC conductors for the continuous current, then check them again for the fault current the fuses will let through before they open.`
         ],
-        formula: 'ΔU_DC = 2 · I · R · L   ·   no zero crossing, so arcing behaves differently'
+        formula: 'ΔU_DC = 2 · I · R · L   ·   no zero crossing, so arcing behaves differently',
+        example: {
+          title: 'Worked example — the return conductor',
+          body: `200 A over 20 m of 95 mm² copper: R = 0.00022 Ω/m, so ΔU = 2 × 200 × 0.00022 × 20 = 1.76 V. Without the factor 2 you would calculate 0.88 V and conclude the run is loss-free, then wonder why the measured RTE is a point below the datasheet.`
+        },
+        mistake: `Applying an AC-rated breaker or fuse to a DC string because the current rating matches. For DC, the voltage and time constant on the label matter more than the amps.`,
+        check: `What is the factor in front of I·R·L for a DC run? Answer: 2 — the return conductor.`
       },
       {
         h: 'On MV, the screen decides',
         p: [
-          'MV cables are XLPE, 20 or 33 kV, single-core or three-core. Single-core cables are preferred for high current, but their screens carry induced voltage and current.',
-          'Bonded at both ends, the screens form a loop and circulating current heats the cable. Bonded at one end, the loop is broken but a standing voltage appears on the far screen — which is why the arrangement is designed, not chosen on site.',
-          'Single-core cables are laid in trefoil to reduce both the external field and the sheath losses. Flat formation needs more attention to phase spacing and transposition.'
+          `MV cables are XLPE at 20 or 33 kV, single-core or three-core. Single-core is preferred at high current, but its screen carries induced voltage and current, so the bonding arrangement becomes a design decision rather than a detail.`,
+          `Bonded at both ends, the screens form a loop and circulating current heats the cable. Bonded at one end, the loop is broken but a standing voltage appears on the far screen. Both arrangements are legitimate; neither is chosen on site.`,
+          `Single-core cables are laid in trefoil to reduce both the external field and the sheath losses. Flat formation needs attention to phase spacing and transposition, and it changes the derating.`,
+          `For a BESS, the MV feeder is short and the current is high, which puts the design pressure on the terminations and the bonding rather than on the route.`,
+          `Ask for the bonding diagram early. If it appears only at as-built stage, the cable was ordered before the arrangement was decided, and one of the two will have been made to fit the other.`
         ],
-        formula: 'Both ends bonded → circulating screen current · One end → standing screen voltage'
+        formula: 'Both ends bonded → circulating screen current · one end → standing screen voltage',
+        example: {
+          title: 'Worked example — a bonding decision with a cost',
+          body: `A 400 mm² single-core feeder at 200 A with both ends bonded can circulate tens of amps in the screens, heating the cable and wasting energy for twenty years. Bonding at one end removes the loop and needs sheath voltage limiters at the far end — a small extra component that is easy to value-engineer out and expensive to retrofit.`
+        },
+        mistake: `Treating the screen as armour and bonding it wherever convenient. The bonding arrangement is part of the cable design, and changing it changes the thermal rating.`,
+        check: `Why bond MV screens at one end? Answer: to break the circulating-current loop.`
       },
       {
         h: 'Laying: where the design meets the ground',
         p: [
-          'Buried cables need depth, sand bedding, protection and a warning tape; the thermal resistivity of the surrounding soil sets the capacity. Ducts add thermal resistance, and unsealed ducts fill with water.',
-          'In trays and in air, grouping and free air movement decide; in a container, ambient is the killer — 50 °C inside a cabinet is normal on a summer afternoon.',
-          'Inside buildings, German building law demands a fire class (Eca minimum) and, for safety circuits, functional integrity for a defined time. Bend radius and pulling tension are checked at the rack entry, which is where cables actually get damaged.'
+          `Buried cables need depth, sand bedding, mechanical protection and a warning tape; the thermal resistivity of the surrounding soil sets the capacity. Ducts add thermal resistance, and an unsealed duct eventually fills with water.`,
+          `In trays and in air, grouping and airflow decide. Inside a container, ambient is the killer — 50 °C in a cabinet on a summer afternoon is normal, and it is not the temperature the table assumed.`,
+          `Inside buildings, German building law demands a fire class (Eca minimum) and, for safety circuits, functional integrity for a defined time. Bend radius and pulling tension are checked at the rack entry, which is where cables are actually damaged.`,
+          `Pull tension and bend radius are specified by the manufacturer for a reason: a cable pulled hard around a tight corner has a locally reduced insulation thickness that no test will find until it fails.`,
+          `Inspect the entry into every enclosure, because that is where the bend radius is tightest and where the installer has the least room to be careful.`
         ],
-        formula: 'Buried: depth, bedding, tape · Tray: grouping · Container: ambient'
+        formula: 'Buried: depth, bedding, tape · Tray: grouping · Container: ambient',
+        example: {
+          title: 'Worked example — the container nobody derated for',
+          body: `A DC cable inside a container may see 50 °C ambient rather than the 30 °C reference — a factor near 0.8 on its own. Add grouping with three parallel strings and the cable is at 60 % of its tabulated capacity before any soil or depth factor is considered.`
+        },
+        mistake: `Using indoor tabulated values for a container installation. The container is hotter than the switch room and the table was not written for it.`,
+        check: `What is the minimum fire class for cables inside a building? Answer: Eca.`
       },
       {
         h: 'What gets tested before handover',
         p: [
-          'Insulation resistance, continuity of protective conductors, and — for MV — a sheath test and partial discharge measurement. A cable that passes at 500 V can still fail at 20 kV.',
-          'Document the runs, the derating factors used and the test results. In a dispute about a hot cable, the derating calculation is the evidence.'
+          `Insulation resistance, continuity of protective conductors, and for MV a sheath test and partial-discharge measurement. A cable that passes at 500 V can still fail at 20 kV, which is why the test voltage is part of the specification.`,
+          `Document the runs, the derating factors used and the test results. In a dispute about a hot cable, that derating calculation is the evidence, and reconstructing it three years later is both expensive and unconvincing.`,
+          `The test schedule is also a schedule item: partial discharge on MV needs the terminations complete and the weather to cooperate, and it is on the critical path to energisation.`,
+          `Book the test window before the terminations are complete, not after: a partial-discharge test needs a stable supply, dry weather and an electrician who has done it before.`,
+          `Keep the results with the as-built drawings. When a joint fails in year six, the test record from commissioning is the only evidence of what it looked like when it was new.`
         ],
-        formula: 'LV: insulation + continuity · MV: + sheath test + partial discharge'
+        formula: 'LV: insulation + continuity · MV: + sheath test + partial discharge',
+        example: {
+          title: 'Worked example — why the record matters',
+          body: `A feeder runs hot in year four. Without the derating factors recorded at design, nobody can prove whether the installation matched the calculation or the calculation was optimistic. With them, the argument is a two-page comparison rather than a blame meeting.`
+        },
+        mistake: `Recording only "test passed". The value and the conditions are the evidence; the word "passed" is an opinion.`,
+        check: `Which test on an MV cable is not done on LV? Answer: partial discharge (with the sheath test).`
       }
     ],
+    renderExtra: drawCascade,
     calc: { html: calcHTML, init: initCalc },
     drills: DRILLS
   });

@@ -569,3 +569,6 @@ select {
 .zone-label { fill: var(--accent); }
 .ct { fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }
 .breaker { fill: var(--card); stroke: var(--ink); stroke-width: 2; }
+
+/* ---------- derating cascade ---------- */
+.cascade-bar { fill: color-mix(in srgb, var(--accent) 30%, transparent); stroke: var(--accent); stroke-width: 1.4; }

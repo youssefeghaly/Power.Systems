@@ -230,56 +230,92 @@
       {
         h: 'Where the plant actually meets the grid',
         p: [
-          'The transfer station (Übergabestation) is the physical boundary. On one side is the DSO\'s network; on the other is your installation. Almost every argument about responsibility starts at this line.',
-          'Inside it: MV switchgear, metering, NA protection, the customer transformer, and the earthing that ties it all to one reference. The plant\'s own LV distribution starts behind the transformer.',
-          'Module 04 taught the process that gets you permission to build this. This module is about what you build.'
+          `The transfer station is the physical boundary. On one side is the DSO's network; on the other is your installation. Almost every argument about responsibility, cost and maintenance starts at this line, and the line is drawn in a document, not on the ground.`,
+          `Inside it: MV switchgear, metering, NA protection, the customer transformer and the earthing that ties it all to one reference. Your own LV distribution begins behind the transformer and is nobody else's business.`,
+          `Module 04 taught the process that gets you permission to build this. This module is about what you build, who owns which part of it, and what gets inspected before it is energised.`
         ],
-        formula: 'DSO network → switchgear → metering → transformer → LV board → plant'
+        formula: 'DSO network → switchgear → metering → transformer → LV board → plant',
+        example: {
+          title: 'Worked example — the ownership line',
+          body: `In a typical German configuration the customer builds and owns the transfer station; the DSO specifies it, inspects it and seals the protection. That means the switchgear, the transformer and the building are your capital cost and your maintenance burden for twenty years — even though the DSO told you exactly what to install. Write the maintenance obligations into the O&M contract at financial close, while the DSO is still in the room and before anyone has an incentive to forget. It is also why the earthing and the building fabric deserve the same attention as the battery.`
+        },
+        mistake: `Assuming the DSO owns and maintains the station because it specified it. Specification is not ownership, and the maintenance contract is yours to write.`,
+        check: `Who owns the transfer station in the usual German arrangement? Answer: the customer.`
       },
       {
         h: 'Ring-main unit or circuit breaker',
         p: [
-          'A ring-main unit (RMU) is the cheap, compact option: load-break switches and fuses, arranged as a ring so a cable section can be isolated without interrupting the others.',
-          'Fuses cannot protect a large transformer — they are not selective enough and their rating runs out. Above the DSO\'s threshold, a circuit-breaker panel with a relay is required.',
-          'The threshold is set in the TAB, not in 4110, which is why the same plant can need different switchgear in two neighbouring DSO areas.'
+          `A ring-main unit is the cheap compact option: load-break switches and fuses arranged as a ring so a cable section can be isolated without interrupting the others. It is the standard answer for a modest transformer on a ring network.`,
+          `Fuses cannot protect a large transformer — they are not selective enough and their rating runs out. Above the DSO's threshold a circuit-breaker panel with a relay is required, and the threshold is set in the TAB rather than in 4110.`,
+          `That is why the same plant can need different switchgear in two neighbouring DSO areas, and why the equipment list is not final until the TAB has been read.`
         ],
-        formula: 'RMU: switches + fuses · CB panel: relay + breaker'
+        formula: 'RMU: switches + fuses · CB panel: relay + breaker',
+        example: {
+          title: 'Worked example — where the threshold bites',
+          body: `A 630 kVA transformer behind a ring-main unit is a common, accepted arrangement. Ask for 2,000 kVA behind the same RMU and the DSO will require a breaker panel with overcurrent and earth-fault protection — a different switchgear type, a different protection concept and a different price. The practical lesson is to confirm the transformer rating before releasing the switchgear order, because the two decisions are coupled through a threshold most people never read. A short written confirmation of the threshold from the DSO is worth more than a catalogue page. Confirm it in writing before the order, and keep the reply.`
+        },
+        mistake: `Ordering the RMU before confirming the transformer size, then having to replace the switchgear when the load grows during detailed design.`,
+        check: `What protects a large transformer at MV? Answer: a circuit-breaker panel with a relay, not fuses.`
       },
       {
         h: 'Metering is a boundary, not a device',
         p: [
-          'The DSO meters at the transfer point. Your PCS meters at its terminals. Between them sit the transformer, the cables and the switchgear — and that difference is your loss, not their error.',
-          'Above 100,000 kWh per year, metering becomes RLM: interval-based and remotely read. That is also the data set your settlement and your warranty claims will be argued from.',
-          'Where consumption and feed-in both exist, they may be metered separately. Get this wrong and you can find yourself paying for energy you generated.'
+          `The DSO meters at the transfer point; your PCS meters at its terminals. Between them sit the transformer, the cables and the switchgear, and that difference is your loss rather than their measurement error.`,
+          `Above 100,000 kWh per year, metering becomes RLM — interval-based and remotely read. That is also the data set your settlement, your warranty claims and your disputes will be argued from, which makes its accuracy and its location commercial matters.`,
+          `Where consumption and feed-in both exist, they may be metered separately. Get that wrong and you can find yourself paying for energy you generated, or being paid for energy you consumed.`
         ],
-        formula: 'RLM above 100,000 kWh/yr · meter at the boundary, always'
+        formula: 'RLM above 100,000 kWh/yr · meter at the boundary, always',
+        example: {
+          title: 'Worked example — two meters, two stories',
+          body: `A 5 MW plant with a 5 MVA transformer loses roughly 1 % in the transformer and a little more in the MV cabling. On 20 GWh a year of throughput that is over 200 MWh — about €8,000 at a €40/MWh spread, every year, from a boundary that was drawn without thinking. The same boundary decides which losses are yours and which are the DSO's, so it belongs in the loss budget as a line item rather than a footnote. Ask which register each number comes from before you build a business case on it. The meter is a contract instrument, and it deserves a contract-level review.`
+        },
+        mistake: `Assuming the meter the DSO installs is the meter your settlement uses. Check which register, which direction and which tariff each measurement belongs to.`,
+        check: `From what annual consumption does metering become RLM? Answer: 100,000 kWh.`
       },
       {
         h: 'NA protection is not a PCS function',
         p: [
-          'The NA protection watches voltage and frequency at the transfer point and disconnects the plant if either leaves its window. Its job is to guarantee the plant never backfeeds a section of network the DSO believes is dead.',
-          'It is a separate, approved device with its own coupling switch, tested at commissioning and sealed by the DSO. Implementing the same logic inside the PCS is not equivalent and is not accepted.',
-          'The most common finding after an incident is that this device was bypassed "temporarily" during commissioning.'
+          `The NA protection watches voltage and frequency at the transfer point and disconnects the plant when either leaves its permitted window. Its job is to guarantee the plant never backfeeds a section of network that the DSO believes is dead.`,
+          `It is a separate, approved device with its own coupling switch, tested at commissioning and sealed by the DSO. Implementing the same logic inside the PCS is not equivalent and is not accepted, however well it is written.`,
+          `The most common finding after an incident is that this device was bypassed temporarily during commissioning — a decision taken by someone under schedule pressure, with no authority to take it.`
         ],
-        formula: 'Central NA protection + coupling switch, sealed by the DSO'
+        formula: 'Central NA protection + coupling switch, sealed by the DSO',
+        example: {
+          title: 'Worked example — the seal matters',
+          body: `During commissioning, a firmware update on the PCS restarts the converter every few minutes. Someone disables the NA protection to finish the test. The plant is energised, the grid has a fault nearby, and the plant keeps feeding an isolated section — which is exactly the scenario the device exists to prevent. The seal exists precisely so that a temporary bypass leaves a physical trace, and breaking it is a reportable event rather than a maintenance decision. Record who broke the seal, when, and on whose authority; that record is the difference between a finding and a prosecution.`
+        },
+        mistake: `Assuming the PCS anti-islanding function satisfies the requirement. The DSO requires a certified device at the boundary, not a function inside a converter they have not certified for that purpose.`,
+        check: `Is PCS anti-islanding equivalent to NA protection? Answer: no — a separate certified device is required.`
       },
       {
         h: 'The transformer decides everything behind it',
         p: [
-          'Vector group, impedance and rating fix the LV fault level, and the LV fault level fixes the rating of every device behind it. Change the transformer late and you invalidate the LV design.',
-          'The standard distribution arrangement is Dyn5: delta on the HV side, star with brought-out neutral on the LV side, earthed to form a TN system.',
-          'Loading above roughly 85 % costs transformer life. Design for 70–80 %, and check what the resulting impedance does to the fault current your LV board must withstand.'
+          `Vector group, impedance and rating fix the LV fault level, and the LV fault level fixes the rating of every device behind it. Change the transformer late and you invalidate the LV design — switchgear, busbars, cable withstand, everything.`,
+          `The standard distribution arrangement is Dyn5: delta on the HV side, star with brought-out neutral on the LV side, earthed to form a TN system. That earthing choice is what makes LV protection operate quickly on an earth fault.`,
+          `Loading above roughly 85 % costs transformer life; most designs aim for 70–80 %. And the LV fault current behind a 5 MVA transformer at 400 V is around 120 kA, which is why large transformers are often specified with higher impedance or a higher LV voltage.`
         ],
-        formula: 'I_LV = S / (√3 · U_LV · u_k)'
+        formula: 'I_LV = S / (√3 · U_LV · u_k)',
+        example: {
+          title: 'Worked example — 120 kA at 400 V',
+          body: `5 MVA with u_k = 6 % at 400 V: 5,000 ÷ (√3 × 0.4 × 0.06) = 120 kA. No standard LV board is rated for that, so the design either raises the LV voltage to 690 V (halving the current), increases u_k, or splits the transformer into smaller units. That is why the LV voltage level is a design decision taken with the transformer, not a given that arrives with the building.`
+        },
+        mistake: `Upsizing the transformer during detailed design without re-checking the LV board rating — the single most expensive "small change" in the whole project.`,
+        check: `What is the LV fault current behind 5 MVA at 400 V with 6 % impedance? Answer: about 120 kA.`
       },
       {
         h: 'Earthing and cable entry',
         p: [
-          'The station earth ties switchgear frames, the transformer tank, cable screens and the LV protective conductor to one electrode system — usually a foundation earth plus a ring.',
-          'Cables enter through sealed ducts or trenches, with fire-rated sealing where they cross a building boundary and Eca-class cable inside. A cable entry that lets water in will find the earth bar within a year.',
-          'All of this is inspected before energisation, and it is the part most often installed "provisionally" and never corrected.'
+          `The station earth ties switchgear frames, the transformer tank, cable screens and the LV protective conductor to one electrode system — usually a foundation earth plus a ring. One reference, or the fault current finds a path you did not design.`,
+          `Cables enter through sealed ducts or trenches, with fire-rated sealing where they cross a building boundary and Eca-class cable inside. A cable entry that lets water in will find the earth bar within a year, and the resulting corrosion is invisible until it matters.`,
+          `All of this is inspected before energisation, and it is the part most often installed provisionally and never corrected — because by the time it fails, the project team has moved on to the next site.`
         ],
-        formula: 'One earth reference · sealed entries · Eca inside buildings'
+        formula: 'One earth reference · sealed entries · Eca inside buildings',
+        example: {
+          title: 'Worked example — the entry that fails first',
+          body: `A duct that was sealed with foam instead of a proper gland lets water into the switchgear basement. Two winters later the earth bar has corroded to half its cross-section, which no routine inspection looks for because it is below floor level and behind a panel. Photograph every entry at commissioning, sealed and labelled, and keep those images with the as-built drawings. Photograph the entries at commissioning, sealed and labelled, and keep the images with the as-built drawings; they are the only record of what was actually installed.`
+        },
+        mistake: `Treating cable sealing and fire stopping as finishing works. They are inspected items, and they are the first things to be value-engineered out by a contractor under pressure.`,
+        check: `What fire class is required for cables inside a building? Answer: Eca, as a minimum.`
       }
     ],
     renderExtra: drawStation,
