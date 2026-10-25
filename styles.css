@@ -536,3 +536,22 @@ select {
 .tank { fill: none; stroke: var(--line); stroke-width: 2; }
 .water { fill: color-mix(in srgb, var(--accent) 22%, transparent); }
 .pipe { fill: var(--accent); }
+
+/* ---------- strategy comparison ---------- */
+.strat-a { fill: none; stroke: var(--accent); stroke-width: 2.6; }
+.strat-b { fill: none; stroke: var(--bad); stroke-width: 2.2; stroke-dasharray: 7 4; }
+.strat-c { fill: none; stroke: var(--good); stroke-width: 2.4; }
+.strat-label-a { fill: var(--accent); }
+.strat-label-b { fill: var(--bad); }
+.strat-label-c { fill: var(--good); }
+
+/* ---------- potential funnel ---------- */
+.potential { fill: color-mix(in srgb, var(--accent) 14%, transparent); }
+.potential-line { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+.measure { stroke: var(--bad); stroke-width: 1.6; stroke-dasharray: 4 3; }
+.measure-label { fill: var(--bad); font-weight: 700; }
+
+.legend .sw-a { background: var(--accent); }
+.legend .sw-c { background: var(--good); }
+.legend .sw-b { background: var(--bad); }
+.legend .sw-contract { background: var(--bad); opacity: .5; }

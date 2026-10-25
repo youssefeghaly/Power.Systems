@@ -201,6 +201,63 @@
       why: '365 × 20 = 7,300. Most warranties allow roughly one cycle per day averaged annually, so a 4-hour battery cycling twice a day is outside its warranty unless negotiated.' }
   ];
 
+
+  function drawStrategies(host) {
+    var W = 860, H = 380, padL = 62, padR = 120, padT = 24, padB = 46;
+    var iw = W - padL - padR, ih = H - padT - padB;
+    var lo = 260, hi = 620;
+    var x = function (y) { return padL + (y / 20) * iw; };
+    var y = function (c) { return padT + ih - ((c - lo) / (hi - lo)) * ih; };
+
+    var noAction = [], over = [], aug = [];
+    for (var i = 0; i <= 20; i++) {
+      noAction.push(435 * Math.pow(0.98, i));
+      over.push(599.15 * Math.pow(0.98, i));
+      aug.push(0);
+    }
+    var cap = 500;
+    aug[0] = cap;
+    for (var yr = 1; yr <= 20; yr++) {
+      cap = cap * 0.98;
+      if (yr === 7 || yr === 14) cap += 60;
+      aug[yr] = cap;
+    }
+
+    function line(arr, cls) {
+      return '<polyline points="' + arr.map(function (c, j) { return x(j) + ',' + y(c); }).join(' ') + '" class="' + cls + '"/>';
+    }
+
+    var p = [];
+    p.push('<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart" role="img" aria-label="Three capacity strategies against a 400 MWh contract floor">');
+
+    [300, 400, 500, 600].forEach(function (c) {
+      p.push('<line x1="' + padL + '" y1="' + y(c) + '" x2="' + (padL + iw) + '" y2="' + y(c) + '" class="chart-grid"/>');
+      p.push('<text x="' + (padL - 8) + '" y="' + (y(c) + 4) + '" class="chart-axis" text-anchor="end">' + c + '</text>');
+    });
+    [0, 5, 10, 15, 20].forEach(function (yr2) {
+      p.push('<text x="' + x(yr2) + '" y="' + (H - 20) + '" class="chart-axis" text-anchor="middle">y' + yr2 + '</text>');
+    });
+
+    p.push('<line x1="' + padL + '" y1="' + y(400) + '" x2="' + (padL + iw) + '" y2="' + y(400) + '" class="chart-threshold"/>');
+
+    p.push(line(over, 'strat-a'));
+    p.push(line(aug, 'strat-c'));
+    p.push(line(noAction, 'strat-b'));
+
+
+    p.push('</svg>');
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>Three answers to the same contract</h2>' +
+        '<p class="muted">All three start from an honest intention of delivering 400 MWh at year 20. Only two get there.</p>' +
+        '<div class="legend"><span><i class="sw-a"></i>overbuild</span><span><i class="sw-c"></i>augment</span>' +
+        '<span><i class="sw-b"></i>nothing</span><span><i class="sw-contract"></i>contract floor</span></div>' +
+        '<div class="chart-wrap">' + p.join('') + '</div>' +
+        '<p class="muted">Overbuild starts at 599 MWh and lands exactly on the line. Augmentation starts at 500 MWh and steps up twice. Doing nothing starts at 435 MWh and ends 110 MWh short — the shape most business cases quietly assume away.</p>' +
+      '</div>';
+  }
+
   window.MODULES.push({
     id: 'm3',
     number: '03',
@@ -210,47 +267,82 @@
       {
         h: 'Two ways a battery ages',
         p: [
-          'Calendar fade happens whether you use the battery or not — a cell left in a drawer still loses capacity. It accelerates with temperature and with average state of charge.',
-          'Cyclic fade comes from throughput: every charge and discharge consumes a little of the cell\'s ability to hold charge. Faster cycling, higher C-rate and deeper swings all cost more.',
-          'The two combine. A plant sitting at 100 % SoC in a hot climate can age faster than one cycling gently at 25 %.'
+          `Calendar fade happens whether you use the battery or not — a cell left in a drawer still loses capacity. It accelerates with temperature and with average state of charge, which is why a plant parked at 100 % in a hot climate can age faster than one cycling gently at 25 %.`,
+          `Cyclic fade comes from throughput: every charge and discharge consumes a little of the cell's ability to hold charge. Faster cycling, higher C-rate and deeper swings all cost more, and the damage accumulates in a way that is not reversible.`,
+          `The two combine, and they interact. A cell that has faded on the calendar has less headroom to absorb cycling damage, so the curve steepens rather than staying straight — which is why a linear model is a planning tool, not a prediction.`
         ],
-        formula: 'Capacity(t) ≈ BOL × (1 − d)ᵗ   (d typically 1.5–2.5 %/yr)'
+        formula: 'Capacity(t) ≈ BOL × (1 − d)ᵗ   (d typically 1.5–2.5 %/yr)',
+        example: {
+          title: 'Worked example — what 2 % a year really means',
+          body: `Start at 400 MWh and apply 2 % a year. Year 5: 361.6 MWh. Year 10: 326.8 MWh. Year 15: 295.4 MWh. Year 20: 267.0 MWh. A third of the plant has quietly disappeared, and the contract still says 400. That gap is the entire reason this module exists.`
+        },
+        mistake: `Modelling degradation as linear — 400 MWh minus 8 MWh per year, reaching 240 MWh at year 20. Compounding gives 267 MWh, so the linear model overstates the loss by 27 MWh and understates the capacity. Both errors cost money, in opposite directions.`,
+        check: `400 MWh at 2 % a year: what is left at year 10? Answer: 326.8 MWh.`
       },
       {
         h: 'Why 80 % is the number you keep hearing',
         p: [
-          'Most guarantees promise a floor — commonly 80 % of beginning-of-life capacity at year 10, or 70 % at year 20. Below roughly 60 % a Li-ion plant is considered unusable and becomes a safety concern.',
-          'Degradation is not linear in reality, and it is not the same for every supplier. That is why the number in the contract is a negotiated position, not a physical constant.'
+          `Most guarantees promise a floor: commonly 80 % of beginning-of-life capacity at year 10, or 70 % at year 20. Below roughly 60 %, a Li-ion plant is considered unusable and increasingly a safety concern, because degraded cells generate more heat for the same current.`,
+          `The number is a negotiated position, not a physical constant. It depends on chemistry, on how the plant is cycled, on the temperature it lives at, and on how much the offtaker is willing to pay for certainty.`,
+          `It is also measured somewhere specific. A guarantee against capacity at the DC terminals is a different promise from one at the POI, and the difference is every loss in Module 2.`,
+          `Ask for the guarantee in writing with three things attached: the metric, the measurement boundary, and the test procedure. Without all three, the number is an aspiration dressed as a contract.`
         ],
-        formula: 'Guarantee: ≥ 80 % of BOL at year 10\nFloor: ~60 % — below this, replace rather than augment'
+        formula: 'Guarantee: ≥ 80 % of BOL at year 10\nFloor: ~60 % — below this, replace rather than augment',
+        example: {
+          title: 'Worked example — two ways to fail the same promise',
+          body: `An 80 % guarantee at year 10 on a 400 MWh BOL plant means 320 MWh. A plant measuring 326 MWh at the DC terminals passes. The same plant at the POI, after 8 % losses, delivers 300 MWh — and fails an offtake written at the meter. Same hardware, same test, two verdicts.`
+        },
+        mistake: `Treating the guarantee as a target. It is a floor for the contract, not a design aim — designing to land exactly on 80 % at year 10 leaves nothing for a hot summer or an unexpected cycling profile.`,
+        check: `A 400 MWh plant must hold 80 % at year 10. What is that in MWh? Answer: 320 MWh.`
       },
       {
         h: 'Overbuild or augment',
         p: [
-          'Overbuild means installing 30–50 % more energy than the contract requires at the start, so degradation never breaches the floor. You pay once and never return.',
-          'Augmentation means adding blocks every 5–8 years. Cheaper at financial close, and you buy future energy at future prices — but each event costs mobilisation, permits, downtime and re-commissioning.',
-          'AC augmentation connects new blocks at medium voltage, so old and new cells can sit at different states of health. DC augmentation is cheaper and avoids touching the interconnection agreement, but forces recalibration of old and new racks.'
+          `Overbuild means installing 30–50 % more energy than the contract requires at the start, so degradation never breaches the floor. You pay once, never return, and you carry the cost of the extra cells for twenty years.`,
+          `Augmentation means adding blocks every 5–8 years. It is cheaper at financial close and you buy the future energy at future prices — but each event costs mobilisation, permits, downtime and re-commissioning, and each one is a chance to lose a month.`,
+          `The choice is usually made by the offtake, not by preference. A merchant plant with no capacity floor often plans neither; a contracted plant almost always plans one of them.`,
+          `A useful discipline in a review: ask which strategy the financial model assumes and then look for the augmentation capex in the out-years. If it is not there, the model is assuming neither, and year 15 will be a surprise.`
         ],
-        formula: 'Overbuild: capex now, no return visit\nAugmentation: capex later, repeated mobilisation'
+        formula: 'Overbuild: capex now, no return visit\nAugmentation: capex later, repeated mobilisation',
+        example: {
+          title: 'Worked example — the same 400 MWh promise, three ways',
+          body: `No action: start at 435 MWh, end at 290 MWh — 110 MWh short. Overbuild: start at 599 MWh (49.8 % over), end exactly at 400 MWh. Augment: start at 500 MWh, add 60 MWh in year 7 and again in year 14, end at 433 MWh. The chart below draws all three against the contract line.`
+        },
+        mistake: `Planning augmentation but not reserving the space, the cable route and the spare breaker for it. The decision costs nothing on paper and everything on site when the containers arrive and there is nowhere to put them.`,
+        check: `At 2 % a year with no augmentation, what must you build to still hold 400 MWh in year 20? Answer: 400 ÷ 0.98²⁰ = 599 MWh.`
       },
       {
         h: 'Two contracts, two thresholds',
         p: [
-          'The warranty covers the product: defects, workmanship, and a performance guarantee measured at the battery terminals.',
-          'The offtake agreement covers the service: energy delivered at the POI, measured through the meter, after every loss in the chain.',
-          'A plant can pass its capacity test at the DC terminals and still fail its offtake obligation, because the two are measured in different places. When people say "we are at 82 %", always ask: 82 % of what, where?'
+          `The warranty covers the product: defects, workmanship, and a performance guarantee measured at the battery terminals. The offtake covers the service: energy delivered at the POI, measured through the meter, after every loss in the chain.`,
+          `They can disagree without either party being dishonest. A plant at 82 % of BOL at the DC terminals passes its warranty and can still fail an offtake written at 80 % of POI energy, because 82 % at the terminals is roughly 72 % at the meter.`,
+          `This is why the question "82 % of what, where?" is the most useful sentence in a performance meeting. It separates a real shortfall from a measurement disagreement, and it usually does so in under a minute.`
         ],
-        formula: 'Warranty → at the DC terminals\nOfftake → at the POI, after losses'
+        formula: 'Warranty → at the DC terminals\nOfftake → at the POI, after losses',
+        example: {
+          title: 'Worked example — the 82 % that fails',
+          body: `BOL 400 MWh. Measured at the DC terminals in year 8: 328 MWh — 82 %, comfortably inside an 80 % guarantee. At the POI with 8 % losses: 302 MWh, which is 75.5 % of BOL. If the offtake promises 80 % of POI energy at year 8, the asset is short by 18 MWh and owes damages on a plant that just passed its warranty test.`
+        },
+        mistake: `Assuming one test satisfies both contracts. The warranty test, the offtake test and the capacity test may be the same procedure at three different boundaries — and passing one proves nothing about the others.`,
+        check: `82 % at the DC terminals with 8 % losses is what fraction at the POI? Answer: 75.4 %.`
       },
       {
         h: 'Liquidated damages shape the design',
         p: [
-          'LDs are the money that moves when a guarantee is missed. They are why availability is defined down to the minute, why RTE is measured in a specified test, and why designers add margin they would otherwise skip.',
-          'The practical consequence: a plant designed exactly to the contract number will fail it. Every number you size must carry a margin for losses, degradation and measurement.'
+          `Liquidated damages are the money that moves when a guarantee is missed. They are why availability is defined to the minute, why RTE is measured in a specified test at a specified boundary, and why designers add margin they would otherwise skip.`,
+          `LDs are usually capped, and the cap is usually a percentage of contract value. That cap is what a lender prices, and it explains why a project with tight guarantees can be financed at a worse rate than one with loose guarantees and a bigger contingency.`,
+          `The practical consequence is uncomfortable: a plant designed exactly to the contract number will fail it. Every number you size must carry margin for losses, degradation and measurement error — and the margin has to be visible in the pack, not buried in a round number.`
         ],
-        formula: 'Design value = contract value ÷ (1 − losses) ÷ (1 − degradation)'
+        formula: 'Design value = contract value ÷ (1 − losses) ÷ (1 − degradation)',
+        example: {
+          title: 'Worked example — building the margin in',
+          body: `Contract: 400 MWh at the POI for twenty years, 8 % losses, 2 %/yr degradation, 80 % floor. POI requirement at year 20: 320 MWh. DC requirement: 347.8 MWh. BOL for that with degradation: 347.8 ÷ 0.98²⁰ = 520.9 MWh. Add the 60 MWh of augmentation and the initial build falls — which is exactly the trade the next twenty years will be argued about.`
+        },
+        mistake: `Sizing to the contract at COD and assuming degradation is "covered by the guarantee". The guarantee compensates you after the shortfall, at a capped rate, once you have proven it — it does not keep the plant compliant.`,
+        check: `What is the design value when losses are 8 % and degradation is 2 %/yr over 20 years, for a 400 MWh contract? Answer: 400 ÷ 0.92 ÷ 0.6676 ≈ 651 MWh, before augmentation.`
       }
     ],
+    renderExtra: drawStrategies,
     calc: { html: calcHTML, init: initCalc },
     drills: DRILLS
   });
