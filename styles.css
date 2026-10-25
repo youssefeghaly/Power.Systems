@@ -555,3 +555,17 @@ select {
 .legend .sw-c { background: var(--good); }
 .legend .sw-b { background: var(--bad); }
 .legend .sw-contract { background: var(--bad); opacity: .5; }
+
+/* ---------- voltage ladder ---------- */
+.ladder-row { fill: color-mix(in srgb, var(--accent) 8%, transparent); stroke: var(--line); }
+.ladder-anchor { fill: color-mix(in srgb, var(--accent) 22%, transparent); stroke: var(--accent); stroke-width: 2; }
+.ladder-tar { fill: var(--accent); font-size: 16px; font-weight: 700; }
+.ladder-name { fill: var(--ink); font-size: 15px; }
+
+/* ---------- protection zones ---------- */
+.zone { fill: none; stroke-width: 1.6; stroke-dasharray: 7 5; }
+.zone-bus { stroke: var(--accent); fill: color-mix(in srgb, var(--accent) 7%, transparent); }
+.zone-feeder { stroke: var(--good); fill: color-mix(in srgb, var(--good) 6%, transparent); }
+.zone-label { fill: var(--accent); }
+.ct { fill: var(--card); stroke: var(--ink); stroke-width: 1.6; }
+.breaker { fill: var(--card); stroke: var(--ink); stroke-width: 2; }

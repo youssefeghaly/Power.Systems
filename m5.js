@@ -219,6 +219,50 @@
       why: 'Fuses (and contactors for switching). High-speed DC fuses limit let-through energy — but nothing protects a cell from an internal short.' }
   ];
 
+
+  function drawZones(host) {
+    var p = [];
+    p.push('<svg viewBox="0 0 880 380" class="chart" role="img" aria-label="Protection zones on a busbar with two feeders">');
+
+    /* busbar zone */
+    p.push('<rect x="60" y="46" width="760" height="130" rx="10" class="zone zone-bus"/>');
+    p.push('<text x="72" y="40" class="chart-axis zone-label">busbar zone — differential</text>');
+    p.push('<line x1="80" y1="86" x2="800" y2="86" class="busbar"/>');
+    p.push('<text x="800" y="110" class="chart-axis" text-anchor="end">110 kV busbar</text>');
+
+    /* two feeders */
+    [240, 600].forEach(function (x, i) {
+      p.push('<line x1="' + x + '" y1="86" x2="' + x + '" y2="150" class="sld-line"/>');
+      /* CT */
+      p.push('<rect x="' + (x - 16) + '" y="150" width="32" height="26" rx="4" class="ct"/>');
+      p.push('<text x="' + (x + 26) + '" y="168" class="chart-axis">CT</text>');
+      /* breaker */
+      p.push('<line x1="' + x + '" y1="176" x2="' + x + '" y2="210" class="sld-line"/>');
+      p.push('<rect x="' + (x - 18) + '" y="210" width="36" height="36" rx="6" class="breaker"/>');
+      p.push('<text x="' + (x + 26) + '" y="234" class="chart-axis">breaker</text>');
+      /* zone box around feeder */
+      p.push('<rect x="' + (x - 60) + '" y="140" width="120" height="155" rx="10" class="zone zone-feeder"/>');
+      p.push('<text x="' + (x - 58) + '" y="298" class="chart-axis">feeder zone</text>');
+      p.push('<line x1="' + x + '" y1="246" x2="' + x + '" y2="330" class="sld-line" marker-end="url(#z-arrow)"/>');
+      p.push('<text x="' + x + '" y="348" class="chart-axis" text-anchor="middle">to load ' + (i + 1) + '</text>');
+    });
+
+    p.push('<text x="440" y="368" class="chart-axis" text-anchor="middle">zones overlap at the CTs — no fault is left unprotected</text>');
+    p.push('</svg>');
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>Where the zones meet</h2>' +
+        '<p class="muted">Protection is drawn as boxes, not devices. The overlap at each CT is what guarantees a fault is seen by at least one zone.</p>' +
+        '<div class="chart-wrap">' +
+          '<svg width="0" height="0"><defs><marker id="z-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">' +
+          '<path d="M0,0 L8,4 L0,8 z" class="arrowhead"/></marker></defs></svg>' +
+          p.join('') +
+        '</div>' +
+        '<p class="muted">A busbar fault is seen by every incomer as "downstream", so graded overcurrent waits too long. Differential on the busbar zone is what closes that gap.</p>' +
+      '</div>';
+  }
+
   window.MODULES.push({
     id: 'm5',
     number: '05',
@@ -228,49 +272,89 @@
       {
         h: 'Fault level is a property of the network',
         p: [
-          'A three-phase fault current is set by the source impedance and the voltage: <code>Ik = c · Un / (√3 · Z)</code>, with c = 1.1 for maximum current.',
-          'It matters because every piece of switchgear has a rated short-circuit current. If the calculated fault level exceeds the rating, the equipment may fail to clear the fault — and fail destructively.',
-          'Note what it does not depend on: your battery. The plant contributes to the fault level, but the network decides the magnitude.'
+          `A three-phase fault current is set by the source impedance and the voltage: <code>Ik = c · Un / (√3 · Z)</code>, with c = 1.1 for the maximum case. Nothing about your battery changes the order of magnitude — the network decides.`,
+          `It matters because every piece of switchgear has a rated short-circuit current. If the calculated fault level exceeds that rating, the equipment may fail to clear the fault, and it fails destructively rather than gracefully.`,
+          `This is also why transformer impedance is a design decision: it is the one element in the chain that lets you deliberately reduce the fault current behind it, at the cost of voltage regulation.`,
+          `Fault level also changes as the network grows: a new substation nearby can raise it by a third, and every device rating behind your connection point is then out of date.`
         ],
-        formula: 'Ik = c · Un / (√3 · Z)   with c = 1.1'
+        formula: 'Ik = c · Un / (√3 · Z)   with c = 1.1',
+        example: {
+          title: 'Worked example — 20 kV and 110 kV',
+          body: `At 20 kV with 0.5 Ω source impedance: 1.1 × 20,000 ÷ (√3 × 0.5) = 25.4 kA. At 110 kV with 2 Ω: 1.1 × 110,000 ÷ (√3 × 2) = 34.9 kA. Higher voltage means higher fault level for the same impedance — which is why HV switchgear is rated in tens of kA and costs accordingly.`
+        },
+        mistake: `Using c = 1.0 because it is "the nominal case". The maximum fault current is what equipment must withstand, and the 1.1 factor exists precisely for that calculation.`,
+        check: `20 kV, 1.2 Ω: what is the fault current? Answer: 10.6 kA.`
       },
       {
         h: 'Zones, not devices',
         p: [
-          'Protection is designed in zones: each zone has a boundary, a measuring point and a device that clears faults inside it. Overlap at the boundaries means no fault is left unprotected.',
-          'Overcurrent protection is the workhorse: it trips when current exceeds a pickup for long enough. It is cheap and it is not inherently selective — it relies on grading.',
-          'Differential protection is inherently selective: it compares current in and out of a zone and trips on the difference. That is why transformers and busbars get it and feeders often do not.'
+          `Protection is designed in zones: each zone has a boundary, a measuring point and a device that clears faults inside it. Zones overlap at the boundaries so that no fault is left unprotected by both.`,
+          `Overcurrent protection is the workhorse — cheap, simple, and not inherently selective. It relies on grading, which means it depends on the fault current actually flowing and on the settings being coordinated.`,
+          `Differential protection is inherently selective: it compares current in and out of a zone and trips on the difference. That is why busbars and transformers get it and feeders often do not — the physics does the selectivity instead of the settings.`,
+          `The practical consequence for a BESS is that its protection must be coordinated with the DSO's, not designed in isolation — two protection worlds meeting at one boundary, agreed in writing.`,
+          `Where the two worlds disagree, the DSO's requirement wins — and finding that out during commissioning is a schedule problem, not a technical one.`
         ],
-        formula: 'Overcurrent → graded by time · Differential → selective by physics'
+        formula: 'Overcurrent → graded by time · Differential → selective by physics',
+        example: {
+          title: 'Worked example — why a busbar needs differential',
+          body: `A fault on the busbar itself is seen by every incomer as "downstream", so graded overcurrent has to wait for the feeder protection to fail before it trips — hundreds of milliseconds during which the whole station burns. Busbar differential sees the sum of currents leave the zone and trips in tens of milliseconds.`
+        },
+        mistake: `Assuming overcurrent protection protects everything. It protects feeders well, transformers acceptably, and busbars badly — which is why the most expensive protection is usually on the cheapest equipment to replace.`,
+        check: `Which principle is inherently selective? Answer: differential.`
       },
       {
         h: 'Current transformers are the weak link',
         p: [
-          'The relay never sees the primary current. It sees a scaled copy through a CT, whose ratio, accuracy class and burden define whether that copy is honest.',
-          'Burden is the total impedance on the secondary, including the relay, wiring and any test links. Exceed the rated burden and the CT saturates exactly when you need it most — at the fault current.',
-          'This is why a Bürdenberechnung is submitted with the design: it proves the CT stays linear at the currents that matter.'
+          `The relay never sees primary current. It sees a scaled copy through a CT, whose ratio, accuracy class and burden define whether that copy is honest at the currents that matter.`,
+          `Burden is the total impedance on the secondary loop — relay, wiring, test links. Exceed the rated burden and the CT saturates exactly when the fault current arrives, so the relay under-reads and clears late or not at all.`,
+          `This is why a Bürdenberechnung is submitted with the design: it proves the CT stays linear over the range the protection depends on.`,
+          `A useful review question: "what is the burden, and what is the CT rated for?" If nobody can answer both numbers, the calculation was probably never done.`,
+          `The same logic applies to voltage transformers: a blown fuse removes the reference and disables protections that looked healthy on the panel.`
         ],
-        formula: 'Z_burden = S / I²   ·  saturation = blind protection'
+        formula: 'I_sec = I_pri × (ratio)  ·  Z_burden = S / I²',
+        example: {
+          title: 'Worked example — ratio and burden',
+          body: `A 600/1 CT carrying 480 A primary delivers 0.8 A secondary. Its rated burden of 15 VA at 1 A corresponds to 15 Ω. If the wiring plus relay actually presents 18 Ω, the CT saturates before the fault current and the protection becomes optimistic at exactly the wrong moment.`
+        },
+        mistake: `Ignoring the lead resistance on a long run from the CT to the relay panel. In a substation that is easily several ohms, and it consumes the burden margin that the CT was specified with.`,
+        check: `A CT is 200/5 and the primary carries 120 A. What is the secondary current? Answer: 3 A.`
       },
       {
         h: 'Grading is a time argument',
         p: [
-          'Two overcurrent relays in series must not trip together. The downstream device clears first; the upstream device waits long enough to be sure.',
-          'The margin is typically 0.3 s, covering breaker opening, relay tolerance and CT error. On IEC curves the times depend on the current multiple, so grading must be checked across the whole current range — not at one point.',
-          'This is what the chart in the calculator is for. When the curves cross, the wrong breaker trips.'
+          `Two overcurrent relays in series must not trip together. The downstream device clears first; the upstream one waits long enough to be certain. The margin is typically 0.3 s, covering breaker opening, relay tolerance and CT error.`,
+          `The trap is that IEC curves are not parallel. Grading checked at one current can look correct and fail at another, where the curves converge or cross. You have to check the margin across the whole range of credible fault currents.`,
+          `When the curves cross, a fault on one bay takes out the upstream device and the whole feeder goes dark — which is how a protection settings error becomes a customer complaint.`,
+          `Checking the whole range is tedious, which is exactly why it is the step that gets skipped — and why the coordination study is worth reading rather than filing.`,
+          `A coordination study is a short document with a long consequence: one page of curves decides whether a fault takes out a bay or a substation.`
         ],
-        formula: 't_upstream(I) − t_downstream(I) ≥ 0.3 s for all I'
+        formula: 't_upstream(I) − t_downstream(I) ≥ 0.3 s for all I',
+        example: {
+          title: 'Worked example — the margin at one point',
+          body: `At a 2,000 A fault, the downstream relay (SI, TMS 0.10, pickup 200 A) trips in 0.30 s and the upstream (SI, TMS 0.30, pickup 400 A) in 1.28 s. Margin 0.98 s — comfortable. Drop the upstream TMS to 0.02 and it trips in 0.09 s: faster than the downstream, so the wrong breaker opens.`
+        },
+        mistake: `Grading by pickup current instead of by time. Two relays with different pickups can still be badly graded, because what matters is the trip time at the fault current they both see.`,
+        check: `Downstream clears in 0.4 s. What is the minimum upstream time with a 0.3 s margin? Answer: 0.7 s.`
       },
       {
-        h: 'The parts the book skips',
+        h: 'The DC side, and arc flash',
         p: [
-          'On the DC side, fuses and contactors protect the external circuit. Nothing protects a cell from an internal short — which is why thermal runaway is a containment problem, not a protection problem.',
-          'Arc-flash relays detect the light of an arc in milliseconds, long before an overcurrent element would pick it up. Arc flash is a worker-safety issue, and it shapes how the plant is operated, not just how it is built.',
-          'Where the numbers live: IEC 60909 for fault calculation and IEC 61936-1 for HV installation design. We do not hold either, so the method is taught here and the specifics are marked for verification.'
+          `On the DC side, fuses and contactors protect the external circuit. Nothing protects a cell from an internal short — which is why thermal runaway is a containment problem, not a protection problem.`,
+          `DC arcs do not self-extinguish at a current zero, so a device rated for AC is not automatically suitable for DC. The rating must state the DC voltage and the time constant it was tested at.`,
+          `Arc-flash relays detect the light of an arc in milliseconds, long before an overcurrent element picks it up. Arc flash is a worker-safety issue that shapes how the plant is operated, not only how it is built.`,
+          `In a review, ask for the DC device ratings and the arc-flash study separately. If only one exists, the other was assumed.`,
+          `Neither is expensive to produce at design stage, and both are impossible to reconstruct convincingly after an incident.`
         ],
-        formula: 'DC side: fuses protect the circuit, nothing protects the cell'
+        formula: 'DC side: fuses protect the circuit, nothing protects the cell',
+        example: {
+          title: 'Worked example — why the DC breaker matters',
+          body: `A 1,500 V DC rack can deliver several thousand amps into a bolted fault. An AC-rated breaker may open the contacts and then arc across them, because there is no zero crossing to extinguish it. The device must be rated for 1,500 V DC at the circuit's time constant — and the datasheet will say so if you ask the right question.`
+        },
+        mistake: `Using an AC miniature circuit breaker on a DC string because the current rating matches. The current rating is the least interesting number on the label for a DC application.`,
+        check: `What protects a cell from an internal short circuit? Answer: nothing — which is why containment matters.`
       }
     ],
+    renderExtra: drawZones,
     calc: { html: calcHTML, init: initCalc },
     drills: DRILLS
   });

@@ -42,6 +42,40 @@
       risk: 'Plants can run for months on provisional permission, with documents still open. It becomes a covenant issue at financing.' }
   ];
 
+
+  function drawLadder(host) {
+    var rows = [
+      { kv: '380 kV', tar: '4130', name: 'Höchstspannung', y: 26 },
+      { kv: '110 kV', tar: '4120', name: 'Hochspannung', y: 92, anchor: true },
+      { kv: '20 kV', tar: '4110', name: 'Mittelspannung', y: 158 },
+      { kv: '400 V', tar: '4105', name: 'Niederspannung', y: 224 }
+    ];
+
+    var p = [];
+    p.push('<svg viewBox="0 0 880 300" class="chart" role="img" aria-label="Voltage levels mapped to their VDE application rules">');
+
+    rows.forEach(function (r) {
+      p.push('<text x="92" y="' + (r.y + 28) + '" class="chart-axis" text-anchor="end">' + r.kv + '</text>');
+      p.push('<rect x="100" y="' + r.y + '" width="600" height="44" rx="10" class="ladder-row' +
+             (r.anchor ? ' ladder-anchor' : '') + '"/>');
+      p.push('<text x="116" y="' + (r.y + 28) + '" class="ladder-tar">' + r.tar + '</text>');
+      p.push('<text x="196" y="' + (r.y + 28) + '" class="ladder-name">' + r.name + '</text>');
+      if (r.anchor) {
+        p.push('<text x="716" y="' + (r.y + 28) + '" class="chart-axis">← anchor plant</text>');
+      }
+    });
+
+    p.push('<text x="100" y="292" class="chart-axis">Below 135 kW: conformity declaration · above: Anlagenzertifikat + provisional permit</text>');
+    p.push('</svg>');
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>One connection point, one rule</h2>' +
+        '<p class="muted">You do not choose the code. The voltage you connect at chooses it — and the anchor plant sits on 4120.</p>' +
+        '<div class="chart-wrap">' + p.join('') + '</div>' +
+      '</div>';
+  }
+
   function renderSteps(host) {
     var html = '<div class="card">' +
       '<h2>The path through a German connection</h2>' +
@@ -197,48 +231,96 @@
       {
         h: 'Not one grid code — four',
         p: [
-          'Germany regulates grid connection through VDE application rules (VDE-Anwendungsregeln), and you follow the one that matches the voltage you connect at: 4105 for low voltage, 4110 for medium voltage, 4120 for high voltage, 4130 for extra-high.',
-          'They are not law in themselves. The <strong>NELEV</strong> — the ordinance on proof of electrical properties of energy installations — makes them binding, and each network operator adds its own TAB with local specifics.',
-          'Practical consequence: two identical plants in two DSO areas can face different requirements. The TAR is the floor; the TAB is the local truth.'
+          `Germany regulates grid connection through VDE application rules, and you follow the one that matches the voltage you connect at: 4105 for low voltage, 4110 for medium, 4120 for high, 4130 for extra-high. The rule follows the connection point, not the investor, the technology or the size of the plant.`,
+          `They are not law in themselves. The <strong>NELEV</strong> — the ordinance on proof of electrical properties of energy installations — makes them binding, and each network operator adds its own TAB with local specifics. The TAR is the floor; the TAB is what this DSO actually demands.`,
+          `That layered structure explains a fact that surprises newcomers: two identical plants in two neighbouring DSO areas can face different requirements, different forms and different timelines, and both are compliant.`,
+          `The practical first question in any German project is therefore not "what does the standard say" but "which standard, and whose TAB am I actually working to".`
         ],
-        formula: '400 V → 4105 · 20 kV → 4110 · 110 kV → 4120 · 380 kV → 4130'
+        formula: '400 V → 4105 · 20 kV → 4110 · 110 kV → 4120 · 380 kV → 4130',
+        example: {
+          title: 'Worked example — three plants, three codes',
+          body: `A 30 kW rooftop unit behind a shop connects at 400 V: 4105 applies, and the paperwork is a form and a confirmation. A 5 MW C&I battery connects at 20 kV: 4110, with an Anlagenzertifikat and a provisional operating permit. Our 100 MW anchor plant connects at 110 kV: 4120, the same mechanics with a much longer queue and a much larger evidence pack.`
+        },
+        mistake: `Citing 4110 for a 110 kV connection because "4110 is the storage one". All four cover storage now; the voltage level decides which applies, and citing the wrong TAR in a submission costs credibility immediately.`,
+        check: `Which TAR governs a plant connected at 110 kV? Answer: 4120.`
       },
       {
         h: 'Who is who',
         p: [
-          'The <strong>VNB</strong> (Verteilnetzbetreiber) owns the network you connect to. The <strong>ÜNB</strong> runs transmission. The <strong>Anschlussnehmer</strong> is the party whose property hosts the connection; the <strong>Anlagenbetreiber</strong> runs the plant — often the same company, sometimes not.',
-          'The <strong>Anlagenzertifizierer</strong> is an independent body that certifies the design against the TAR. The <strong>Installateur</strong> builds the connection, and the <strong>AHJ</strong> — usually the local fire authority — signs off the site.',
-          'Knowing who signs what is half of project management in this market. The other half is knowing which of them can stop you.'
-        ]
+          `The <strong>VNB</strong> owns the distribution network you connect to; the <strong>ÜNB</strong> runs transmission. The <strong>Anschlussnehmer</strong> is the party whose property hosts the connection, while the <strong>Anlagenbetreiber</strong> operates the plant — usually the same company, sometimes not, and the distinction matters when the site is leased.`,
+          `The <strong>Anlagenzertifizierer</strong> is an independent body that certifies the design against the TAR. The <strong>Installateur</strong> builds the connection, and the <strong>AHJ</strong> — in practice the local fire authority — signs off the site.`,
+          `Knowing who signs what is half of project management in this market. The other half is knowing which of them can stop you, and at which gate.`,
+          `On a small project one person may hold several of these roles at once; on a large one they are different companies with different contracts, and the interfaces between them are where delays are born.`,
+          `Keep the map in your head: on any given week you are waiting on one of them, and knowing which one tells you what to chase.`
+        ],
+        formula: 'VNB · ÜNB · Anschlussnehmer · Anlagenbetreiber · Zertifizierer · AHJ',
+        example: {
+          title: 'Worked example — who can stop you, and when',
+          body: `The DSO can refuse energisation at the transfer station. The certifier can withhold the Anlagenzertifikat, which blocks the permit. The fire authority can refuse occupancy, which blocks operation even with a perfect electrical installation. Three different gates, three different documents, and none of them is the developer's own signature.`
+        },
+        mistake: `Assuming the network operator owns and maintains the transfer station. In most German configurations the customer builds and owns it, and the DSO only inspects and seals it — which means its maintenance is your cost for twenty years.`,
+        check: `Who issues the final permission to operate? Answer: the VNB.`
       },
       {
         h: 'The paper trail',
         p: [
-          'E.8 is the plant data sheet, E.9 the network operator\'s questionnaire generated from it, E.14 the component certificate. The Anlagenzertifikat bundles them at plant level.',
-          'Two permission stages matter: from <strong>135 kW</strong> installed you may only energise after a <strong>provisional</strong> operating permit, and only operate permanently after the <strong>final</strong> one. Between the two, plants run for months with documents still open.',
-          'Inside the NELEV §2(4) envelope — up to 500 kW installed and 270 kW feed-in — the DSO\'s notification of the connection point counts as provisional permission. Still certified, less ceremony.'
+          `E.8 is the plant data sheet, E.9 the network operator's questionnaire generated from it, E.14 the component certificate. The Anlagenzertifikat bundles them at plant level. None of these is optional above the thresholds.`,
+          `Two permission stages matter: from <strong>135 kW</strong> installed you may only energise after a <strong>provisional</strong> operating permit, and only operate permanently after the <strong>final</strong> one. Between the two, plants run for months with documents still open.`,
+          `Inside the NELEV §2(4) envelope — up to 500 kW installed and 270 kW feed-in — the DSO's notification of the connection point counts as provisional permission. Still certified, less ceremony.`,
+          `Note what the simplification does not remove: certification, the E.8 data sheet and the technical review remain. It shortens the permission path, not the engineering.`,
+          `In practice it saves weeks at the start, when weeks are cheapest to save and hardest to justify in a schedule.`
         ],
-        formula: 'E.8 Datenblatt → E.9 Fragebogen → E.14 Komponenten → Anlagenzertifikat'
+        formula: 'E.8 Datenblatt → E.9 Fragebogen → E.14 Komponenten → Anlagenzertifikat',
+        example: {
+          title: 'Worked example — a 5 MW plant through the gates',
+          body: `Month 0: connection request. Month 1–2: DSO studies, connection promise. Month 3: E.8 and E.14 submitted with the PCS model. Month 6: Anlagenzertifikat issued. Month 9: transfer station built and inspected. Month 10: provisional permit, energisation, functional test. Month 12: final permit — and only now is the plant fully commercial.`
+        },
+        mistake: `Treating E.8 as a commissioning document and leaving it until the end. It is required before the DSO can produce E.9, and E.9 is what starts the technical dialogue — so a late E.8 delays everything downstream.`,
+        check: `Which form is the plant data sheet? Answer: E.8.`
       },
       {
         h: 'What the operator actually checks',
         p: [
-          '<strong>Netzrückwirkungen</strong>: voltage change, flicker, harmonics, unbalance. The plant must not make the network worse than the TAR allows.',
-          '<strong>Reactive power</strong>: cos φ from 0.90 under-excited to 1 at part load, and at least 0.95 at rated power when charging. The PCS must deliver this — it is a sizing input, not a commissioning setting.',
-          '<strong>Protection</strong>: the central NA protection with its coupling switch disconnects the plant when the grid leaves its window. At medium voltage it sits in the transfer station, not inside the container.'
+          `<strong>Netzrückwirkungen</strong>: voltage change, flicker, harmonics, unbalance. The plant must not make the network worse than the TAR allows, and the limits are shared with every other customer on the feeder.`,
+          `<strong>Reactive power</strong>: cos φ from 0.90 under-excited to 1 at part load, and at least 0.95 at rated power when charging. The PCS must deliver this, which makes it a sizing input rather than a commissioning setting.`,
+          `<strong>Protection</strong>: the central NA protection with its coupling switch, plus a protection concept and the CT burden calculation that proves the relays see the truth at fault current.`,
+          `What the DSO is really testing is whether your plant behaves like the model you submitted. The submission is a promise; commissioning is where they check it.`,
+          `This is also why changing the PCS model late is expensive: it is not a document update, it is a re-certification.`
         ],
-        formula: 'cos φ 0.90 … 1 at part load · ≥ 0.95 at rated power'
+        formula: 'cos φ 0.90 … 1 at part load · ≥ 0.95 at rated power',
+        example: {
+          title: 'Worked example — what cos φ 0.90 costs you',
+          body: `A 400 kW charging load at cos φ 0.90 draws 400 × tan(acos 0.9) ≈ 194 kvar of reactive power. The converter must be able to supply or absorb that while carrying 400 kW — so the PCS is not simply rated at 400 kVA, and the extra converter headroom has a price.`
+        },
+        mistake: `Designing the PCS at unity power factor and discovering at the DSO's review that reactive capability was a requirement, not an option. The equipment then either gets oversized late or the plant fails its compliance check.`,
+        check: `What minimum cos φ applies at rated charging power? Answer: 0.95.`
       },
       {
         h: 'What this module does not teach',
         p: [
-          'The exact fault-ride-through curve, the permitted voltage step and the flicker coefficients live in the 4110 and 4120 documents themselves, which we do not hold. This app teaches the mechanism and the thresholds we can source.',
-          'Where a number is not in our documents, it is marked rather than invented. In an interview, saying "that is in 4110 clause 5.4, and I would verify the current edition" beats quoting a figure from memory that has since been amended.'
+          `The exact fault-ride-through curve, the permitted voltage step and the flicker coefficients live in 4110 and 4120 themselves, which we do not hold. This module teaches the mechanism and the thresholds we can source.`,
+          `That is a deliberate limitation, not an oversight. A number quoted from memory in an interview, with no clause and no edition, is worse than naming the clause you would verify — because the person across the table may have written it.`,
+          `What you should be able to do after this module is run the process, know which document answers which question, and know precisely where your knowledge stops.`,
+          `That is a skill in its own right, and a more employable one than memorising figures that change with every amendment.`,
+          `An interviewer can tell the difference within one question, and they usually ask the second one on purpose.`
         ],
-        formula: 'Rule: cite what you hold, with edition and year'
+        formula: 'Rule: cite what you hold, with edition and year',
+        example: {
+          title: 'Worked example — the honest answer',
+          body: `Question: "What is the permitted voltage change at the connection point?" A weak answer invents 2 %. A strong answer says: "That limit is in 4110, and in our DSO's TAB it is not modified — I would confirm the current edition before quoting a figure to you." The second answer demonstrates you know where the answer lives.`
+        },
+        mistake: `Filling gaps with plausible numbers. It works until the one time it does not, and in this market the person asking is often the person who wrote the requirement.`,
+        check: `What should you say when asked a clause-level question you cannot verify? Answer: name the document and edition, and say you would verify it.`
       }
     ],
-    renderExtra: renderSteps,
+    renderExtra: function (host) {
+      var a = document.createElement('div');
+      var b = document.createElement('div');
+      host.appendChild(a);
+      host.appendChild(b);
+      drawLadder(a);
+      renderSteps(b);
+    },
     calc: { html: calcHTML, init: initCalc },
     drills: DRILLS
   });
