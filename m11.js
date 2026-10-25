@@ -170,56 +170,95 @@
       {
         h: 'The top of the chain',
         p: [
-          'Transmission runs at 220 and 380 kV in Germany, split between four TSOs — 50Hertz, Amprion, TenneT and TransnetBW — and coordinated inside ENTSO-E across Europe.',
-          'TSOs balance generation and demand second by second, plan the network decades ahead, and buy the services that keep frequency and voltage inside limits.',
-          'Connection here follows VDE-AR-N 4120 and the TSO\'s own rules. The engineering is similar to MV; the consequences of being wrong are not.'
+          `Transmission runs at 220 and 380 kV in Germany, split between four TSOs — 50Hertz, Amprion, TenneT and TransnetBW — and coordinated across Europe inside ENTSO-E. The TSOs balance generation and demand second by second, plan the network decades ahead, and buy the services that keep frequency and voltage inside their limits.`,
+          `Connection here follows VDE-AR-N 4120 and the TSO's own rules. The engineering is similar to medium voltage; the consequences of being wrong are not, because a 380 kV substation is a national asset and its protection is designed accordingly.`,
+          `For a BESS developer, transmission is where the money is: frequency response, redispatch and capacity are all procured at this level, and the interfaces are fewer but much larger.`
         ],
-        formula: '220/380 kV · four TSOs · ENTSO-E coordination'
+        formula: '220/380 kV · four TSOs · ENTSO-E coordination',
+        example: {
+          title: 'Worked example — knowing which TSO owns the site',
+          body: `The four control areas meet in the middle of the country, and a site near a boundary can sit in either. The connection process, the redispatch rules and sometimes the available products differ between them, and asking the wrong operator for a connection study costs six weeks before anyone tells you it is the wrong operator. The control-area map is published, but the boundary near a large load centre is not always intuitive, so confirm it in writing before commissioning a study.`
+        },
+        mistake: `Treating the TSO as an obstacle rather than a customer. At transmission level your plant is selling a service to an organisation that publishes what it needs in detail, every year.`,
+        check: `Which TAR applies at 380 kV? Answer: 4130 (extra-high voltage).`
       },
       {
         h: 'n-1, congestion, and redispatch',
         p: [
-          'The grid is planned to survive the loss of any single element — n-1. When actual flows approach a limit anyway, the TSO redispatches: pays one plant to reduce output and another to increase it.',
-          'Redispatch 2.0 brought every plant above 100 kW into that mechanism, which turned distributed storage into a resource the TSO can call on.',
-          'Congestion is local and temporal: a line is overloaded because wind is strong in the north and demand is in the south. Storage placed on the right side of that constraint is worth more than storage placed anywhere else.'
+          `The grid is planned to survive the loss of any single element — n-1. Every line, transformer and generator may fail, and the system must remain operable without cascading. That single planning rule explains most of the redundancy you see when you look at a substation.`,
+          `When actual flows approach a limit anyway, the TSO redispatches: pays one plant to reduce output and another to increase it, so the physical flow moves away from the constraint. Redispatch 2.0 brought every plant above 100 kW into that mechanism, which turned distributed storage into a resource the TSO can call.`,
+          `Congestion is local and temporal — a line is overloaded because wind is strong in the north and demand sits in the south. Storage on the right side of that constraint is worth more than identical storage anywhere else.`
         ],
-        formula: 'n-1 planning · redispatch when reality beats the plan'
+        formula: 'n-1 planning · redispatch when reality beats the plan',
+        example: {
+          title: 'Worked example — why location is the whole business case',
+          body: `Two identical 100 MW batteries, one at a north German wind cluster and one outside Munich, face different prices, different congestion and different redispatch value. Same hardware, same cost, different revenue by a factor that can exceed two — because one of them is on the correct side of a constraint. That is also why portfolio developers buy options on several sites rather than committing to one before the grid studies return.`
+        },
+        mistake: `Site selection driven by land price and grid connection speed alone. At transmission level, the constraint map is the commercial map.`,
+        check: `From what size does Redispatch 2.0 cover a plant? Answer: 100 kW.`
       },
       {
         h: 'Three balancing products, three timescales',
         p: [
-          '<strong>FCR</strong> is automatic and local: it responds to frequency deviation itself and must be fully active in 30 seconds. <strong>aFRR</strong> is signalled by the TSO and restores frequency within 5 minutes. <strong>mFRR</strong> is manual and takes up to 15 minutes.',
-          'The products are not interchangeable: prequalification, metering and control differ. A battery that is fast enough for FCR may still fail aFRR prequalification on energy or on its control interface.',
-          'Revenue per MW is highest for FCR and lowest for mFRR — but FCR requires continuous availability and a symmetrical reserve, which eats into your usable energy.'
+          `<strong>FCR</strong> is automatic and local: it responds to the frequency deviation itself, must be fully active within 30 seconds, and is bought in symmetrical blocks. <strong>aFRR</strong> is signalled by the TSO, restores frequency rather than containing it, and must be fully active within 5 minutes. <strong>mFRR</strong> is manually dispatched and takes up to 15 minutes.`,
+          `The products are not interchangeable. Prequalification, metering, control interface and energy obligations differ, and a battery that is fast enough for FCR may still fail aFRR prequalification on control interface or on sustained energy.`,
+          `Revenue per MW is highest for FCR and lowest for mFRR, but FCR requires continuous availability and symmetric headroom — which removes usable energy from arbitrage. The product choice is a design decision disguised as a commercial one.`
         ],
-        formula: 'FCR 30 s · aFRR 5 min · mFRR 15 min'
+        formula: 'FCR 30 s · aFRR 5 min · mFRR 15 min',
+        example: {
+          title: 'Worked example — the energy an FCR obligation consumes',
+          body: `A 100 MW plant offering 20 MW of FCR must hold 20 MW of headroom in each direction, so it can never charge above 80 % or discharge below 20 % of its power capability. That band, multiplied by the hours committed, is energy the arbitrage model assumed it could use. On a four-hour battery that band is the difference between cycling twice a day and cycling once — which changes degradation, augmentation and the whole warranty picture.`
+        },
+        mistake: `Adding FCR, aFRR and arbitrage revenue at full capacity in the same hour. The products reserve the same megawatt, and a model that stacks them simultaneously overstates revenue by more than the plant costs.`,
+        check: `How fast must aFRR be fully active? Answer: 5 minutes.`
       },
       {
         h: 'Voltage and reactive power',
         p: [
-          'Transmission voltage is managed by generators and compensation, and the TSO buys reactive power where it needs it. At the connection boundary there is an exchange of U and Q that both sides must agree.',
-          'A battery can supply reactive power without discharging, which is one of its underrated advantages at transmission level — but it consumes converter headroom, so active and reactive capability trade against each other.',
-          'This is where the PCS specification meets the grid code: the converter must be able to deliver the reactive current the TSO asks for at the moment of a fault.'
+          `Transmission voltage is managed by generators and compensation, and the TSO buys reactive power where it needs it. At each connection boundary there is an exchange of U and Q that both sides agree in the connection agreement.`,
+          `A battery can supply reactive power without discharging, which is one of its underrated advantages at transmission level. The catch is converter headroom: active and reactive capability trade against each other, so a converter rated at 100 MVA cannot deliver 100 MW and 50 MVar at the same instant.`,
+          `This is where the PCS specification meets the grid code. The converter must be able to deliver the reactive current the TSO asks for during a fault, not just in steady state — and that requirement is usually discovered late.`,
+          `A useful review question for a PCS specification: what reactive current can the converter deliver at 0 % voltage for 150 ms? If nobody knows the answer, the fault-ride-through requirement has not been engineered.`
         ],
-        formula: 'Q without energy, but never without converter headroom'
+        formula: 'Q without energy, but never without converter headroom',
+        example: {
+          title: 'Worked example — the rating that is not a single number',
+          body: `A converter rated 100 MVA at unity power factor may deliver 100 MW and 0 MVar, or 90 MW and 43 MVar, depending on its capability curve. A connection agreement asking for 0.95 power factor at full active power is therefore a request for a larger converter than the developer budgeted for. Ask for the capability curve at the connection voltage, not the nominal one, and check it at both the maximum and minimum grid voltage.`
+        },
+        mistake: `Reading a PCS datasheet's MVA rating as available active power at any power factor. The capability curve is the real specification.`,
+        check: `Can a battery supply reactive power while idle? Answer: yes, within converter headroom.`
       },
       {
         h: 'Stability: inertia, RoCoF, short-circuit strength',
         p: [
-          'Synchronous machines store kinetic energy in their rotors and release it instantly when frequency falls. That inertia is why the frequency moves slowly enough for control to act.',
-          'Inverter-based generation has no rotor, so replacing synchronous plant with inverters reduces inertia and raises RoCoF. <code>RoCoF = ΔP·f / (2·E)</code>.',
-          'Grid-forming converters can synthesise an inertia-like response, and batteries can provide fast frequency response — but only within their energy and power limits. Storage mitigates the problem; it does not restore the physics.'
+          `Synchronous machines store kinetic energy in their rotors and release it instantly when frequency falls. That inertia is why frequency moves slowly enough for control to act: <code>RoCoF = ΔP·f / (2·E)</code>.`,
+          `Inverter-based generation has no rotor, so replacing synchronous plant with inverters reduces inertia and raises RoCoF. The system becomes more sensitive to the same loss of generation, and protection that assumes a slow decline starts to trip on events it used to ride through.`,
+          `Grid-forming converters can synthesise an inertia-like response and batteries can provide fast frequency response, but only within their energy and power limits. Storage mitigates the problem; it does not restore the physics of a rotating mass.`,
+          `The practical consequence is that grid codes keep tightening: minimum inertia requirements, fast frequency response obligations and grid-forming capability are all attempts to buy back behaviour that used to be free.`
         ],
-        formula: 'RoCoF = ΔP · f / (2 · E)   ·   3000 MW lost from 200 GW·s → 0.375 Hz/s'
+        formula: 'RoCoF = ΔP · f / (2 · E)   ·   3000 MW lost from 200 GW·s → 0.375 Hz/s',
+        example: {
+          title: 'Worked example — how much inertia a loss removes',
+          body: `Losing 3,000 MW from a system with 200,000 MW·s gives 0.375 Hz/s. Halve the inertia and the same loss gives 0.75 Hz/s, which is the range where RoCoF relays start to operate and where the sequence of events in a blackout report begins. The number that matters operationally is how quickly frequency reaches the first protection threshold, not how far it eventually falls.`
+        },
+        mistake: `Assuming a battery's fast response equals inertia. Frequency response acts on the deviation that has already occurred; inertia limits how fast that deviation develops.`,
+        check: `What is RoCoF? Answer: rate of change of frequency, in Hz/s.`
       },
       {
         h: 'HVDC and the north–south problem',
         p: [
-          'Germany generates wind in the north and consumes in the south. HVDC links move bulk power over long distances without coupling the two ends, and without the reactive current that AC cables would demand.',
-          'The trade is converter stations at both ends, losses in conversion, and a new class of failure mode: a converter block that disappears in milliseconds.',
-          'For storage, HVDC matters indirectly: it changes where congestion appears, and therefore where a battery is worth building.'
+          `Germany generates wind in the north and consumes in the south. HVDC links move bulk power over long distances without coupling the two ends and without the reactive current that AC cables would demand — which is why they are used for subsea and for long land routes.`,
+          `The trade is converter stations at both ends, conversion losses, and a new class of failure mode: a converter block that disappears in milliseconds and takes gigawatts with it. Protection and system studies at HVDC terminals look quite different from AC.`,
+          `For storage, HVDC matters indirectly. It changes where congestion appears, and therefore where a battery is worth building — which is why the transmission plan is a commercial document for anyone siting storage.`,
+          `Read the ten-year network development plan before committing capital, and read it again every two years: the corridors being reinforced and the ones being retired tell you where flexibility will be scarce — and where a battery will be paid for being available rather than for being cheap.`
         ],
-        formula: 'HVDC: decoupled ends · converter losses · new failure modes'
+        formula: 'HVDC: decoupled ends · converter losses · new failure modes',
+        example: {
+          title: 'Worked example — reading the network plan as a map',
+          body: `A new HVDC link relieves a constraint in one corridor and creates new flows elsewhere. Storage sited on the relieved corridor loses value; storage sited at the new bottleneck gains it. The network development plan publishes both years in advance.`
+        },
+        mistake: `Treating the grid as static when siting an asset with a twenty-year life. The network plan is public; the siting decision is a bet on it.`,
+        check: `Why is HVDC used for long links? Answer: it decouples the ends and avoids reactive current over distance.`
       }
     ],
     renderExtra: drawTimeline,

@@ -156,56 +156,92 @@
       {
         h: 'The synchronous machine, in four ideas',
         p: [
-          'A synchronous generator spins at exactly grid frequency, held there by the balance of mechanical power in and electrical power out. Its rotor stores kinetic energy: <code>E = S · H</code>, with H typically 3–7 seconds.',
-          'The <strong>governor</strong> adjusts mechanical input as frequency changes, with a droop of a few percent. The <strong>AVR</strong> adjusts excitation to hold voltage and supply reactive power. They are separate loops and are often confused.',
-          'That stored energy is invisible until something goes wrong — then it is the only reason the frequency falls slowly enough for control to act.'
+          `A synchronous generator spins at exactly grid frequency, held there by the balance between mechanical power in and electrical power out. Its rotor stores kinetic energy: <code>E = S · H</code>, with H typically 3–7 seconds, so a 1 GW machine holds several thousand megawatt-seconds of energy that nobody paid for explicitly.`,
+          `The <strong>governor</strong> adjusts mechanical input as frequency changes, with a droop of a few percent — a 5 % droop means a 5 % frequency deviation moves the machine from no load to full output. The <strong>AVR</strong> adjusts excitation to hold voltage and supply reactive power. Two separate loops, routinely confused with each other.`,
+          `The point of all this is that a synchronous machine provides stability as a by-product of existing. Nobody had to specify inertia, voltage support or fault current: physics supplied them, and the market price never showed them.`
         ],
-        formula: 'E = S · H   ·   droop ≈ 5 %   ·   AVR holds voltage'
+        formula: 'E = S · H   ·   droop ≈ 5 %   ·   AVR holds voltage',
+        example: {
+          title: 'Worked example — the energy in a rotor',
+          body: `A 1 GW machine with H = 5 s stores 5,000 MW·s. If 3,000 MW of generation is lost, that stored energy is what slows the frequency decline for the first seconds — before governors respond at all. Multiply it across the fleet and you have the system inertia that decides how fast RoCoF develops.`
+        },
+        mistake: `Assuming a battery provides the same thing because it responds quickly. Fast response acts on a deviation that has already happened; inertia determines how fast that deviation develops in the first place.`,
+        check: `A 500 MW machine with H = 4 s: what is the stored energy? Answer: 2,000 MW·s.`
       },
       {
         h: 'Thermal and hydro: ramp rates and minimum load',
         p: [
-          'Coal and gas plants take hours to start and have minimum stable loads; they cannot follow a ten-minute forecast error. Hydro is fast but geographically limited.',
-          'These constraints — ramp rate, minimum load, start-up cost — are why the dispatch stack has a shape, and why the cheapest plant is not always running.',
-          'They are also why frequency response was historically a by-product: a spinning machine responds automatically because physics makes it.'
+          `Coal and gas plants take hours to start and have minimum stable loads; they cannot follow a ten-minute forecast error. Hydro is fast but geographically limited, and its energy is limited by water rather than by fuel.`,
+          `These constraints — ramp rate, minimum load, start-up cost — are why the dispatch stack has a shape at all, and why the cheapest plant is not always running. A unit held at minimum load for system reasons is being paid for something other than energy.`,
+          `They are also why frequency response was historically a by-product: a spinning machine responds automatically because physics makes it. The control room did not buy response; it received it with the generation.`
         ],
-        formula: 'Slow to start · minimum load · response for free'
+        formula: 'Slow to start · minimum load · response for free',
+        example: {
+          title: 'Worked example — why the coal plant stays on',
+          body: `A 500 MW coal unit with a 40 % minimum load must stay above 200 MW whenever it is running, even when the market price says zero. That is 200 MW of must-run capacity sitting under the renewables, which is why negative prices appear before the coal fleet has switched off. The same logic explains why a gas plant can be running while the price is below its own short-run marginal cost: it is being kept warm for a later peak, and the cost of being warm is a line item someone has to justify.`
+        },
+        mistake: `Reading merit-order charts as if every plant can start and stop freely. The chart describes marginal cost; the constraints behind it describe what can actually happen.`,
+        check: `What happens to price when must-run output exceeds demand? Answer: it goes to zero or negative.`
       },
       {
-        h: 'Renewables: variable, forecastable, and zero marginal cost',
+        h: 'Renewables: variable, forecastable, zero marginal cost',
         p: [
-          'Wind and solar have no fuel cost, so they run whenever they can and sit at the bottom of the merit order. Their output is variable and forecast with error, which is what creates the need for flexibility.',
-          'When their output exceeds demand, prices go to zero or negative. That is not a market failure: it is the market telling generators to stop and telling storage to charge.',
-          'Their inverters also replaced rotating machines, which removed inertia from the system at exactly the moment variability increased.'
+          `Wind and solar have no fuel cost, so they run whenever they can and sit at the bottom of the merit order. Their output is variable and forecast with error, and the error is what creates the need for flexibility at every timescale from seconds to seasons.`,
+          `When their output exceeds demand, prices go to zero or negative. That is not a market failure; it is the market telling generators to stop and telling storage to charge. The signal is correct — the question is who can respond to it.`,
+          `Their inverters also replaced rotating machines, which removed inertia from the system at exactly the moment variability increased. That coincidence is the technical story of the German Energiewende.`
         ],
-        formula: 'Zero marginal cost · forecast error · no inertia'
+        formula: 'Zero marginal cost · forecast error · no inertia',
+        example: {
+          title: 'Worked example — the midday collapse',
+          body: `On a sunny Sunday, 25 GW of solar against 55 GW of demand pushes the marginal plant down the stack to a zero-cost unit, so the clearing price goes to zero. Add strong wind and the price crosses into negative territory: generators pay to keep running rather than shut down, and a battery is paid to charge. Note that the battery is not competing with the solar farm; it is buying its output at the moment the solar farm cannot give it away.`
+        },
+        mistake: `Assuming negative prices are temporary anomalies. In high-renewable systems they are a structural feature, and a storage business case that ignores them is ignoring its cheapest charging hours.`,
+        check: `What is the marginal cost of wind generation? Answer: essentially zero.`
       },
       {
         h: 'Inverter-based generation and what it lacks',
         p: [
-          'A PV or wind inverter follows the grid: it measures voltage and frequency and injects current in phase. It cannot establish a grid on its own, and it contributes no inertia.',
-          'As inverter share rises, the grid gets weaker: lower short-circuit strength, faster RoCoF, and less inherent damping. Grid codes respond by demanding synthetic inertia and grid-forming capability.',
-          'Storage is the natural provider — it can inject real power instantly — but only within its energy and power limits. It buys time; it does not restore the physics of a rotating mass.'
+          `A PV or wind inverter follows the grid: it measures voltage and frequency and injects current in phase with what it finds. It cannot establish a grid on its own, and it contributes no inertia because there is no rotating mass.`,
+          `As inverter share rises the grid gets weaker — lower short-circuit strength, faster RoCoF, less inherent damping. The controls that used to be a curiosity become mandatory, which is why grid codes have moved from "ride through" to "support".`,
+          `Grid-forming control is the response: a converter that establishes voltage and frequency rather than following them. Storage is the natural provider because it can inject real power instantly — but only within its energy and power limits.`
         ],
-        formula: 'Follow the grid · no inertia · stability becomes a control problem'
+        formula: 'Follow the grid · no inertia · stability becomes a control problem',
+        example: {
+          title: 'Worked example — what a weak grid does to a converter',
+          body: `At a low short-circuit ratio the voltage at the converter terminals moves as the converter injects current, so a control loop tuned for a stiff grid becomes unstable. That is why grid-forming inverters and careful tuning are required on weak parts of the network, and why a plant that worked on one site may oscillate on another. The short-circuit ratio at the connection point is therefore a design parameter, not a network curiosity, and it belongs in the PCS specification, right next to the efficiency figures nobody argues about.`
+        },
+        mistake: `Assuming a grid-following inverter is a drop-in replacement for a synchronous machine. It replaces the energy, not the behaviour — and the behaviour was free before.`,
+        check: `What does grid-forming control establish? Answer: voltage and frequency, without needing an existing reference.`
       },
       {
         h: 'Merit order and the price',
         p: [
-          'Plants are dispatched in order of marginal cost. The most expensive plant that must run sets the price for everyone — which is why a gas peaker at 110 €/MWh can set a price received by a wind farm at zero cost.',
-          'The gap between a plant\'s marginal cost and the clearing price is inframarginal rent. It funds fixed costs, and it is the reason cheap generators like a fully depreciated lignite plant are valuable.',
-          'A battery with near-zero marginal cost earns the clearing price when it discharges — but pays for the energy it stored. Its margin is the spread, not the price.'
+          `Plants are dispatched in order of marginal cost. The most expensive plant that must run sets the price for everyone — so a gas peaker at 110 €/MWh sets a price that a wind farm at zero cost also receives.`,
+          `The gap between a plant's own marginal cost and the clearing price is inframarginal rent. It funds fixed costs, and it explains why a fully depreciated lignite plant is a valuable asset even when it runs rarely.`,
+          `A battery with near-zero marginal cost earns the clearing price when it discharges, but pays for the energy it stored. Its margin is the spread, not the price — which is why storage business cases look nothing like generation business cases.`
         ],
-        formula: 'Price = marginal cost of the marginal plant'
+        formula: 'Price = marginal cost of the marginal plant',
+        example: {
+          title: 'Worked example — who sets the price at 55 GW',
+          body: `Stack: 30 GW wind and 25 GW solar at zero, then lignite at 35 €/MWh. At 55 GW demand the zero-cost capacity is exactly exhausted, so the first lignite unit is marginal and sets 35 €/MWh — for every megawatt-hour sold, including the 55 GW of renewables that cost nothing to run. That gap between cost and price is the money that funds the whole fleet, and it is the reason merit-order charts are studied by investors as closely as by engineers.`
+        },
+        mistake: `Thinking the price reflects the average cost of generation. It reflects the cost of the last unit needed, which can be far above or below the average.`,
+        check: `Who sets the price when demand exceeds all zero-cost capacity? Answer: the cheapest fossil unit that must run.`
       },
       {
         h: 'The German mix, and how it got there',
         p: [
-          'The EEG built the renewables fleet through guaranteed prices, then moved larger plants to direct marketing with a sliding premium. That shift exposed generators to market signals, including negative prices.',
-          'The nuclear phase-out and the coal exit removed synchronous capacity in the same decades that inverter capacity grew — a double change to system stability.',
-          'Understanding this history matters commercially: it explains why German storage revenue is concentrated in frequency services and why the capacity mechanism debate keeps returning.'
+          `The EEG built the renewables fleet through guaranteed prices, then moved larger plants to direct marketing with a sliding premium. That shift exposed generators to market signals, including negative prices, and changed what "operating" a renewable plant means.`,
+          `The nuclear phase-out and the coal exit removed synchronous capacity in the same decades that inverter capacity grew — a double change to system stability that no single policy intended.`,
+          `Understanding this history matters commercially. It explains why German storage revenue is concentrated in frequency services, why the capacity mechanism debate keeps returning, and why the regulatory framework you learn today will look different in three years.`
         ],
-        formula: 'Feed-in tariff → market premium → market exposure'
+        formula: 'Feed-in tariff → market premium → market exposure',
+        example: {
+          title: 'Worked example — the same plant under two regimes',
+          body: `Under a fixed feed-in tariff a PV plant runs whenever the sun shines, because every kilowatt-hour is paid the same. Under direct marketing with a sliding premium it faces the market price, so on a negative-price afternoon it may curtail. Same asset, same sun, different behaviour — driven entirely by the settlement mechanism. Any storage business case therefore needs a view on policy, not just on price spreads — and it should state that view explicitly so it can be argued with — and revisited when the next amendment lands.`
+        },
+        mistake: `Learning the current subsidy rules as if they were engineering constants. They are policy, they change with governments, and any business case older than a year should be treated as a draft.`,
+        check: `What replaced the fixed feed-in tariff for larger plants? Answer: direct marketing with a sliding market premium.`
       }
     ],
     renderExtra: function (host) {

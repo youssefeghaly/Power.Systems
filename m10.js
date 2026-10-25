@@ -109,6 +109,54 @@
       why: 'Resonant earthing with a Petersen coil. It limits the earth-fault current so a single fault does not trip the feeder — common in German MV networks.' }
   ];
 
+
+  function drawFeeder(host) {
+    var W = 860, H = 340, padL = 70, padR = 30, padT = 30, padB = 54;
+    var iw = W - padL - padR, ih = H - padT - padB;
+    var kmMax = 10, vMin = 96, vMax = 104;
+    var x = function (km) { return padL + (km / kmMax) * iw; };
+    var y = function (v) { return padT + ih - ((v - vMin) / (vMax - vMin)) * ih; };
+
+    /* load-only: voltage falls along the feeder; with 5 MW at the end: rises */
+    var loadOnly = [], withGen = [];
+    for (var k = 0; k <= kmMax; k++) {
+      loadOnly.push(100 - 0.2 * k);
+      withGen.push(100 + 0.25 * k);
+    }
+
+    var p = [];
+    p.push('<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart" role="img" aria-label="Voltage profile along a feeder with and without injection">');
+
+    [96, 98, 100, 102, 104].forEach(function (v) {
+      p.push('<line x1="' + padL + '" y1="' + y(v) + '" x2="' + (W - padR) + '" y2="' + y(v) + '" class="chart-grid"/>');
+      p.push('<text x="' + (padL - 8) + '" y="' + (y(v) + 4) + '" class="chart-axis" text-anchor="end">' + v + '%</text>');
+    });
+    [0, 2, 4, 6, 8, 10].forEach(function (k) {
+      p.push('<text x="' + x(k) + '" y="' + (H - 30) + '" class="chart-axis" text-anchor="middle">' + k + ' km</text>');
+    });
+    p.push('<text x="' + (W - padR) + '" y="' + (H - 10) + '" class="chart-axis" text-anchor="end">distance from substation</text>');
+
+    p.push('<line x1="' + padL + '" y1="' + y(102) + '" x2="' + (W - padR) + '" y2="' + y(102) + '" class="chart-threshold"/>');
+    p.push('<text x="' + (padL + 4) + '" y="' + (y(102) + 16) + '" class="chart-axis">+2 % allowance</text>');
+
+    function line(arr, cls) {
+      return '<polyline points="' + arr.map(function (v, i) { return x(i) + ',' + y(v); }).join(' ') + '" class="' + cls + '"/>';
+    }
+
+    p.push(line(loadOnly, 'strat-a'));
+    p.push(line(withGen, 'strat-c'));
+    p.push('</svg>');
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>Same feeder, two directions of power</h2>' +
+        '<p class="muted">Voltage falls along a loaded feeder. Add injection at the far end and the profile lifts — and it is the far end that breaches the limit first.</p>' +
+        '<div class="legend"><span><i class="sw-a"></i>load only</span><span><i class="sw-c"></i>with 5 MW injection</span><span><i class="sw-contract"></i>+2 % allowance</span></div>' +
+        '<div class="chart-wrap">' + p.join('') + '</div>' +
+        '<p class="muted">The constraint is not at your terminals. It is at the node furthest along the feeder, which is why a plant can pass its own voltage check and still be refused.</p>' +
+      '</div>';
+  }
+
   window.MODULES.push({
     id: 'm10',
     number: '10',
@@ -118,58 +166,98 @@
       {
         h: 'Who owns what',
         p: [
-          'German distribution runs from the 110 kV regional network down to 10/20/30 kV medium voltage and 400 V low voltage. The DSO owns the network; you own everything behind the meter.',
-          'Most storage — C&I certainly, and a good share of utility-scale — connects at medium voltage. The rules are 4110, and the local truth is the DSO\'s TAB.',
-          'The distribution network was designed for consumption flowing one way, from substation to customer. That single fact explains most connection refusals.'
+          `German distribution runs from the 110 kV regional network down to 10/20/30 kV medium voltage and 400 V low voltage. The DSO owns the network; you own everything behind the meter. The boundary is a document, not a fence, and it decides who pays for every fault on either side of it.`,
+          `Most storage — C&I certainly, and a large share of utility-scale — connects at medium voltage. The rules are 4110 and the local truth is the DSO's TAB, which is why two identical plants in neighbouring areas can face different requirements.`,
+          `The distribution network was designed for consumption flowing one way, from substation to customer. That single historical fact explains most connection refusals, because your plant asks the network to work in the direction it was never planned for.`
         ],
-        formula: '110 kV regional → 20 kV MV → 400 V LV'
+        formula: '110 kV regional → 20 kV MV → 400 V LV',
+        example: {
+          title: 'Worked example — why the direction matters',
+          body: `A 5 MW factory on a 20 kV feeder is unremarkable: the DSO modelled it as load and the feeder voltage profile expects it. A 5 MW battery at the same point injects instead, raising the voltage at every node between it and the substation. The network did not change; the direction did. The DSO studies your connection against the feeder as it will be, not as it was when the load was connected.`
+        },
+        mistake: `Assuming the plant's size is the only thing the DSO cares about. What it cares about is the effect on the voltage profile and the fault level at every node on the feeder, not at your terminal alone.`,
+        check: `At which voltage do most C&I storage plants connect? Answer: medium voltage, typically 20 kV.`
       },
       {
         h: 'Rings built, radials run',
         p: [
-          'MV networks are built as rings so that a cable fault can be restored by closing the open point and feeding from the other side. But they are operated radially, with one normally open switch, because a ring would carry circulating current and make protection ambiguous.',
-          'That open point is also a planning tool: where it sits decides which customers lose supply when a section fails.',
-          'For a connecting plant, the ring means two possible directions of supply — and therefore two sets of fault levels and protection settings to check.'
+          `MV networks are built as rings so a cable fault can be restored by closing the open point and feeding from the other side. But they are run radially, with one normally open switch, because a closed ring would carry circulating current and make protection ambiguous.`,
+          `The position of that open point is a planning decision: it decides which customers lose supply when a section fails, and which direction the fault current comes from at each point on the ring.`,
+          `For a connecting plant this means two possible supply directions and therefore two fault levels to check, two protection settings to coordinate, and two sets of evidence in the connection study.`,
+          `In practice the DSO will tell you which configuration applies at your point, but the protection study should demonstrate the settings are valid in both — that is the difference between a study and a guess.`
         ],
-        formula: 'Built as a ring · operated radially · one open point'
+        formula: 'Built as a ring · operated radially · one open point',
+        example: {
+          title: 'Worked example — the open point moves the fault level',
+          body: `Close the open point at one end and the source impedance to your connection point changes, so the fault level at your terminals changes with it. A protection study done for one switching state can be wrong for the other — which is why the DSO studies both and why your relay settings must work in both. Ask the DSO which switching states were studied; if the answer is one, ask again.`
+        },
+        mistake: `Treating the ring as a redundancy feature that has nothing to do with you. It is the reason your protection has to be valid in two network configurations.`,
+        check: `Why is an MV ring operated with one open point? Answer: to avoid circulating current and keep protection unambiguous.`
       },
       {
         h: 'Voltage rise is the binding constraint',
         p: [
-          'Injection raises voltage at the far end of a feeder: <code>ΔU = (P·R + Q·X) / U</code>. Resistance dominates on MV and LV cables, reactance on overhead lines and at higher voltages.',
-          'The permitted rise is a share of the ±10 % band, and it is shared with everyone else on the feeder. That is why hosting capacity is a network question, not a plant question.',
-          'The three levers: connect further upstream, absorb reactive power, or accept curtailment at the top of the output. A fourth — paying for a network upgrade — is the expensive one.'
+          `Injection raises voltage at the far end of a feeder: <code>ΔU = (P·R + Q·X) / U</code>. Resistance dominates on MV and LV cables, reactance on overhead lines and at higher voltages — which is why the same megawatt has a different effect depending on where it connects.`,
+          `The permitted rise is a share of the ±10 % band, and that band is shared with every other customer on the feeder. It is not a property of your plant; it is a budget the network operator allocates.`,
+          `The three levers are: connect further upstream where the impedance is lower, absorb reactive power to pull the voltage back down, or accept curtailment at the top of the output. Paying for a network upgrade is the fourth, and it is usually the most expensive.`
         ],
-        formula: 'ΔU = (P·R + Q·X) / U   ·   5 MW, 1 Ω, 20 kV → 1.25 %'
+        formula: 'ΔU = (P·R + Q·X) / U   ·   5 MW, 1 Ω, 20 kV → 1.25 %',
+        example: {
+          title: 'Worked example — the same five megawatts',
+          body: `Five megawatts at the end of a feeder with 1 Ω gives 250 V, or 1.25 % of 20 kV. Add 2 MVar of reactive injection with X = 2 Ω and the rise becomes 2.25 % — three quarters of a 2 % allowance spent on reactive power nobody asked for. Absorbing Q instead would buy headroom without giving up a kilowatt of active output.`
+        },
+        mistake: `Calculating the voltage rise at the plant terminals only. The constraint is the highest node on the feeder, which may be kilometres away and is not on your site.`,
+        check: `5 MW at 20 kV through 1 Ω: what is the rise? Answer: 1.25 %.`
       },
       {
         h: 'Hosting capacity, and why 5 MW is not 5 MW',
         p: [
-          'Hosting capacity is the injection a feeder can accept without breaching its voltage or thermal limits. It depends on where you connect, what else is on the feeder, and the time of day.',
-          'A load and an injection of the same size are not symmetrical: the load lowers voltage and the feeder was designed for it; the injection raises voltage into a band that is already partly used.',
-          'This is why the same 5 MW gets approved at one point and refused 2 km further out — and why the DSO\'s answer is a calculation, not a policy.'
+          `Hosting capacity is the injection a feeder can accept without breaching its voltage or thermal limits. It depends on where you connect, what else is on the feeder and the time of day — so it is a property of the network at that point, not a number attached to your project.`,
+          `A load and an injection of the same size are not symmetrical. The load lowers voltage into a band the feeder was designed to use; the injection raises it into a band that is already partly consumed by other customers.`,
+          `This is why the same 5 MW is approved at one point and refused two kilometres further out, and why the DSO's answer is a calculation rather than a policy position you can negotiate.`
         ],
-        formula: 'Hosting capacity = the injection at which ΔU reaches the limit'
+        formula: 'Hosting capacity = the injection at which ΔU reaches the limit',
+        example: {
+          title: 'Worked example — the number the DSO computes',
+          body: `With 1 Ω and a 2 % limit at 20 kV, the maximum injection is 8 MW: ΔU_max is 400 V, so P = 400 × 20,000 ÷ 1. Ask for 10 MW at that point and the answer is no — not because 10 MW is large, but because this feeder has 8 MW of headroom and someone else may already have booked part of it.`
+        },
+        mistake: `Assuming the hosting capacity you were quoted is reserved for you. It is a snapshot of the network, and the next connection request may consume it before your contract is signed.`,
+        check: `At 1 Ω and a 2 % limit, what injection reaches the limit? Answer: 8 MW.`
       },
       {
         h: 'Protection and earth faults',
         p: [
-          'Distribution protection is cheap and layered: fuses, reclosers, and at the connection a central NA protection. Grading is coarser than at transmission because the network is radial and the fault current is limited.',
-          'Earth-fault treatment matters more here than anywhere: isolated networks, resonant earthing with a Petersen coil, or low-impedance earthing all change what a single earth fault does — and whether the network trips at all.',
-          'A storage plant on a resonant-earthed network must not add an earth-fault path that defeats the compensation.'
+          `Distribution protection is cheap and layered: fuses, reclosers, and at the connection a central NA protection. Grading is coarser than at transmission because the network is radial and the fault current is deliberately limited.`,
+          `Earth-fault treatment matters more here than anywhere else. Isolated networks, resonant earthing with a Petersen coil, and low-impedance earthing all change what a single earth fault does — and whether the network trips at all.`,
+          `A storage plant on a resonant-earthed network must not introduce an earth path that defeats the compensation. That is a design question resolved with the DSO before the transformer is ordered.`,
+          `Ask the DSO three questions: how is the neutral treated, what earth-fault current flows on a single fault, and does the network trip on the first fault. The answers determine both the transformer and the protection, and none of them is written in the TAR alone — they are network-specific.`
         ],
-        formula: 'Isolated · resonant (Petersen) · low-impedance — three different fault behaviours'
+        formula: 'Isolated · resonant (Petersen) · low-impedance — three different fault behaviours',
+        example: {
+          title: 'Worked example — one fault, two outcomes',
+          body: `On a resonant-earthed 20 kV network a single earth fault may not trip anything: the coil compensates the capacitive current and the network continues. On a low-impedance-earthed network the same fault produces a large current and trips immediately. Identical plant, identical fault, completely different protection behaviour. Confirm the earthing philosophy before specifying the transformer's neutral arrangement, because the two decisions are the same decision.`
+        },
+        mistake: `Specifying earth-fault protection by copying a previous project. The earthing philosophy of the network decides what protection is even possible.`,
+        check: `Which earthing method uses a coil to compensate capacitive current? Answer: resonant earthing (Petersen coil).`
       },
       {
-        h: 'The DSO\'s view of you',
+        h: 'The DSO sees you through three systems',
         p: [
-          'Beyond protection, the DSO sees you through metering, the MaStR register, and §14a if you are a controllable consumption device. It can dim you, and it will, on a winter evening.',
-          'That is a commercial arrangement as much as a technical one: reduced grid fees in exchange for controllability. Model it before you assume your plant runs when it wants to.',
-          'The relationship is long — twenty years of operation — and the DSO\'s engineers remember who cooperated during commissioning.'
+          `Beyond protection, the DSO sees you through metering, through the MaStR register, and through §14a if you are a controllable consumption device. It can dim you, and on a cold winter evening it will.`,
+          `That is a commercial arrangement as much as a technical one: reduced grid fees in exchange for controllability. Model it before assuming the plant runs when it wants to, because the difference between 8,000 and 7,400 operating hours is most of a business case.`,
+          `The relationship is long — twenty years of operation — and the engineers who commissioned your plant will still be there when you need a variation. Cooperating during commissioning is cheaper than negotiating afterwards.`,
+          `A practical habit: keep one page of contacts and agreements from commissioning, because the engineer who signs your variation in year eight is often the one who watched your functional test in year one.`
         ],
-        formula: '§14a: controllability in exchange for reduced grid fees'
+        formula: '§14a: controllability in exchange for reduced grid fees',
+        example: {
+          title: 'Worked example — what an hour of dimming costs',
+          body: `A 100 MW plant earning €100/kW/yr needs those hours to exist. If §14a removes 400 hours a year at the top of the price curve, the lost arbitrage can be a six-figure sum — against a grid-fee saving that is usually five figures. The comparison is the whole negotiation. Put the avoided grid fee and the lost revenue in the same spreadsheet, at the same discount rate, or the comparison is theatre.`
+        },
+        mistake: `Treating grid-fee reduction as free money. It is paid for with controllability, and controllability is exactly what a merchant revenue model assumes you keep.`,
+        check: `What does §14a let the DSO do? Answer: dim controllable consumption devices.`
       }
     ],
+    renderExtra: drawFeeder,
     calc: { html: calcHTML, init: initCalc },
     drills: DRILLS
   });
