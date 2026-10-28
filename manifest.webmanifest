@@ -1,7 +1,7 @@
 {
-  "name": "BESS lab \u2014 module 1 & 2",
-  "short_name": "BESS lab",
-  "description": "Sizing, architecture and losses for utility-scale battery storage.",
+  "name": "Power Systems",
+  "short_name": "Power Systems",
+  "description": "Generation, transmission, distribution and utility-scale battery storage \u2014 an interactive curriculum.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

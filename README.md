@@ -1,4 +1,4 @@
-# BESS lab
+# Power Systems
 
 An offline-capable, single-page training app for utility-scale battery storage, aimed at
 the German market. Built as a design curriculum: every module ends with something you

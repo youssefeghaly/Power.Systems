@@ -253,12 +253,18 @@ select {
   min-height: 52px;
   font: inherit;
   font-size: 16px;
-  padding: 10px 12px;
+  padding: 10px 16px;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--ink);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
 }
+
+select::-ms-expand { display: none; }
 
 .module-title { font-size: 13px; color: var(--muted); }
 
@@ -572,3 +578,7 @@ select {
 
 /* ---------- derating cascade ---------- */
 .cascade-bar { fill: color-mix(in srgb, var(--accent) 30%, transparent); stroke: var(--accent); stroke-width: 1.4; }
+
+/* module picker: no chevron, but must still look selectable */
+select:hover { border-color: var(--accent); }
+select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
