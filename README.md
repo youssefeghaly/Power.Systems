@@ -24,8 +24,9 @@ produce or compute, not something you read.
 | 12 | Generation | Synchronous machines, merit order, EEG |
 | 13 | Safety, fire and permitting | Thermal runaway, containment layers, German permission path |
 | 14 | German markets and revenue | Reserve and arbitrage revenue, stacking, dispatch |
-| 15 | Testing, commissioning and O&M | Capacity tests, RTE, availability, guarantees |
-| 16 | Capstone design review | Ten-point scorecard and the errors real packs contain |
+| 15 | Operations and maintenance | Monitoring, triage, dispatch, preventive and corrective maintenance, LTSA |
+| 16 | Testing and commissioning | PV (IEC 62446-1/-2) and BESS (IEC 62933-2-1) test regimes side by side |
+| 17 | Capstone design review | Ten-point scorecard and the errors real packs contain |
 
 Each module has three views: **Learn** (cards), **Calculate** (a live tool) and **Drill** (12 questions).
 

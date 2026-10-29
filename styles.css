@@ -692,3 +692,6 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .bracket { fill: var(--muted); opacity: .45; }
 .screen { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 4 3; }
 .bond-line { stroke: var(--bad); stroke-width: 2; }
+
+/* PV test sequence dots */
+.step-dot-svg { fill: var(--accent); stroke: none; }

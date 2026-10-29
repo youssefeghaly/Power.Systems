@@ -105,87 +105,158 @@
   window.MODULES.push({
     id: 'm15',
     number: '15',
-    title: 'Testing, commissioning and O&M',
-    lead: 'The numbers you will be held to for twenty years, and how they are measured.',
+    title: 'Operations and maintenance',
+    lead: 'The plant is built; now it has to earn. Monitoring, triage, dispatch, maintenance and the contracts around them.',
     sections: [
       {
-        h: 'Commissioning is a sequence, not an event',
+        h: 'What operations actually is',
         p: [
-          `Mechanical completion, energisation, subsystem tests, integrated tests, the capacity test, commercial operation. Each gate has documents, and the DSO is present at the ones that matter. A plant does not "get commissioned" in an afternoon; it passes through a series of doors, and each door has a keeper.`,
-          `The capacity test is the anchor: discharge to 0 % state of charge, charge fully, rest, then discharge at rated power. The energy out is the capacity; the ratio of energy in to energy out is the round-trip efficiency. Everything measured here becomes the baseline for twenty years of warranty argument.`,
-          `The most valuable thing you can do in this phase is agree the procedure in writing before the test — including where it is measured, at what temperature, and what counts as a pass. Arguments about method after the result are always more expensive than arguments about method before it.`
+          `Operations is four jobs running at different timescales: watching the data, triaging alarms, deciding how to dispatch, and reporting what happened. None of them is glamorous, and together they decide whether a plant earns its model.`,
+          `The data arrives continuously and mostly says nothing. The skill is knowing which deviation matters: a rising cell temperature on one rack, a slowly drifting state-of-charge estimate, a recurring communication fault on one BMS. Each is cheap to fix early and expensive to explain later.`,
+          `The dispatch decision is the commercial one. Which market, when to charge, when to hold reserve — taken hour by hour, informed by price forecasts and by the plant's own limitations. Two operators with identical hardware earn different amounts because of this, not because of the equipment, and because one of them treats the dispatch algorithm as part of the asset.`
         ],
-        formula: 'Energise → subsystem → integrated → capacity test → COD',
+        formula: 'Monitor · triage · dispatch · report',
         example: {
-          title: 'Worked example — the test that defines the next twenty years',
-          body: `A plant measured at 435 MWh at the DC terminals at commissioning has that number written into its warranty baseline. If the test had been run at the POI instead, the baseline would be 400 MWh and every later comparison would shift by the losses — a difference that never leaves the contract.`
+          title: 'Worked example — the same plant, two operators',
+          steps: [
+            `Plant A follows a fixed charge/discharge schedule set at COD.`,
+            `Plant B re-optimises daily against forecast prices and reserve commitments.`,
+            `Over a year, B captures perhaps 10–20 % more spread on the same hardware.`,
+            `Same asset, same market, different operating discipline — that is the whole difference.`
+          ],
+          result: `The dispatch algorithm is the highest-return upgrade most plants never buy. The gap is invisible in the datasheet and obvious in the monthly revenue report.`
         },
-        mistake: `Running the capacity test before the thermal system is stable, then accepting a number the plant will never reproduce. A test under abnormal conditions is not a baseline, it is a data point.`,
-        check: `What is the first step of a capacity test? Answer: discharge to 0 % state of charge.`
+        mistake: `Treating operations as "keep it running". Availability is the floor; the revenue comes from how the available hours are used.`,
+        check: `What are the four operational jobs? Answer: monitor, triage, dispatch, report.`
       },
       {
-        h: 'Two numbers, two different fates',
+        h: 'Reading the data',
         p: [
-          `Capacity degrades and can be restored by augmentation. RTE degrades and cannot — it is dominated by cell internal resistance, and adding batteries does not improve it. That asymmetry governs how contracts treat the two.`,
-          `A capacity shortfall triggers augmentation or damages, and augmentation is a known cost that can be planned and financed. An RTE shortfall has no engineering remedy at all: the plant either meets the number or pays liquidated damages for the rest of its life.`,
-          `It is also why a sensible owner leaves a buffer between expected and guaranteed RTE at COD. The guarantee is a promise about year twenty made in year zero, and the margin you leave is the price of that promise — paid once at the factory, instead of every year for two decades.`
+          `Cells are polled every couple of seconds; a large plant generates over a gigabyte an hour. Full-fidelity data is kept briefly and compressed afterwards, so the detailed record of an event exists only if someone captures it while it is still there.`,
+          `The useful metrics are few: round-trip efficiency, capacity trend, availability, auxiliary consumption, cell temperature spread, and the count of alarms by type. Each is a trend, not a value — the number matters less than its direction over twelve months.`,
+          `Compare against the previous year, not against the datasheet. The datasheet describes a factory condition the plant left on day one; last year describes what this plant, on this site, is actually capable of.`
         ],
-        formula: 'Capacity: fixable · RTE: not fixable',
+        formula: 'RTE · capacity · availability · auxiliary · temperature spread · alarm count',
         example: {
-          title: 'Worked example — the guarantee you cannot fix',
-          steps: [`A plant guaranteeing 86 % RTE at end of life, measuring 85.2 % at year 15, has no lever: augmenting adds capacity but not efficiency, and re-powering the cells is a capital project.`, `The damages run for the remaining five years — typically a few percent of revenue, every year, with no way to stop the clock.`],
-          result: `The only real protection is to buy margin at the design stage, when a slightly larger transformer or a better-cooled container can still be specified.`
+          title: 'Worked example — the metric that moved first',
+          steps: [
+            `RTE falls 0.2 points a year instead of 0.1 — invisible in any single month.`,
+            `Auxiliary consumption rises in the same period by 4 %.`,
+            `The combination points at cooling: the HVAC is working harder to hold the same temperature.`,
+            `A filter service and a condenser clean restore both — for the price of a technician-day.`
+          ],
+          result: `Efficiency drift is usually a cooling story before it is a cell story. Plot auxiliary consumption against average ambient temperature; when the curves separate, the cooling has a problem.`
         },
-        mistake: `Treating RTE and capacity as equivalent performance guarantees. One is an operating cost you can manage; the other is a defect you can only compensate for.`,
-        check: `Which guarantee has no engineering remedy? Answer: RTE.`
+        mistake: `Watching only alarm counts. A plant with no alarms and a slowly rising auxiliary load is failing quietly, and that is the more expensive failure.`,
+        check: `What do you compare performance against? Answer: the previous twelve months, not the datasheet.`
       },
       {
-        h: 'Availability, and the definition fight',
+        h: 'Alarm triage and response',
         p: [
-          `Availability is available time divided by total time — but "available" is defined in the contract: at full power or partial, excluding grid-operator outages, excluding force majeure, starting from when. The definition is worth more than the number.`,
-          `A 98 % guarantee over 8,760 hours allows 175 hours down. One inverter replacement and one grid-operator outage can consume that allowance before the year is half gone, and then every subsequent hour is chargeable.`,
-          `Two contracts both saying 98 % can differ by a week of permitted downtime. When you review a guarantee, read the exclusions first — the headline percentage is the least informative part of the clause, and the exclusions are where the negotiation actually happened. Read them with the same attention you would give a price, because they are a price, and the headline number is only an advertisement for it.`
+          `Alarms arrive in tiers. A communication loss on one rack is a ticket; a cell over-temperature is a call-out; smoke detection is an emergency response. The plant's own design should have defined these tiers, and the operating contract should have matched response times to them.`,
+          `The dangerous tier is the one in between: a fault that is not urgent enough to stop the plant but not trivial enough to ignore. Insulation monitoring warnings on the DC side belong here — the first fault is a warning, and the window to act closes when the second appears.`,
+          `Response times are contractual. The LTSA will specify hours for a critical event and days for a minor one, and the difference between those numbers is worth more than the contract price.`
         ],
-        formula: 'Availability = available hours / 8 760 · definition beats value',
+        formula: 'Alarm tier → response time → who attends → what closes it',
         example: {
-          title: 'Worked example — 175 hours',
-          steps: [`8,760 × 2 % = 175.2 hours.`, `A single container fire, a transformer failure or a two-week grid outage exceeds it.`, `That is why serious contracts define partial availability, pro-rata capacity and outage exclusions rather than a single number.`],
-          result: `Ask the broker or the offtaker how they count a partial outage; the answer changes the value of the guarantee more than the percentage does.`
+          title: 'Worked example — the insulation warning',
+          steps: [
+            `The DC insulation monitoring device reports 40 kΩ — below the alarm threshold, above a trip.`,
+            `On an unearthed system this is the first fault: the plant can continue.`,
+            `A second fault would create a path through the rack.`,
+            `The right response is a scheduled inspection within days, not a shutdown and not a shrug.`
+          ],
+          result: `The first insulation fault is a deadline, not a notification. Write the threshold, the response and the owner into the operating procedure before energisation, not after the first alarm.`
         },
-        mistake: `Negotiating the percentage and conceding the definition. The definition is where the money is, and it is usually settled by whoever drafted the clause.`,
-        check: `A 98 % guarantee on 8,760 hours allows how many hours down? Answer: 175.2.`
+        mistake: `Setting response times by what the site can achieve rather than what the risk requires. The second fault does not read the contract.`,
+        check: `What does the first DC insulation fault mean? Answer: it is a warning — act before a second fault appears.`
       },
       {
-        h: 'Operations: what actually happens day to day',
+        h: 'Preventive maintenance: what is actually done',
         p: [
-          `Monitoring, alarm triage, monthly performance review, and the discipline of chasing small deviations before they become claims. Most of the job is data, not spanners — and the operators who add value are the ones who notice a 2 % drift in RTE before it becomes a warranty dispute.`,
-          `Dispatch decisions sit with operations: which market, when to charge, when to hold reserve. That is where revenue is made or lost, and it is a commercial skill informed by engineering rather than either one alone.`,
-          `Maintenance is preventive (HVAC, filters, torque checks, firmware) and corrective (failed modules, sensors, contactors). The LTSA defines who does what, how fast, and who pays — and its response-time table is more operationally important than its price.`
+          `The list is mundane and largely about heat, dust and connections: HVAC filters and refrigerant circuits, condenser cleaning, fan inspection, torque checks on power connections, thermal imaging of terminals, firmware and control-system updates, and the annual calibration of instruments the contract depends on.`,
+          `Thermal imaging earns its place. A loose connection shows as a hot spot long before it fails, and a thermal survey of every enclosure once a year finds the ones that will fail in the next twelve months. It is the highest-value hour in the maintenance calendar.`,
+          `The calendar matters as much as the list. Do the work in the low-revenue season, batch tasks that need the same outage, and never schedule a major service in the week the plant is most valuable.`
         ],
-        formula: 'Monitor · triage · dispatch · maintain · document',
+        formula: 'Thermal survey · torque check · filters · coolant · firmware · calibration',
         example: {
-          title: 'Worked example — the 2 % drift',
-          steps: [`A plant losing 0.2 percentage points of RTE per year instead of 0.1 looks unremarkable at any single test.`, `Over five years it is 5 % of revenue, and by the time it is obvious the warranty period for the affected components may have expired.`, `Monthly review is what catches it while there is still a claim.`],
-          result: `Set the monthly review to compare against the previous twelve months rather than against the datasheet, so the trend is visible before the absolute number is alarming.`
+          title: 'Worked example — the campaign that paid for itself',
+          steps: [
+            `An annual thermal survey finds three terminals running 15 K above their neighbours.`,
+            `Each is a loose lug: ten minutes to torque.`,
+            `Left alone, one of them becomes an arc fault — enclosure damage, fire risk, weeks offline.`,
+            `The survey costs a day; the avoided event costs six figures.`
+          ],
+          result: `Preventive maintenance is mostly looking at the right things at the right time. Do the survey on a warm day under load; a thermal image at 10 % load shows nothing.`
         },
-        mistake: `Treating O&M as a cost line rather than a revenue function. The dispatch decisions taken by the operations team are worth more than the difference between two maintenance contracts.`,
-        check: `What does the LTSA define? Answer: who maintains what, how fast, and who pays.`
+        mistake: `Scheduling maintenance by calendar convenience rather than by revenue season. A summer outage on a plant earning its money in summer costs more than the maintenance saves.`,
+        check: `Which single task finds the most future failures? Answer: the annual thermal survey.`
       },
       {
-        h: 'The end, and the second life',
+        h: 'Corrective maintenance and spares',
         p: [
-          `At end of life the plant is re-powered with new cells in the same infrastructure, decommissioned, or sold. Re-powering is increasingly attractive because the grid connection is the scarce asset — a new connection may take five years and cannot be bought at any price.`,
-          `Decommissioning costs belong in the model from day one, and in Germany the recycling and transport rules apply to every tonne of cells. A plant whose end-of-life cost was never provisioned is a liability that lands on whoever owns it last.`,
-          `The best operators plan the re-powering decision years ahead, because it changes the augmentation strategy in the final third of asset life: why augment capacity you are about to replace?`
+          `Something will fail: a module, a sensor, a contactor, a fan, an inverter. The question is how long the plant is down, and that is decided years earlier by the spares strategy and the LTSA's response commitments.`,
+          `A spare module on site is worth more than a discount on the purchase price. Lead times for cells and modules run to months, and a plant waiting for one rack is a plant earning nothing while the obligation to be available continues.`,
+          `The same logic applies to firmware and configuration: keep an archive of the commissioned versions. A controller replaced in year five with new firmware can behave differently from the one that passed the witness test, and proving it is your problem, and the archived version is the only thing that settles it.`
         ],
-        formula: 'Re-power · decommission · or sell — decide years early',
+        formula: 'Downtime = diagnosis + parts lead time + labour + re-commissioning',
         example: {
-          title: 'Worked example — the connection is the asset',
-          steps: [`A 100 MW plant reaching end of life in 2045 holds a 110 kV connection that a new project might wait years for.`, `Re-powering the containers costs a fraction of a new build and keeps the connection — which is why the residual value of a BESS may sit more in its paperwork than in its cells.`],
-          result: `Treat the connection agreement as an asset in the financial model, with a value and a remaining life, because that is how a buyer will treat it.`
+          title: 'Worked example — the £40 part and the six-week outage',
+          steps: [
+            `A contactor fails in a single rack.`,
+            `The part is not stocked; the supplier quotes six weeks.`,
+            `The rack is isolated, so the plant loses 1/40th of its capacity — and some contracts measure availability per unit.`,
+            `A stocked spare would have restored it in an afternoon, on a plant whose availability obligation never paused.`
+          ],
+          result: `Spares are an insurance premium with a known return. List the ten components most likely to fail, and stock the three with the longest lead times.`
         },
-        mistake: `Planning augmentation to year 20 without asking whether the plant will be re-powered at year 18. The last augmentation is often the one that should not happen.`,
-        check: `Why is re-powering often better than a new build? Answer: it reuses the grid connection, which is the scarce asset.`
+        mistake: `Buying spares by price rather than by lead time. The expensive part is the wait, not the component.`,
+        check: `What decides downtime after a failure? Answer: parts lead time, plus diagnosis and re-commissioning.`
+      },
+      {
+        h: 'The LTSA, and who pays for what',
+        p: [
+          `The long-term service agreement defines what the integrator maintains, how fast they respond, what counts as a defect, and what voids the warranty. It is the operating document, and its response-time table matters more day to day than its price.`,
+          `Read the exclusions first. Work outside the LTSA falls to the owner, including balance-of-plant, the transformer, the connection, and often anything caused by grid events. Those are the failures that surprise owners, because they are not battery failures.`,
+          `The commercial consequence is a second budget: the LTSA covers the battery system, and the plant around it needs its own maintenance plan, its own spares and its own contractor list. Owners who discover this in year four discover it expensively.`,
+          `Boundaries matter for the same reason they matter in guarantees: capacity and efficiency are measured at the terminals, availability is measured by the clock, and the LTSA says which party owns which number.`,
+          `A useful test in negotiation: ask what happens on a transformer failure, and see whether the answer comes from the LTSA or from silence.`
+        ],
+        formula: 'Scope · response times · exclusions · measurement boundary',
+        example: {
+          title: 'Worked example — the transformer that was nobody\'s',
+          steps: [
+            `An oil leak develops on the site transformer in year four.`,
+            `The LTSA covers battery, PCS and controls.`,
+            `The transformer is balance-of-plant: owner\'s cost.`,
+            `A replacement is eight months on lead time, and the plant is unavailable throughout.`
+          ],
+          result: `The most expensive asset outside the LTSA is the one nobody planned for, because it sat outside every scope.`
+        },
+        mistake: `Assuming the LTSA covers the plant. It covers the battery system; the plant includes things the contract never mentions.`,
+        check: `Which document defines maintenance scope and response times? Answer: the LTSA.`
+      },
+      {
+        h: 'Two numbers, two fates, and the end',
+        p: [
+          `Capacity degrades and can be restored by augmentation; RTE degrades and cannot — it is cell internal resistance, and adding batteries does not fix it. That asymmetry shapes the operating regime as well as the contract: you can plan a capacity recovery, but you can only budget for an efficiency shortfall.`,
+          `Availability is the third number, and the definition is worth more than the value. A 98 % guarantee over 8,760 hours allows 175 hours down, which one inverter replacement and one grid outage can consume.`,
+          `At end of life the plant is re-powered, decommissioned or sold. Re-powering is increasingly attractive because the grid connection is the scarce asset — which means the final augmentation decision should be taken with the re-powering date in view, not in isolation, and usually decided before the final augmentation contract is signed.`,
+          `Treat the three numbers separately in the operating budget: one is a capital plan, one is a revenue forecast, and one is a contract negotiation.`
+        ],
+        formula: 'Capacity: recoverable · RTE: budgeted · Availability: defined',
+        example: {
+          title: 'Worked example — the last augmentation',
+          steps: [
+            `A plant is due to augment in year 18 and re-power in year 20.`,
+            `The augmentation buys two years of contractual compliance.`,
+            `The re-power replaces the cells anyway.`,
+            `The cheapest compliant path is a smaller top-up, negotiated with the offtaker, not a full block.`
+          ],
+          result: `The last augmentation should be decided by the re-powering date, not by the degradation model. The cheapest compliant path is usually a negotiated top-up, not a full block. Decide it with the re-powering date on the same page as the degradation curve.`
+        },
+        mistake: `Running the augmentation schedule to year 20 without asking whether the plant will be re-powered at 18.`,
+        check: `Which of the three numbers cannot be recovered? Answer: RTE.`
       }
     ],
     calc: { html: calcHTML, init: initCalc },

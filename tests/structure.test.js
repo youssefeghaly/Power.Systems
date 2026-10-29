@@ -16,17 +16,17 @@ const ok = (cond, msg, detail) => {
 console.log('module registry');
 const ctx = { window: {}, Calc: C, console };
 vm.createContext(ctx);
-['content.js','m1.js','m2.js','m3.js','m4.js','m5.js','m6.js','m7.js','m8.js','m9.js','m10.js','m11.js','m12.js','m13.js','m14.js','m15.js','m16.js'].forEach((f) => vm.runInContext(read(f), ctx));
+['content.js','m1.js','m2.js','m3.js','m4.js','m5.js','m6.js','m7.js','m8.js','m9.js','m10.js','m11.js','m12.js','m13.js','m14.js','m15.js','mtc.js','m16.js'].forEach((f) => vm.runInContext(read(f), ctx));
 const MODULES = ctx.window.MODULES;
 ok(Array.isArray(MODULES), 'MODULES array built');
-ok(MODULES.length === 16, 'sixteen modules registered', 'got ' + (MODULES || []).length);
-ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16', 'module order m1 … m16');
+ok(MODULES.length === 17, 'seventeen modules registered', 'got ' + (MODULES || []).length);
+ok(MODULES.map((m) => m.id).join(',') === 'm1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,mtc,m16', 'module order m1 … mtc, m16');
 
 MODULES.forEach((m) => {
   ok(typeof m.number === 'string' && m.number.length === 2, m.id + ': has a number');
   ok(Array.isArray(m.sections) && m.sections.length >= 5, m.id + ': at least 5 lesson sections', 'got ' + (m.sections || []).length);
   ok(m.sections.every((s) => s.h && Array.isArray(s.p) && s.p.length), m.id + ': every section has a heading and prose');
-  if (['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m14','m15','m16'].includes(m.id)) {
+  if (['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m14','m15','mtc','m16'].includes(m.id)) {
     m.sections.forEach((s) => {
       const exText = s.example
         ? [s.example.body || '', (s.example.steps || []).join(' '), s.example.result || ''].join(' ')
@@ -175,7 +175,7 @@ used.forEach((id) => {
 
 console.log('scripts');
 const scripts = [...html.matchAll(/<script src="\.\/([^"?]+)\?v=\d+"/g)].map((m) => m[1]);
-['calc.js','content.js','m1.js','m2.js','m3.js','m4.js','m5.js','m6.js','m7.js','m8.js','m9.js','m10.js','m11.js','m12.js','m13.js','m14.js','m15.js','m16.js','app.js'].forEach((f) => {
+['calc.js','content.js','m1.js','m2.js','m3.js','m4.js','m5.js','m6.js','m7.js','m8.js','m9.js','m10.js','m11.js','m12.js','m13.js','m14.js','m15.js','mtc.js','m16.js','app.js'].forEach((f) => {
   ok(scripts.indexOf(f) >= 0, f + ' is loaded by index.html');
   ok(fs.existsSync(path.join(dir, f)), f + ' exists on disk');
 });

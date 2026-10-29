@@ -109,7 +109,7 @@
 
   window.MODULES.push({
     id: 'm16',
-    number: '16',
+    number: '17',
     title: 'Capstone design review',
     lead: 'Everything at once, on one plant, with the errors a real pack contains.',
     sections: [
