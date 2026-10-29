@@ -164,6 +164,87 @@
       '</div>';
   }
 
+
+  function drawEarthGallery(host) {
+    function panel(title, caption, body) {
+      return '<figure class="gallery-item">' +
+        '<svg viewBox="0 0 260 190" class="gallery-svg" role="img" aria-label="' + title + '">' + body + '</svg>' +
+        '<figcaption><strong>' + title + '</strong><span>' + caption + '</span></figcaption>' +
+        '</figure>';
+    }
+
+    /* 1 — electrode types */
+    var types = '';
+    types += '<rect x="0" y="60" width="260" height="120" class="soil"/>';
+    types += '<line x1="0" y1="60" x2="260" y2="60" class="ground-line"/>';
+    types += '<line x1="45" y1="60" x2="45" y2="150" class="cable-core" stroke-width="4"/>';
+    types += '<text x="45" y="176" class="gal-label" text-anchor="middle">rod · 33 Ω</text>';
+    types += '<ellipse cx="130" cy="130" rx="34" ry="10" class="screen"/>';
+    types += '<text x="130" y="176" class="gal-label" text-anchor="middle">ring · 4.7 Ω</text>';
+    types += '<line x1="190" y1="100" x2="246" y2="100" class="screen"/>';
+    types += '<line x1="190" y1="130" x2="246" y2="130" class="screen"/>';
+    types += '<line x1="205" y1="90" x2="205" y2="145" class="screen"/>';
+    types += '<line x1="230" y1="90" x2="230" y2="145" class="screen"/>';
+    types += '<text x="218" y="176" class="gal-label" text-anchor="middle">grid · ~2 Ω</text>';
+
+    /* 2 — soil resistivity ranges */
+    var soils = [['clay', 20], ['loam', 100], ['sand', 500], ['rock', 2000]];
+    var soilSvg = '';
+    soils.forEach(function (s, i) {
+      var h = 20 * Math.log10(s[1] + 1) * 1.6;
+      var x = 30 + i * 56;
+      soilSvg += '<rect x="' + x + '" y="' + (150 - h) + '" width="38" height="' + h + '" rx="4" class="cascade-bar"/>';
+      soilSvg += '<text x="' + (x + 19) + '" y="' + (142 - h) + '" class="gal-label" text-anchor="middle">' + s[1] + '</text>';
+      soilSvg += '<text x="' + (x + 19) + '" y="170" class="gal-label" text-anchor="middle">' + s[0] + '</text>';
+    });
+    soilSvg += '<text x="130" y="186" class="gal-label" text-anchor="middle">Ω·m — two orders of magnitude</text>';
+
+    /* 3 — foundation earth */
+    var found = '';
+    found += '<rect x="0" y="120" width="260" height="70" class="soil"/>';
+    found += '<line x1="0" y1="120" x2="260" y2="120" class="ground-line"/>';
+    found += '<rect x="60" y="50" width="140" height="70" class="concrete"/>';
+    found += '<line x1="60" y1="108" x2="200" y2="108" class="bond-line" stroke-width="3"/>';
+    found += '<text x="130" y="40" class="gal-label" text-anchor="middle">building</text>';
+    found += '<text x="130" y="146" class="gal-label" text-anchor="middle">rebar in foundation concrete</text>';
+
+    /* 4 — bonding star */
+    var bond = '';
+    bond += '<line x1="130" y1="95" x2="130" y2="70" class="bond-line"/>';
+    bond += '<line x1="130" y1="95" x2="60" y2="95" class="bond-line"/>';
+    bond += '<line x1="130" y1="95" x2="200" y2="95" class="bond-line"/>';
+    bond += '<line x1="130" y1="95" x2="130" y2="140" class="bond-line"/>';
+    bond += '<circle cx="130" cy="95" r="7" class="cable-core"/>';
+    [['switchgear', 60, 60], ['tank', 200, 60], ['screens', 60, 150], ['LV PE', 200, 150]].forEach(function (b) {
+      bond += '<text x="' + b[1] + '" y="' + b[2] + '" class="gal-label" text-anchor="middle">' + b[0] + '</text>';
+    });
+    bond += '<text x="130" y="176" class="gal-label" text-anchor="middle">one reference, many bonds</text>';
+
+    /* 5 — gravel grading */
+    var gravel = '';
+    gravel += '<rect x="0" y="110" width="260" height="80" class="soil"/>';
+    gravel += '<rect x="0" y="92" width="260" height="18" class="bedding"/>';
+    gravel += '<line x1="0" y1="110" x2="260" y2="110" class="ground-line"/>';
+    gravel += '<path d="M18,58 C 70,72 120,84 200,88 L250,89" class="potential-line"/>';
+    gravel += '<line x1="18" y1="58" x2="18" y2="92" class="measure"/>';
+    gravel += '<text x="24" y="80" class="gal-label">U at the surface</text>';
+    gravel += '<text x="8" y="104" class="gal-label">gravel</text>';
+    gravel += '<text x="8" y="128" class="gal-label">grade</text>';
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>Electrodes, soil and bonding</h2>' +
+        '<p class="muted">Five things that decide whether the earth resistance you calculate is the one you install.</p>' +
+        '<div class="gallery">' +
+          panel('Electrode type', 'Same 100 Ω·m soil: geometry buys an order of magnitude.', types) +
+          panel('Soil resistivity', 'Measured, not assumed — and it varies by two orders of magnitude.', soilSvg) +
+          panel('Foundation earth', 'Concrete-encased rebar: cheap, permanent, and often available.', found) +
+          panel('Equipotential bonding', 'One reference bar. Every bond is inspected.', bond) +
+          panel('Surface grading', 'Gravel does not lower the EPR — it lowers what a body sees.', gravel) +
+        '</div>' +
+      '</div>';
+  }
+
   window.MODULES.push({
     id: 'm6',
     number: '06',
@@ -253,9 +334,58 @@
         },
         mistake: `Earthing the DC negative to "make it like AC". That defeats the insulation monitoring, removes the warning of the first fault, and turns a maintenance item into an unannounced hazard.`,
         check: `On an unearthed DC system, what does the first insulation fault do? Answer: it raises an alarm — the system can continue until a second fault appears.`
+      },
+      {
+        h: 'Worked design — earthing a 20 kV station',
+        p: [
+          `Three numbers arrive before the calculation: the earth-fault current the network can deliver, the permissible touch voltage for the clearing time, and the soil resistivity measured on site. Everything else is arithmetic on those three.`,
+          `Take 500 A, 1,000 V and 100 Ω·m. The permitted rise gives the target directly: 1,000 ÷ 500 = 2 Ω. That single division sets the whole electrode design, and it is the step most often skipped in favour of a rule of thumb like "under one ohm".`,
+          `Then you work up through geometries until one meets the target — rod, ring, grid — and if none does cheaply, you change the other variables: grade the surface, shorten the clearing time, or accept a lower fault current through network design — which is usually someone else's decision, and therefore the last lever you reach for.`
+        ],
+        formula: 'R_target = U_permissible ÷ I_fault',
+        example: {
+          title: 'Worked example — from 33 Ω to 2 Ω',
+          steps: [
+            `Target: 1,000 V ÷ 500 A = <strong>2 Ω</strong>.`,
+            `One 3 m rod: <strong>33.5 Ω</strong> — sixteen times too high.`,
+            `A 10 m ring: <strong>4.67 Ω</strong> — still over, but within reach of grading.`,
+            `A grid over the station footprint, or a shorter clearing time, closes the rest.`
+          ],
+          result: `The design is not "a rod"; it is a sequence of geometries tested against one number.`
+        },
+        mistake: `Starting from a preferred electrode and checking afterwards whether it passes. The target comes first, from the fault current and the limit — the geometry is the answer, not the assumption.`,
+        check: `500 A, 1,000 V limit: what earth resistance do you need? Answer: 2 Ω.`
+      },
+      {
+        h: 'What fails in the field',
+        p: [
+          `Earthing calculations are usually right and earthing installations frequently are not. The failure modes are mundane: a bond left loose behind a panel, a test joint buried under gravel, a rod driven into a different soil layer than the one measured.`,
+          `Corrosion is the slow one. A copper bond to a galvanised frame in damp soil becomes a battery; five years later the connection is a resistive joint nobody inspected, and the fault current takes the path of least resistance — possibly through a person.`,
+          `Seasonal variation is the one that catches designers. Resistivity measured in a wet October can be several times lower than in frozen February, and the compliance argument made on the October number does not survive the winter, when the soil freezes and the resistance rises by a factor nobody modelled.`
+        ],
+        formula: 'Inspect the bonds · record the test joints · design for the dry season',
+        example: {
+          title: 'Worked example — the inspection nobody does',
+          steps: [
+            `Measure the earth resistance at commissioning and record the soil condition.`,
+            `Repeat at the same time of year, every year — same method, same weather.`,
+            `Photograph every bond and test joint at handover; that record is the baseline.`,
+            `A rising trend matters more than a single value: it points at corrosion, not weather.`
+          ],
+          result: `A test result without its conditions is not a measurement — it is a number.`
+        },
+        mistake: `Testing once at commissioning and treating the certificate as permanent. Earthing degrades silently, and the only defence is a comparable measurement repeated over time.`,
+        check: `Why does a single earth-resistance measurement prove little? Answer: it has no trend and no recorded conditions.`
       }
     ],
-    renderExtra: drawPotential,
+    renderExtra: function (host) {
+      var a = document.createElement('div');
+      var b = document.createElement('div');
+      host.appendChild(a);
+      host.appendChild(b);
+      drawPotential(a);
+      drawEarthGallery(b);
+    },
     calc: { html: calcHTML, init: initCalc },
     drills: DRILLS
   });
