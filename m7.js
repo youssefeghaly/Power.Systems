@@ -160,6 +160,95 @@
   ];
 
 
+
+  function drawLaying(host) {
+    function panel(title, caption, body) {
+      return '<figure class="gallery-item">' +
+        '<svg viewBox="0 0 260 190" class="gallery-svg" role="img" aria-label="' + title + '">' + body + '</svg>' +
+        '<figcaption><strong>' + title + '</strong><span>' + caption + '</span></figcaption>' +
+        '</figure>';
+    }
+
+    /* 1 — buried direct */
+    var buried = '';
+    buried += '<rect x="0" y="70" width="260" height="120" class="soil"/>';
+    buried += '<line x1="0" y1="70" x2="260" y2="70" class="ground-line"/>';
+    buried += '<text x="8" y="62" class="gal-label">grade</text>';
+    buried += '<rect x="80" y="86" width="100" height="88" class="trench"/>';
+    buried += '<rect x="80" y="140" width="100" height="34" class="bedding"/>';
+    buried += '<circle cx="130" cy="158" r="11" class="cable-core"/>';
+    buried += '<line x1="80" y1="104" x2="180" y2="104" class="tape"/>';
+    buried += '<text x="188" y="108" class="gal-label">tape</text>';
+    buried += '<text x="188" y="150" class="gal-label">sand</text>';
+    buried += '<line x1="42" y1="70" x2="42" y2="158" class="dim"/>';
+    buried += '<text x="90" y="124" class="gal-label">0.6–0.8 m</text>';
+
+    /* 2 — duct bank */
+    var duct = '';
+    duct += '<rect x="0" y="70" width="260" height="120" class="soil"/>';
+    duct += '<line x1="0" y1="70" x2="260" y2="70" class="ground-line"/>';
+    duct += '<text x="8" y="62" class="gal-label">grade</text>';
+    duct += '<rect x="60" y="96" width="140" height="76" rx="6" class="concrete"/>';
+    [90, 130, 170].forEach(function (x) {
+      duct += '<circle cx="' + x + '" cy="134" r="18" class="duct"/>';
+      duct += '<circle cx="' + x + '" cy="134" r="10" class="cable-core"/>';
+    });
+
+
+    /* 3 — tray in air */
+    var tray = '';
+    tray += '<rect x="0" y="70" width="260" height="120" class="air"/>';
+    tray += '<rect x="40" y="120" width="180" height="10" class="tray"/>';
+    tray += '<rect x="40" y="110" width="8" height="60" class="bracket"/>';
+    tray += '<rect x="212" y="110" width="8" height="60" class="bracket"/>';
+    [70, 100, 130, 160, 190].forEach(function (x) {
+      tray += '<circle cx="' + x + '" cy="112" r="9" class="cable-core"/>';
+    });
+    tray += '<text x="130" y="92" class="gal-label" text-anchor="middle">grouping and airflow decide</text>';
+
+    /* 4 — trefoil vs flat */
+    var formation = '';
+    formation += '<text x="52" y="24" class="gal-label" text-anchor="middle">trefoil</text>';
+    formation += '<circle cx="40" cy="92" r="14" class="cable-core"/>';
+    formation += '<circle cx="66" cy="92" r="14" class="cable-core"/>';
+    formation += '<circle cx="53" cy="68" r="14" class="cable-core"/>';
+    formation += '<text x="52" y="150" class="gal-label" text-anchor="middle">low sheath loss</text>';
+    formation += '<text x="190" y="24" class="gal-label" text-anchor="middle">flat</text>';
+    formation += '<circle cx="150" cy="80" r="13" class="cable-core"/>';
+    formation += '<circle cx="190" cy="80" r="13" class="cable-core"/>';
+    formation += '<circle cx="230" cy="80" r="13" class="cable-core"/>';
+    formation += '<text x="190" y="150" class="gal-label" text-anchor="middle">spacing + derating</text>';
+
+    /* 5 — screen bonding */
+    var bond = '';
+    bond += '<text x="66" y="24" class="gal-label" text-anchor="middle">both ends bonded</text>';
+    bond += '<circle cx="66" cy="70" r="18" class="cable-core"/>';
+    bond += '<circle cx="66" cy="70" r="24" class="screen"/>';
+    bond += '<line x1="42" y1="94" x2="42" y2="120" class="bond-line"/>';
+    bond += '<line x1="90" y1="94" x2="90" y2="120" class="bond-line"/>';
+    bond += '<line x1="42" y1="120" x2="90" y2="120" class="bond-line"/>';
+    bond += '<text x="66" y="146" class="gal-label" text-anchor="middle">loop · current</text>';
+    bond += '<text x="196" y="24" class="gal-label" text-anchor="middle">one end bonded</text>';
+    bond += '<circle cx="196" cy="70" r="18" class="cable-core"/>';
+    bond += '<circle cx="196" cy="70" r="24" class="screen"/>';
+    bond += '<line x1="172" y1="94" x2="172" y2="120" class="bond-line"/>';
+    bond += '<line x1="172" y1="120" x2="206" y2="120" class="bond-line"/>';
+    bond += '<text x="196" y="146" class="gal-label" text-anchor="middle">no loop · voltage</text>';
+
+    host.innerHTML =
+      '<div class="card">' +
+        '<h2>How cables are actually laid</h2>' +
+        '<p class="muted">Five arrangements that decide the thermal rating before any calculation begins.</p>' +
+        '<div class="gallery">' +
+          panel('Buried direct', 'Depth, sand bedding and a warning tape. Soil resistivity sets the rating.', buried) +
+          panel('Duct bank', 'The duct adds thermal resistance and the group heats itself.', duct) +
+          panel('Tray in air', 'Grouping matters more than length. Airflow decides.', tray) +
+          panel('Trefoil vs flat', 'Single-core MV cables: formation changes sheath loss and derating.', formation) +
+          panel('Screen bonding', 'Both ends: circulating current heats the cable. One end: standing voltage.', bond) +
+        '</div>' +
+      '</div>';
+  }
+
   function drawCascade(host) {
     var steps = [
       { label: 'tabulated', value: 150, note: 'reference conditions' },
@@ -314,7 +403,13 @@
         check: `Which test on an MV cable is not done on LV? Answer: partial discharge (with the sheath test).`
       }
     ],
-    renderExtra: drawCascade,
+    renderExtra: function (host) {
+      var a = document.createElement('div');
+      var b = document.createElement('div');
+      host.appendChild(a); host.appendChild(b);
+      drawCascade(a);
+      drawLaying(b);
+    },
     calc: { html: calcHTML, init: initCalc },
     drills: DRILLS
   });

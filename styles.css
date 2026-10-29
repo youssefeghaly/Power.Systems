@@ -648,3 +648,47 @@ select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   max-width: 68ch;
   line-height: 1.55;
 }
+
+/* ---------- diagram gallery ---------- */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 14px 0 4px;
+}
+
+.gallery-item {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.gallery-svg { display: block; width: 100%; height: auto; }
+
+.gallery-item figcaption {
+  padding: 10px 12px 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.gallery-item figcaption strong { display: block; font-size: 15px; margin-bottom: 2px; }
+.gallery-item figcaption span { color: var(--muted); }
+
+.soil { fill: #d9c9a8; }
+@media (prefers-color-scheme: dark) { .soil { fill: #3b3528; } }
+.ground-line { stroke: var(--ink); stroke-width: 2; }
+.trench { fill: color-mix(in srgb, var(--card) 60%, transparent); stroke: var(--line); stroke-dasharray: 5 3; }
+.bedding { fill: color-mix(in srgb, var(--accent) 18%, transparent); }
+.cable-core { fill: var(--card); stroke: var(--ink); stroke-width: 2; }
+.tape { stroke: var(--bad); stroke-width: 3; stroke-dasharray: 6 4; }
+.dim { stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 3 3; }
+.gal-label { fill: var(--muted); font-size: 10px; }
+.concrete { fill: color-mix(in srgb, var(--muted) 30%, transparent); stroke: var(--line); }
+.duct { fill: var(--card); stroke: var(--muted); stroke-width: 1.5; }
+.air { fill: color-mix(in srgb, var(--accent) 6%, transparent); }
+.tray { fill: var(--muted); opacity: .6; }
+.bracket { fill: var(--muted); opacity: .45; }
+.screen { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 4 3; }
+.bond-line { stroke: var(--bad); stroke-width: 2; }
