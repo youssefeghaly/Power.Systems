@@ -181,7 +181,8 @@
         formula: 'EPR = I_f × R_E',
         example: {
           title: 'Worked example — the number that decides',
-          body: `A single 3 m rod of 16 mm diameter in 100 Ω·m soil gives 33.49 Ω. A 500 A earth fault then lifts the earthing system to 16,746 V. Against a permissible touch voltage of 1,000 V, that is a factor of 16.7 — and the design has to change, not the standard.`
+          steps: [`A single 3 m rod of 16 mm diameter in 100 Ω·m soil gives 33.49 Ω.`, `A 500 A earth fault then lifts the earthing system to 16,746 V.`],
+          result: `Against a permissible touch voltage of 1,000 V, that is a factor of 16.7 — and the design has to change, not the standard.`
         },
         mistake: `Thinking of earthing as a compliance item rather than a fault-current calculation. "We have an earth electrode" answers nothing; the questions are how much current, through what resistance, for how long.`,
         check: `500 A through 5 Ω: what is the EPR? Answer: 2,500 V.`
@@ -197,7 +198,8 @@
         formula: 'U_T = hand-to-feet · U_S = foot-to-foot\nHigher fault current → higher EPR → shorter clearing time or lower R_E',
         example: {
           title: 'Worked example — why gravel is not decoration',
-          body: `A station with an EPR of 2,500 V is dangerous to touch anywhere the surface is at remote-earth potential. Laying 100 mm of high-resistivity gravel over the surface does not change the EPR — it changes the voltage a body sees between hand and feet, by inserting resistance in series with the person. That is why substations have gravel, and why removing it during maintenance is a real hazard.`
+          steps: [`A station with an EPR of 2,500 V is dangerous to touch anywhere the surface is at remote-earth potential.`, `Laying 100 mm of high-resistivity gravel over the surface does not change the EPR — it changes the voltage a body sees between hand and feet, by inserting resistance in series with the person.`],
+          result: `That is why substations have gravel, and why removing it during maintenance is a real hazard.`
         },
         mistake: `Treating touch and step voltage as the same problem. They peak in different places and are mitigated differently; a design that fixes one can leave the other untouched.`,
         check: `Which is higher close to the electrode: step voltage or touch voltage? Answer: step voltage — the surface potential changes fastest there.`
@@ -213,7 +215,8 @@
         formula: 'Rod: R ≈ ρ/(2πL)·[ln(4L/a) − 1]   ·   Ring: R ≈ ρ/(2π²r)·ln(8r/a)',
         example: {
           title: 'Worked example — rods versus a ring',
-          body: `One 3 m rod at 33.49 Ω. A 10 m ring of the same conductor in the same soil: 4.67 Ω, seven times better with a fraction of the excavation. Four rods in parallel would give roughly 12–15 Ω rather than 8.4 Ω, because mutual coupling means each additional rod buys only 60–70 % of the last.`
+          steps: [`One 3 m rod at 33.49 Ω.`, `A 10 m ring of the same conductor in the same soil: 4.67 Ω, seven times better with a fraction of the excavation.`],
+          result: `Four rods in parallel would give roughly 12–15 Ω rather than 8.4 Ω, because mutual coupling means each additional rod buys only 60–70 % of the last.`
         },
         mistake: `Using the diameter as the radius in Dwight's formula. The logarithm changes by ln 2, which moves the answer by about 12 % — enough to make a marginal design look compliant or vice versa.`,
         check: `At 4 m probe spacing the meter reads 10 Ω. What is the resistivity? Answer: 2π × 4 × 10 = 251 Ω·m.`
@@ -245,7 +248,8 @@
         formula: 'DC: unearthed + insulation monitoring · AC: earthed + bonded',
         example: {
           title: 'Worked example — a fault that is not a fault',
-          body: `A container reports an insulation alarm on the DC side at 40 kΩ. Nothing is broken; moisture has entered a connector. On an unearthed system the first fault is a warning, and the plant can keep running — but only until a second fault appears. Ignoring the first alarm is how a warning becomes a fire.`
+          steps: [`A container reports an insulation alarm on the DC side at 40 kΩ.`, `Nothing is broken; moisture has entered a connector.`, `On an unearthed system the first fault is a warning, and the plant can keep running — but only until a second fault appears.`],
+          result: `Ignoring the first alarm is how a warning becomes a fire.`
         },
         mistake: `Earthing the DC negative to "make it like AC". That defeats the insulation monitoring, removes the warning of the first fault, and turns a maintenance item into an unannounced hazard.`,
         check: `On an unearthed DC system, what does the first insulation fault do? Answer: it raises an alarm — the system can continue until a second fault appears.`

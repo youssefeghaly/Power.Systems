@@ -15,7 +15,8 @@ var LESSON = {
       formula: 'Energy [MWh] = Power [MW] × Time [h]',
       example: {
         title: 'Worked example — same tank, two pipes',
-        body: `The anchor plant holds 400 MWh. With a 100 MW pipe it empties in four hours; with a 200 MW pipe, in two. The battery did not change size — but the second plant earns in different markets, needs a different interconnection, and pays a different price per MW. This is why "a 400 MWh battery" is an incomplete description of an asset.`
+          steps: [`The anchor plant holds 400 MWh.`, `With a 100 MW pipe it empties in four hours; with a 200 MW pipe, in two.`, `The battery did not change size — but the second plant earns in different markets, needs a different interconnection, and pays a different price per MW.`],
+          result: `This is why "a 400 MWh battery" is an incomplete description of an asset.`
       },
       mistake: `Quoting a battery by its energy alone. "We have 400 MWh" says nothing about whether the plant can deliver 50 MW or 200 MW, and those are different products at different prices.`,
       check: `A plant is rated 3 MW / 12 MWh. How long can it run at full power? Answer: four hours.`
@@ -31,7 +32,8 @@ var LESSON = {
       formula: 'Duration [h] = Energy [MWh] ÷ Power [MW]\nC-rate = Power [MW] ÷ Energy [MWh] = 1 ÷ Duration [h]',
       example: {
         title: 'Worked example — reading a datasheet',
-        body: `A product sheet says 5 MW / 20 MWh. Duration = 20 ÷ 5 = 4 h. C-rate = 5 ÷ 20 = 0.25C. Now suppose a supplier offers 5 MW / 10 MWh at the same price per kWh: duration halves to 2 h, C-rate doubles to 0.5C, and the cell will cycle twice as hard for the same revenue. Same megawatts, different asset.`
+          steps: [`A product sheet says 5 MW / 20 MWh.`, `Duration = 20 ÷ 5 = 4 h.`, `C-rate = 5 ÷ 20 = 0.25C.`, `Now suppose a supplier offers 5 MW / 10 MWh at the same price per kWh: duration halves to 2 h, C-rate doubles to 0.5C, and the cell will cycle twice as hard for the same revenue.`],
+          result: `Same megawatts, different asset.`
       },
       mistake: `Saying "4-hour battery, so 0.5C". It is 0.25C. The 0.5C figure belongs to a two-hour system, and the error propagates into PCS sizing, warranty limits and degradation estimates.`,
       check: `What is the C-rate of a 6-hour battery? Answer: 1 ÷ 6 ≈ 0.167C.`
@@ -47,7 +49,8 @@ var LESSON = {
       formula: 'Energy [Wh] = Voltage [V] × Charge [Ah]\n1 kWh = 1,000 Wh · 1 MWh = 1,000 kWh · 1 GWh = 1,000 MWh',
       example: {
         title: 'Worked example — from one cell to a container',
-        body: `One cell: 3.2 V × 314 Ah = 1,004.8 Wh = 1.0048 kWh. A 5 MWh container therefore needs about 4,976 cells. Now price it: at €70/kWh the cells in one container cost roughly €350,000. Get the kWh/Wh conversion wrong in the tender and you are out by a factor of a thousand on a €350,000 line — about €350 million.`
+          steps: [`One cell: 3.2 V × 314 Ah = 1,004.8 Wh = 1.0048 kWh.`, `A 5 MWh container therefore needs about 4,976 cells.`, `Now price it: at €70/kWh the cells in one container cost roughly €350,000.`],
+          result: `Get the kWh/Wh conversion wrong in the tender and you are out by a factor of a thousand on a €350,000 line — about €350 million.`
       },
       mistake: `Writing "1004.8 kWh" for a cell. The number is right and the unit is wrong by a factor of a thousand; a reviewer who reads quickly will believe it.`,
       check: `A cell is 3.2 V and 280 Ah. What is its energy in kWh? Answer: 0.896 kWh.`
@@ -63,7 +66,8 @@ var LESSON = {
       formula: 'E_DC = E_POI ÷ (1 − L)\n400 ÷ 0.92 = 434.8 MWh      (not 432)',
       example: {
         title: 'Worked example — where the half percent goes',
-        body: `At 400 MWh per day, the 2.8 MWh difference between the correct and incorrect methods is about 1,000 MWh a year. At a €40/MWh spread that is €40,000 a year of margin that was never in the model. The error is small per cycle and relentless per decade.`
+          steps: [`At 400 MWh per day, the 2.8 MWh difference between the correct and incorrect methods is about 1,000 MWh a year.`, `At a €40/MWh spread that is €40,000 a year of margin that was never in the model.`],
+          result: `The error is small per cycle and relentless per decade.`
       },
       mistake: `Adding the loss percentage to the contract number because it "feels like" adding a margin. It is not a margin, it is a denominator.`,
       check: `Deliver 500 MWh at 10 % losses. What is needed at DC? Answer: 500 ÷ 0.9 = 555.6 MWh.`
@@ -79,7 +83,8 @@ var LESSON = {
       formula: 'Containers = ⌈E_DC ÷ MWh per container⌉',
       example: {
         title: 'Worked example — the anchor plant',
-        body: `Contract: 100 MW for 4 h at the POI, 8 % losses, 5 MWh containers. POI energy 400 MWh; DC energy 434.8 MWh; containers 86.96 → 87; installed 435 MWh. Overbuild versus the DC requirement: 0.05 %. The plant is now described as 100 MW / 435 MWh installed, delivering 400 MWh at the POI.`
+          steps: [`Contract: 100 MW for 4 h at the POI, 8 % losses, 5 MWh containers.`, `POI energy 400 MWh; DC energy 434.8 MWh; containers 86.96 → 87; installed 435 MWh.`, `Overbuild versus the DC requirement: 0.05 %.`],
+          result: `The plant is now described as 100 MW / 435 MWh installed, delivering 400 MWh at the POI.`
       },
       mistake: `Sizing to the exact number and then discovering that no supplier sells a fraction of a container — or that the last container is needed only because of a rounding error in the loss calculation.`,
       check: `You need 217.4 MWh at DC and containers are 5 MWh. How many? Answer: 44.`
@@ -95,7 +100,8 @@ var LESSON = {
       formula: '100 MW · 400 MWh at POI · 435 MWh at DC · 87 containers · 0.25C',
       example: {
         title: 'Worked example — the question that exposes it',
-        body: `Ask "what is the capacity of this plant?" and you will get 400 from the developer, 435 from the battery supplier and 80 from the PCS engineer who is thinking in MVA. All three are answering a different question. In a review, the first thing you establish is which number each party is quoting and at which boundary.`
+          steps: [`Ask "what is the capacity of this plant?" and you will get 400 from the developer, 435 from the battery supplier and 80 from the PCS engineer who is thinking in MVA.`, `All three are answering a different question.`],
+          result: `In a review, the first thing you establish is which number each party is quoting and at which boundary.`
       },
       mistake: `Letting a single spreadsheet carry one "capacity" cell used by every document. It will be right for one of them and wrong for the other four.`,
       check: `Which figure belongs in the offtake contract — 400 MWh or 435 MWh? Answer: 400 MWh, measured at the POI.`

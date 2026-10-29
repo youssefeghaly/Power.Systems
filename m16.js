@@ -123,7 +123,8 @@
         formula: 'Look for missing evidence, not for mistakes in arithmetic',
         example: {
           title: 'Worked example — the finding nobody wants to hear',
-          body: `A pack with a beautifully produced 200-page design report and no earthing calculation fails review, because the EPR has not been compared against a touch-voltage limit. The report is not wrong; it is incomplete in the one place where incompleteness is a safety issue. A review that raises only this, and raises it clearly, has earned its fee.`
+          steps: [`A pack with a beautifully produced 200-page design report and no earthing calculation fails review, because the EPR has not been compared against a touch-voltage limit.`, `The report is not wrong; it is incomplete in the one place where incompleteness is a safety issue.`],
+          result: `A review that raises only this, and raises it clearly, has earned its fee.`
         },
         mistake: `Reviewing the arithmetic instead of the evidence. Arithmetic errors are rare and cheap; missing evidence is common and expensive, because it means nobody has done the thinking — and the arithmetic you can check in an afternoon is not where the risk lives, however satisfying it is to correct.`,
         check: `What is the most useful question in a review? Answer: show me the calculation.`
@@ -138,7 +139,8 @@
         formula: 'Ten checks · one failure blocks the signature',
         example: {
           title: 'Worked example — the check that is always skipped',
-          body: `The grid-code matrix is the one most often missing, because it is tedious and because everyone believes they know the requirements. Then a DSO reviewer asks which evidence document proves the reactive-power capability at the connection point, and the answer is not in the pack. Build the matrix early in the project and it fills itself in; build it at review stage and it becomes an archaeology exercise.`
+          steps: [`The grid-code matrix is the one most often missing, because it is tedious and because everyone believes they know the requirements.`, `Then a DSO reviewer asks which evidence document proves the reactive-power capability at the connection point, and the answer is not in the pack.`],
+          result: `Build the matrix early in the project and it fills itself in; build it at review stage and it becomes an archaeology exercise.`
         },
         mistake: `Treating the checks as a checklist to be satisfied rather than a set of questions to be answered with documents. A tick without a reference is an opinion.`,
         check: `How many of the ten checks must pass before sign-off? Answer: all ten.`
@@ -153,7 +155,8 @@
         formula: 'SLD ↔ schedule · trace one number · check every boundary',
         example: {
           title: 'Worked example — tracing 400 MWh',
-          body: `Follow 400 MWh from the offtake: at the POI, so 434.8 at DC with 8 % losses, so 87 containers of 5 MWh, so about 400,000 cells, so a bill of materials. If any step in that chain is missing a number, that is the finding — and it is found in ten minutes, not two days. Do it once, and the rest of the review is a matter of confirming that the other numbers are as traceable as that one.`
+          steps: [`Follow 400 MWh from the offtake: at the POI, so 434.8 at DC with 8 % losses, so 87 containers of 5 MWh, so about 400,000 cells, so a bill of materials.`, `If any step in that chain is missing a number, that is the finding — and it is found in ten minutes, not two days.`],
+          result: `Do it once, and the rest of the review is a matter of confirming that the other numbers are as traceable as that one.`
         },
         mistake: `Reading the pack front to back like a report. It was written to be read that way, which is exactly why the contradictions between sections survive until someone reads them against each other.`,
         check: `What do you compare first? Answer: the single-line diagram and the equipment schedule.`
@@ -168,7 +171,8 @@
         formula: 'Precision without basis · interfaces without owners',
         example: {
           title: 'Worked example — the interface with no owner',
-          body: `The protection interface to the DSO sits between the PCS supplier, the EPC and the network operator. It is nobody's deliverable unless someone writes it into a scope, and it is on the critical path to energisation. A single line in the interface schedule prevents a six-week delay. Write it into the EPC scope as a deliverable with a date, not as an assumption with a hope.`
+          steps: [`The protection interface to the DSO sits between the PCS supplier, the EPC and the network operator.`, `It is nobody's deliverable unless someone writes it into a scope, and it is on the critical path to energisation.`, `A single line in the interface schedule prevents a six-week delay.`],
+          result: `Write it into the EPC scope as a deliverable with a date, not as an assumption with a hope.`
         },
         mistake: `Assuming that a competent contractor covers the interfaces. Interfaces are exactly where competent contractors assume someone else is responsible.`,
         check: `Which finding is quietest and most expensive? Answer: an interface nobody owns.`
@@ -183,7 +187,8 @@
         formula: 'Gap → why it matters → evidence that closes it → owner',
         example: {
           title: 'Worked example — the finding that got fixed in a day',
-          body: `"Earthing: no EPR calculation. Without it the touch-voltage requirement is unverified, which blocks the safety sign-off. Provide the calculation at the specified fault current against the permissible voltage for the clearing time, owner: electrical lead." That is a finding someone can act on before lunch. Compare that with 'protection needs more detail', which produces a meeting, a revised section and another review.`
+          steps: [`"Earthing: no EPR calculation.`, `Without it the touch-voltage requirement is unverified, which blocks the safety sign-off.`, `Provide the calculation at the specified fault current against the permissible voltage for the clearing time, owner: electrical lead." That is a finding someone can act on before lunch.`],
+          result: `Compare that with 'protection needs more detail', which produces a meeting, a revised section and another review.`
         },
         mistake: `Writing findings that describe a feeling rather than a gap. If the reader cannot tell what document would close the item, it will stay open for months.`,
         check: `What four elements does a finding need? Answer: gap, consequence, evidence, owner.`

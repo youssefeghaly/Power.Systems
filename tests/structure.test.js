@@ -28,10 +28,17 @@ MODULES.forEach((m) => {
   ok(m.sections.every((s) => s.h && Array.isArray(s.p) && s.p.length), m.id + ': every section has a heading and prose');
   if (['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m14','m15','m16'].includes(m.id)) {
     m.sections.forEach((s) => {
-      const words = (s.p.join(' ') + ' ' + (s.example ? s.example.body : '') + ' ' + (s.mistake || '') + ' ' + (s.check || ''))
+      const exText = s.example
+        ? [s.example.body || '', (s.example.steps || []).join(' '), s.example.result || ''].join(' ')
+        : '';
+      const words = (s.p.join(' ') + ' ' + exText + ' ' + (s.mistake || '') + ' ' + (s.check || ''))
         .split(/\s+/).filter(Boolean).length;
       ok(words >= 240, 'template depth: "' + s.h.slice(0, 30) + '" has ≥ 240 words', words + ' words');
       ok(!!s.example, 'template: "' + s.h.slice(0, 30) + '" has a worked example');
+      ok(!!(s.example && (s.example.steps || s.example.body)), 'example content present: "' + s.h.slice(0, 30) + '"');
+      if (s.example && s.example.steps) {
+        ok(s.example.steps.length >= 2, 'example is stepped: "' + s.h.slice(0, 30) + '"', s.example.steps.length + ' steps');
+      }
       ok(!!s.mistake, 'template: "' + s.h.slice(0, 30) + '" names a mistake');
       ok(!!s.check, 'template: "' + s.h.slice(0, 30) + '" has a self-check');
     });

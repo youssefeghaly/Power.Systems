@@ -161,7 +161,8 @@
         formula: 'Heat → venting → flammable gas → deflagration → propagation',
         example: {
           title: 'Worked example — the ten minutes',
-          body: `In the McMicken incident the cell temperature went from about 30 °C to over 700 °C in under ten minutes, after an internal short caused by dendrites. Nothing the controls could do would have stopped it once the short formed — which is why the design effort goes into detection, venting and keeping the next container cool rather than into extinguishing this one. The practical lesson for design is that the timeline of a cell event is shorter than any human response, so the layout must assume the container is lost.`
+          steps: [`In the McMicken incident the cell temperature went from about 30 °C to over 700 °C in under ten minutes, after an internal short caused by dendrites.`, `Nothing the controls could do would have stopped it once the short formed — which is why the design effort goes into detection, venting and keeping the next container cool rather than into extinguishing this one.`],
+          result: `The practical lesson for design is that the timeline of a cell event is shorter than any human response, so the layout must assume the container is lost.`
         },
         mistake: `Designing for fire and forgetting gas. Most of the serious injuries in this industry come from deflagration and toxic exposure, not from flames reaching people.`,
         check: `What creates the explosion risk in a container? Answer: accumulation of flammable vented gas.`
@@ -176,7 +177,8 @@
         formula: '62933-5-2 system · 62619 cells · UL 9540A propagation · VdS 3103 German practice',
         example: {
           title: 'Worked example — why UL 9540A data matters in Germany',
-          body: `A German authority may not apply NFPA 855, but it will ask what happens when one module goes into runaway. The UL 9540A test answers exactly that question with measured data — temperatures, gas composition, whether propagation occurred — and that data is often the only quantitative evidence available to the fire department. Ask suppliers for the module-level results, not the headline summary; the summary is marketing and the data is evidence. Present it as supporting evidence attached to the fire concept, not as a claim of compliance.`
+          steps: [`A German authority may not apply NFPA 855, but it will ask what happens when one module goes into runaway.`, `The UL 9540A test answers exactly that question with measured data — temperatures, gas composition, whether propagation occurred — and that data is often the only quantitative evidence available to the fire department.`, `Ask suppliers for the module-level results, not the headline summary; the summary is marketing and the data is evidence.`],
+          result: `Present it as supporting evidence attached to the fire concept, not as a claim of compliance.`
         },
         mistake: `Treating the American standard as legally applicable in Germany. It is evidence, not law — useful evidence, but the permission comes from the Landesbauordnung and the AHJ.`,
         check: `Which German guideline covers fire protection for lithium storage? Answer: VdS 3103.`
@@ -191,7 +193,8 @@
         formula: 'Contain the container, protect the site',
         example: {
           title: 'Worked example — spacing beats suppression',
-          body: `Two layouts with identical suppression: one with containers 3 m apart, one with 6 m. The first propagates in a wind-driven fire; the second loses one container and keeps the plant. The extra 3 m costs land; the propagation costs the asset, the insurance and possibly the planning consent for the next project. Fire engineering can sometimes justify closer spacing with a barrier and a calculation, but that argument is made with the authority before the layout is drawn, not after. Land is the constraint in most German industrial estates, which is why this argument is usually won or lost at site selection.`
+          steps: [`Two layouts with identical suppression: one with containers 3 m apart, one with 6 m.`, `The first propagates in a wind-driven fire; the second loses one container and keeps the plant.`, `The extra 3 m costs land; the propagation costs the asset, the insurance and possibly the planning consent for the next project.`, `Fire engineering can sometimes justify closer spacing with a barrier and a calculation, but that argument is made with the authority before the layout is drawn, not after.`],
+          result: `Land is the constraint in most German industrial estates, which is why this argument is usually won or lost at site selection.`
         },
         mistake: `Buying a more elaborate suppression system to compensate for tight spacing. Suppression acts after the event has started; spacing prevents the event from becoming a site emergency.`,
         check: `What limits propagation between containers most reliably? Answer: spacing and physical barriers.`
@@ -206,7 +209,8 @@
         formula: 'BauGB → LBO (and possibly BImSchG) → fire authority → DSO',
         example: {
           title: 'Worked example — the paragraph that decides the site',
-          body: `A site outside a village, on agricultural land, looks cheap and is often the one that fails at §35: the plant is not agriculture, not forestry, and not a privileged utility in the narrow sense the paragraph uses. A site inside an industrial estate costs more per square metre and saves a year of legal argument. The same logic applies to grid connection: the cheapest land is often the most expensive project.`
+          steps: [`A site outside a village, on agricultural land, looks cheap and is often the one that fails at §35: the plant is not agriculture, not forestry, and not a privileged utility in the narrow sense the paragraph uses.`, `A site inside an industrial estate costs more per square metre and saves a year of legal argument.`],
+          result: `The same logic applies to grid connection: the cheapest land is often the most expensive project.`
         },
         mistake: `Buying or optioning land before establishing the planning category. Land cost is visible and planning risk is not, which is exactly why the cheap site wins the spreadsheet and loses the project.`,
         check: `Which paragraph governs privileged construction outside built-up areas? Answer: BauGB §35.`
@@ -221,7 +225,8 @@
         formula: 'Write it with the brigade · rehearse it · design for it',
         example: {
           title: 'Worked example — the gate that was too narrow',
-          body: `A site with a 3.5 m gate and a 6 m turning circle looks adequate until the local brigade arrives with its largest appliance and cannot enter. Rebuilding the entrance after commissioning costs a variation, a delay and a conversation with the authority who now doubts everything else in the pack. Walk the route with the brigade before the fence goes up; they will tell you what their largest appliance needs, and it is never what the drawing assumes.`
+          steps: [`A site with a 3.5 m gate and a 6 m turning circle looks adequate until the local brigade arrives with its largest appliance and cannot enter.`, `Rebuilding the entrance after commissioning costs a variation, a delay and a conversation with the authority who now doubts everything else in the pack.`],
+          result: `Walk the route with the brigade before the fence goes up; they will tell you what their largest appliance needs, and it is never what the drawing assumes.`
         },
         mistake: `Writing the emergency plan after construction, to match what was built. It should be written with the brigade before the layout is frozen.`,
         check: `What is the usual doctrine for a container in runaway? Answer: let it burn while cooling neighbours.`

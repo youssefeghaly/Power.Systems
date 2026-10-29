@@ -239,7 +239,8 @@
         formula: '400 V → 4105 · 20 kV → 4110 · 110 kV → 4120 · 380 kV → 4130',
         example: {
           title: 'Worked example — three plants, three codes',
-          body: `A 30 kW rooftop unit behind a shop connects at 400 V: 4105 applies, and the paperwork is a form and a confirmation. A 5 MW C&I battery connects at 20 kV: 4110, with an Anlagenzertifikat and a provisional operating permit. Our 100 MW anchor plant connects at 110 kV: 4120, the same mechanics with a much longer queue and a much larger evidence pack.`
+          steps: [`A 30 kW rooftop unit behind a shop connects at 400 V: 4105 applies, and the paperwork is a form and a confirmation.`, `A 5 MW C&I battery connects at 20 kV: 4110, with an Anlagenzertifikat and a provisional operating permit.`],
+          result: `Our 100 MW anchor plant connects at 110 kV: 4120, the same mechanics with a much longer queue and a much larger evidence pack.`
         },
         mistake: `Citing 4110 for a 110 kV connection because "4110 is the storage one". All four cover storage now; the voltage level decides which applies, and citing the wrong TAR in a submission costs credibility immediately.`,
         check: `Which TAR governs a plant connected at 110 kV? Answer: 4120.`
@@ -256,7 +257,8 @@
         formula: 'VNB · ÜNB · Anschlussnehmer · Anlagenbetreiber · Zertifizierer · AHJ',
         example: {
           title: 'Worked example — who can stop you, and when',
-          body: `The DSO can refuse energisation at the transfer station. The certifier can withhold the Anlagenzertifikat, which blocks the permit. The fire authority can refuse occupancy, which blocks operation even with a perfect electrical installation. Three different gates, three different documents, and none of them is the developer's own signature.`
+          steps: [`The DSO can refuse energisation at the transfer station.`, `The certifier can withhold the Anlagenzertifikat, which blocks the permit.`, `The fire authority can refuse occupancy, which blocks operation even with a perfect electrical installation.`],
+          result: `Three different gates, three different documents, and none of them is the developer's own signature.`
         },
         mistake: `Assuming the network operator owns and maintains the transfer station. In most German configurations the customer builds and owns it, and the DSO only inspects and seals it — which means its maintenance is your cost for twenty years.`,
         check: `Who issues the final permission to operate? Answer: the VNB.`
@@ -273,7 +275,8 @@
         formula: 'E.8 Datenblatt → E.9 Fragebogen → E.14 Komponenten → Anlagenzertifikat',
         example: {
           title: 'Worked example — a 5 MW plant through the gates',
-          body: `Month 0: connection request. Month 1–2: DSO studies, connection promise. Month 3: E.8 and E.14 submitted with the PCS model. Month 6: Anlagenzertifikat issued. Month 9: transfer station built and inspected. Month 10: provisional permit, energisation, functional test. Month 12: final permit — and only now is the plant fully commercial.`
+          steps: [`Month 0: connection request.`, `Month 1–2: DSO studies, connection promise.`, `Month 3: E.8 and E.14 submitted with the PCS model.`, `Month 6: Anlagenzertifikat issued.`, `Month 9: transfer station built and inspected.`, `Month 10: provisional permit, energisation, functional test.`],
+          result: `Month 12: final permit — and only now is the plant fully commercial.`
         },
         mistake: `Treating E.8 as a commissioning document and leaving it until the end. It is required before the DSO can produce E.9, and E.9 is what starts the technical dialogue — so a late E.8 delays everything downstream.`,
         check: `Which form is the plant data sheet? Answer: E.8.`

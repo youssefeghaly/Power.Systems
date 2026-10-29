@@ -223,7 +223,8 @@
         formula: 'I_b ≤ I_n ≤ I_z   ·   ΔU ≤ limit   ·   S ≥ I√t / k',
         example: {
           title: 'Worked example — the cable that passes two checks',
-          body: `A 35 mm² copper feeder carries 100 A over 50 m: thermal passes, drop is 5.18 V or 1.30 % of 400 V and passes too. Then the adiabatic check: a 25 kA fault clearing in 0.1 s needs 55.3 mm², so the cable is undersized for the fault it will actually see. Same cable, three verdicts.`
+          steps: [`A 35 mm² copper feeder carries 100 A over 50 m: thermal passes, drop is 5.18 V or 1.30 % of 400 V and passes too.`, `Then the adiabatic check: a 25 kA fault clearing in 0.1 s needs 55.3 mm², so the cable is undersized for the fault it will actually see.`],
+          result: `Same cable, three verdicts.`
         },
         mistake: `Sizing on ampacity and treating the other two as formalities. On a 400 V run of 100 m the drop alone can force a jump of two sizes, and no thermal table will tell you that.`,
         check: `Which check usually binds on a long LV run? Answer: voltage drop.`
@@ -306,7 +307,8 @@
         formula: 'LV: insulation + continuity · MV: + sheath test + partial discharge',
         example: {
           title: 'Worked example — why the record matters',
-          body: `A feeder runs hot in year four. Without the derating factors recorded at design, nobody can prove whether the installation matched the calculation or the calculation was optimistic. With them, the argument is a two-page comparison rather than a blame meeting.`
+          steps: [`A feeder runs hot in year four.`, `Without the derating factors recorded at design, nobody can prove whether the installation matched the calculation or the calculation was optimistic.`],
+          result: `With them, the argument is a two-page comparison rather than a blame meeting.`
         },
         mistake: `Recording only "test passed". The value and the conditions are the evidence; the word "passed" is an opinion.`,
         check: `Which test on an MV cable is not done on LV? Answer: partial discharge (with the sheath test).`

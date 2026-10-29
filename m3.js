@@ -274,7 +274,8 @@
         formula: 'Capacity(t) ≈ BOL × (1 − d)ᵗ   (d typically 1.5–2.5 %/yr)',
         example: {
           title: 'Worked example — what 2 % a year really means',
-          body: `Start at 400 MWh and apply 2 % a year. Year 5: 361.6 MWh. Year 10: 326.8 MWh. Year 15: 295.4 MWh. Year 20: 267.0 MWh. A third of the plant has quietly disappeared, and the contract still says 400. That gap is the entire reason this module exists.`
+          steps: [`Start at 400 MWh and apply 2 % a year.`, `Year 5: 361.6 MWh.`, `Year 10: 326.8 MWh.`, `Year 15: 295.4 MWh.`, `Year 20: 267.0 MWh.`, `A third of the plant has quietly disappeared, and the contract still says 400.`],
+          result: `That gap is the entire reason this module exists.`
         },
         mistake: `Modelling degradation as linear — 400 MWh minus 8 MWh per year, reaching 240 MWh at year 20. Compounding gives 267 MWh, so the linear model overstates the loss by 27 MWh and understates the capacity. Both errors cost money, in opposite directions.`,
         check: `400 MWh at 2 % a year: what is left at year 10? Answer: 326.8 MWh.`
@@ -290,7 +291,8 @@
         formula: 'Guarantee: ≥ 80 % of BOL at year 10\nFloor: ~60 % — below this, replace rather than augment',
         example: {
           title: 'Worked example — two ways to fail the same promise',
-          body: `An 80 % guarantee at year 10 on a 400 MWh BOL plant means 320 MWh. A plant measuring 326 MWh at the DC terminals passes. The same plant at the POI, after 8 % losses, delivers 300 MWh — and fails an offtake written at the meter. Same hardware, same test, two verdicts.`
+          steps: [`An 80 % guarantee at year 10 on a 400 MWh BOL plant means 320 MWh.`, `A plant measuring 326 MWh at the DC terminals passes.`, `The same plant at the POI, after 8 % losses, delivers 300 MWh — and fails an offtake written at the meter.`],
+          result: `Same hardware, same test, two verdicts.`
         },
         mistake: `Treating the guarantee as a target. It is a floor for the contract, not a design aim — designing to land exactly on 80 % at year 10 leaves nothing for a hot summer or an unexpected cycling profile.`,
         check: `A 400 MWh plant must hold 80 % at year 10. What is that in MWh? Answer: 320 MWh.`
@@ -306,7 +308,8 @@
         formula: 'Overbuild: capex now, no return visit\nAugmentation: capex later, repeated mobilisation',
         example: {
           title: 'Worked example — the same 400 MWh promise, three ways',
-          body: `No action: start at 435 MWh, end at 290 MWh — 110 MWh short. Overbuild: start at 599 MWh (49.8 % over), end exactly at 400 MWh. Augment: start at 500 MWh, add 60 MWh in year 7 and again in year 14, end at 433 MWh. The chart below draws all three against the contract line.`
+          steps: [`No action: start at 435 MWh, end at 290 MWh — 110 MWh short.`, `Overbuild: start at 599 MWh (49.8 % over), end exactly at 400 MWh.`, `Augment: start at 500 MWh, add 60 MWh in year 7 and again in year 14, end at 433 MWh.`],
+          result: `The chart below draws all three against the contract line.`
         },
         mistake: `Planning augmentation but not reserving the space, the cable route and the spare breaker for it. The decision costs nothing on paper and everything on site when the containers arrive and there is nowhere to put them.`,
         check: `At 2 % a year with no augmentation, what must you build to still hold 400 MWh in year 20? Answer: 400 ÷ 0.98²⁰ = 599 MWh.`
@@ -321,7 +324,8 @@
         formula: 'Warranty → at the DC terminals\nOfftake → at the POI, after losses',
         example: {
           title: 'Worked example — the 82 % that fails',
-          body: `BOL 400 MWh. Measured at the DC terminals in year 8: 328 MWh — 82 %, comfortably inside an 80 % guarantee. At the POI with 8 % losses: 302 MWh, which is 75.5 % of BOL. If the offtake promises 80 % of POI energy at year 8, the asset is short by 18 MWh and owes damages on a plant that just passed its warranty test.`
+          steps: [`BOL 400 MWh.`, `Measured at the DC terminals in year 8: 328 MWh — 82 %, comfortably inside an 80 % guarantee.`, `At the POI with 8 % losses: 302 MWh, which is 75.5 % of BOL.`],
+          result: `If the offtake promises 80 % of POI energy at year 8, the asset is short by 18 MWh and owes damages on a plant that just passed its warranty test.`
         },
         mistake: `Assuming one test satisfies both contracts. The warranty test, the offtake test and the capacity test may be the same procedure at three different boundaries — and passing one proves nothing about the others.`,
         check: `82 % at the DC terminals with 8 % losses is what fraction at the POI? Answer: 75.4 %.`
@@ -336,7 +340,8 @@
         formula: 'Design value = contract value ÷ (1 − losses) ÷ (1 − degradation)',
         example: {
           title: 'Worked example — building the margin in',
-          body: `Contract: 400 MWh at the POI for twenty years, 8 % losses, 2 %/yr degradation, 80 % floor. POI requirement at year 20: 320 MWh. DC requirement: 347.8 MWh. BOL for that with degradation: 347.8 ÷ 0.98²⁰ = 520.9 MWh. Add the 60 MWh of augmentation and the initial build falls — which is exactly the trade the next twenty years will be argued about.`
+          steps: [`Contract: 400 MWh at the POI for twenty years, 8 % losses, 2 %/yr degradation, 80 % floor.`, `POI requirement at year 20: 320 MWh.`, `DC requirement: 347.8 MWh.`, `BOL for that with degradation: 347.8 ÷ 0.98²⁰ = 520.9 MWh.`],
+          result: `Add the 60 MWh of augmentation and the initial build falls — which is exactly the trade the next twenty years will be argued about.`
         },
         mistake: `Sizing to the contract at COD and assuming degradation is "covered by the guarantee". The guarantee compensates you after the shortfall, at a capped rate, once you have proven it — it does not keep the plant compliant.`,
         check: `What is the design value when losses are 8 % and degradation is 2 %/yr over 20 years, for a 400 MWh contract? Answer: 400 ÷ 0.92 ÷ 0.6676 ≈ 651 MWh, before augmentation.`

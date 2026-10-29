@@ -177,7 +177,8 @@
         formula: '220/380 kV · four TSOs · ENTSO-E coordination',
         example: {
           title: 'Worked example — knowing which TSO owns the site',
-          body: `The four control areas meet in the middle of the country, and a site near a boundary can sit in either. The connection process, the redispatch rules and sometimes the available products differ between them, and asking the wrong operator for a connection study costs six weeks before anyone tells you it is the wrong operator. The control-area map is published, but the boundary near a large load centre is not always intuitive, so confirm it in writing before commissioning a study.`
+          steps: [`The four control areas meet in the middle of the country, and a site near a boundary can sit in either.`, `The connection process, the redispatch rules and sometimes the available products differ between them, and asking the wrong operator for a connection study costs six weeks before anyone tells you it is the wrong operator.`],
+          result: `The control-area map is published, but the boundary near a large load centre is not always intuitive, so confirm it in writing before commissioning a study.`
         },
         mistake: `Treating the TSO as an obstacle rather than a customer. At transmission level your plant is selling a service to an organisation that publishes what it needs in detail, every year.`,
         check: `Which TAR applies at 380 kV? Answer: 4130 (extra-high voltage).`
@@ -192,7 +193,8 @@
         formula: 'n-1 planning · redispatch when reality beats the plan',
         example: {
           title: 'Worked example — why location is the whole business case',
-          body: `Two identical 100 MW batteries, one at a north German wind cluster and one outside Munich, face different prices, different congestion and different redispatch value. Same hardware, same cost, different revenue by a factor that can exceed two — because one of them is on the correct side of a constraint. That is also why portfolio developers buy options on several sites rather than committing to one before the grid studies return.`
+          steps: [`Two identical 100 MW batteries, one at a north German wind cluster and one outside Munich, face different prices, different congestion and different redispatch value.`, `Same hardware, same cost, different revenue by a factor that can exceed two — because one of them is on the correct side of a constraint.`],
+          result: `That is also why portfolio developers buy options on several sites rather than committing to one before the grid studies return.`
         },
         mistake: `Site selection driven by land price and grid connection speed alone. At transmission level, the constraint map is the commercial map.`,
         check: `From what size does Redispatch 2.0 cover a plant? Answer: 100 kW.`
@@ -207,7 +209,8 @@
         formula: 'FCR 30 s · aFRR 5 min · mFRR 15 min',
         example: {
           title: 'Worked example — the energy an FCR obligation consumes',
-          body: `A 100 MW plant offering 20 MW of FCR must hold 20 MW of headroom in each direction, so it can never charge above 80 % or discharge below 20 % of its power capability. That band, multiplied by the hours committed, is energy the arbitrage model assumed it could use. On a four-hour battery that band is the difference between cycling twice a day and cycling once — which changes degradation, augmentation and the whole warranty picture.`
+          steps: [`A 100 MW plant offering 20 MW of FCR must hold 20 MW of headroom in each direction, so it can never charge above 80 % or discharge below 20 % of its power capability.`, `That band, multiplied by the hours committed, is energy the arbitrage model assumed it could use.`],
+          result: `On a four-hour battery that band is the difference between cycling twice a day and cycling once — which changes degradation, augmentation and the whole warranty picture.`
         },
         mistake: `Adding FCR, aFRR and arbitrage revenue at full capacity in the same hour. The products reserve the same megawatt, and a model that stacks them simultaneously overstates revenue by more than the plant costs.`,
         check: `How fast must aFRR be fully active? Answer: 5 minutes.`
@@ -223,7 +226,8 @@
         formula: 'Q without energy, but never without converter headroom',
         example: {
           title: 'Worked example — the rating that is not a single number',
-          body: `A converter rated 100 MVA at unity power factor may deliver 100 MW and 0 MVar, or 90 MW and 43 MVar, depending on its capability curve. A connection agreement asking for 0.95 power factor at full active power is therefore a request for a larger converter than the developer budgeted for. Ask for the capability curve at the connection voltage, not the nominal one, and check it at both the maximum and minimum grid voltage.`
+          steps: [`A converter rated 100 MVA at unity power factor may deliver 100 MW and 0 MVar, or 90 MW and 43 MVar, depending on its capability curve.`, `A connection agreement asking for 0.95 power factor at full active power is therefore a request for a larger converter than the developer budgeted for.`],
+          result: `Ask for the capability curve at the connection voltage, not the nominal one, and check it at both the maximum and minimum grid voltage.`
         },
         mistake: `Reading a PCS datasheet's MVA rating as available active power at any power factor. The capability curve is the real specification.`,
         check: `Can a battery supply reactive power while idle? Answer: yes, within converter headroom.`
@@ -239,7 +243,8 @@
         formula: 'RoCoF = ΔP · f / (2 · E)   ·   3000 MW lost from 200 GW·s → 0.375 Hz/s',
         example: {
           title: 'Worked example — how much inertia a loss removes',
-          body: `Losing 3,000 MW from a system with 200,000 MW·s gives 0.375 Hz/s. Halve the inertia and the same loss gives 0.75 Hz/s, which is the range where RoCoF relays start to operate and where the sequence of events in a blackout report begins. The number that matters operationally is how quickly frequency reaches the first protection threshold, not how far it eventually falls.`
+          steps: [`Losing 3,000 MW from a system with 200,000 MW·s gives 0.375 Hz/s.`, `Halve the inertia and the same loss gives 0.75 Hz/s, which is the range where RoCoF relays start to operate and where the sequence of events in a blackout report begins.`],
+          result: `The number that matters operationally is how quickly frequency reaches the first protection threshold, not how far it eventually falls.`
         },
         mistake: `Assuming a battery's fast response equals inertia. Frequency response acts on the deviation that has already occurred; inertia limits how fast that deviation develops.`,
         check: `What is RoCoF? Answer: rate of change of frequency, in Hz/s.`
@@ -255,7 +260,8 @@
         formula: 'HVDC: decoupled ends · converter losses · new failure modes',
         example: {
           title: 'Worked example — reading the network plan as a map',
-          body: `A new HVDC link relieves a constraint in one corridor and creates new flows elsewhere. Storage sited on the relieved corridor loses value; storage sited at the new bottleneck gains it. The network development plan publishes both years in advance.`
+          steps: [`A new HVDC link relieves a constraint in one corridor and creates new flows elsewhere.`, `Storage sited on the relieved corridor loses value; storage sited at the new bottleneck gains it.`],
+          result: `The network development plan publishes both years in advance.`
         },
         mistake: `Treating the grid as static when siting an asset with a twenty-year life. The network plan is public; the siting decision is a bet on it.`,
         check: `Why is HVDC used for long links? Answer: it decouples the ends and avoids reactive current over distance.`

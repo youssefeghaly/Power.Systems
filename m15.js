@@ -133,7 +133,8 @@
         formula: 'Capacity: fixable · RTE: not fixable',
         example: {
           title: 'Worked example — the guarantee you cannot fix',
-          body: `A plant guaranteeing 86 % RTE at end of life, measuring 85.2 % at year 15, has no lever: augmenting adds capacity but not efficiency, and re-powering the cells is a capital project. The damages run for the remaining five years — typically a few percent of revenue, every year, with no way to stop the clock. The only real protection is to buy margin at the design stage, when a slightly larger transformer or a better-cooled container can still be specified.`
+          steps: [`A plant guaranteeing 86 % RTE at end of life, measuring 85.2 % at year 15, has no lever: augmenting adds capacity but not efficiency, and re-powering the cells is a capital project.`, `The damages run for the remaining five years — typically a few percent of revenue, every year, with no way to stop the clock.`],
+          result: `The only real protection is to buy margin at the design stage, when a slightly larger transformer or a better-cooled container can still be specified.`
         },
         mistake: `Treating RTE and capacity as equivalent performance guarantees. One is an operating cost you can manage; the other is a defect you can only compensate for.`,
         check: `Which guarantee has no engineering remedy? Answer: RTE.`
@@ -148,7 +149,8 @@
         formula: 'Availability = available hours / 8 760 · definition beats value',
         example: {
           title: 'Worked example — 175 hours',
-          body: `8,760 × 2 % = 175.2 hours. A single container fire, a transformer failure or a two-week grid outage exceeds it. That is why serious contracts define partial availability, pro-rata capacity and outage exclusions rather than a single number. Ask the broker or the offtaker how they count a partial outage; the answer changes the value of the guarantee more than the percentage does.`
+          steps: [`8,760 × 2 % = 175.2 hours.`, `A single container fire, a transformer failure or a two-week grid outage exceeds it.`, `That is why serious contracts define partial availability, pro-rata capacity and outage exclusions rather than a single number.`],
+          result: `Ask the broker or the offtaker how they count a partial outage; the answer changes the value of the guarantee more than the percentage does.`
         },
         mistake: `Negotiating the percentage and conceding the definition. The definition is where the money is, and it is usually settled by whoever drafted the clause.`,
         check: `A 98 % guarantee on 8,760 hours allows how many hours down? Answer: 175.2.`
@@ -163,7 +165,8 @@
         formula: 'Monitor · triage · dispatch · maintain · document',
         example: {
           title: 'Worked example — the 2 % drift',
-          body: `A plant losing 0.2 percentage points of RTE per year instead of 0.1 looks unremarkable at any single test. Over five years it is 5 % of revenue, and by the time it is obvious the warranty period for the affected components may have expired. Monthly review is what catches it while there is still a claim. Set the monthly review to compare against the previous twelve months rather than against the datasheet, so the trend is visible before the absolute number is alarming.`
+          steps: [`A plant losing 0.2 percentage points of RTE per year instead of 0.1 looks unremarkable at any single test.`, `Over five years it is 5 % of revenue, and by the time it is obvious the warranty period for the affected components may have expired.`, `Monthly review is what catches it while there is still a claim.`],
+          result: `Set the monthly review to compare against the previous twelve months rather than against the datasheet, so the trend is visible before the absolute number is alarming.`
         },
         mistake: `Treating O&M as a cost line rather than a revenue function. The dispatch decisions taken by the operations team are worth more than the difference between two maintenance contracts.`,
         check: `What does the LTSA define? Answer: who maintains what, how fast, and who pays.`
@@ -178,7 +181,8 @@
         formula: 'Re-power · decommission · or sell — decide years early',
         example: {
           title: 'Worked example — the connection is the asset',
-          body: `A 100 MW plant reaching end of life in 2045 holds a 110 kV connection that a new project might wait years for. Re-powering the containers costs a fraction of a new build and keeps the connection — which is why the residual value of a BESS may sit more in its paperwork than in its cells. Treat the connection agreement as an asset in the financial model, with a value and a remaining life, because that is how a buyer will treat it.`
+          steps: [`A 100 MW plant reaching end of life in 2045 holds a 110 kV connection that a new project might wait years for.`, `Re-powering the containers costs a fraction of a new build and keeps the connection — which is why the residual value of a BESS may sit more in its paperwork than in its cells.`],
+          result: `Treat the connection agreement as an asset in the financial model, with a value and a remaining life, because that is how a buyer will treat it.`
         },
         mistake: `Planning augmentation to year 20 without asking whether the plant will be re-powered at year 18. The last augmentation is often the one that should not happen.`,
         check: `Why is re-powering often better than a new build? Answer: it reuses the grid connection, which is the scarce asset.`

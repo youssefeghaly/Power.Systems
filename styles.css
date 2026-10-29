@@ -35,11 +35,11 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-main { max-width: 900px; margin: 0 auto; padding: 0 18px 40px; }
+main { max-width: 720px; margin: 0 auto; padding: 0 18px 40px; }
 
 /* top bar */
 .topbar {
-  max-width: 900px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 18px 18px 8px;
   display: flex;
@@ -69,7 +69,7 @@ main { max-width: 900px; margin: 0 auto; padding: 0 18px 40px; }
 
 /* tabs */
 .tabs {
-  max-width: 900px;
+  max-width: 720px;
   margin: 8px auto 18px;
   padding: 0 18px;
   display: flex;
@@ -223,7 +223,7 @@ input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 .center { text-align: center; }
 
 .foot {
-  max-width: 900px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 8px 18px 28px;
   color: var(--muted);
@@ -237,7 +237,7 @@ input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* ---------- module bar ---------- */
 .modulebar {
-  max-width: 900px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 0 18px 6px;
   display: flex;
@@ -582,3 +582,69 @@ select::-ms-expand { display: none; }
 /* module picker: no chevron, but must still look selectable */
 select:hover { border-color: var(--accent); }
 select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ---------- readability: measure and rhythm ---------- */
+.formula { max-width: 100%; }
+
+.ex-steps {
+  margin: 10px 0 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: ex;
+}
+
+.ex-steps li {
+  counter-increment: ex;
+  position: relative;
+  padding-left: 34px;
+  margin: 0 0 10px;
+  max-width: 100%;
+}
+
+.ex-steps li::before {
+  content: counter(ex);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ex-steps li::before { color: #08111f; }
+}
+
+.ex-result {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed color-mix(in srgb, var(--accent) 40%, transparent);
+  font-weight: 650;
+  font-size: 17px;
+}
+
+.card-mistake {
+  margin: 18px 0 14px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--bad);
+  background: color-mix(in srgb, var(--bad) 6%, transparent);
+  border-radius: 0 10px 10px 0;
+  max-width: 100%;
+}
+
+.card-check {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px dashed var(--line);
+  font-size: 16px;
+  max-width: 68ch;
+  line-height: 1.55;
+}

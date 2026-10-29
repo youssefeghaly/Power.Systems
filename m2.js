@@ -280,7 +280,8 @@
         formula: 'Cells → modules → racks → enclosure (DC)\nSeries adds volts · parallel adds amp-hours',
         example: {
           title: 'Worked example — how many cells',
-          body: `A 5 MWh container built from 3.2 V / 314 Ah cells needs 5,000 ÷ 1.0048 ≈ 4,976 cells. If they are arranged as 416 in series, that is 416 × 3.2 = 1,331 V per string, and 4,976 ÷ 416 = 12 strings in parallel. The 400 MWh anchor plant scales that up: roughly 400,000 cells across 87 containers.`
+          steps: [`A 5 MWh container built from 3.2 V / 314 Ah cells needs 5,000 ÷ 1.0048 ≈ 4,976 cells.`, `If they are arranged as 416 in series, that is 416 × 3.2 = 1,331 V per string, and 4,976 ÷ 416 = 12 strings in parallel.`],
+          result: `The 400 MWh anchor plant scales that up: roughly 400,000 cells across 87 containers.`
         },
         mistake: `Adding amp-hours when cells are put in series. "Two 100 Ah cells in series give 200 Ah" is wrong — they give 100 Ah at twice the voltage. This error propagates into rack counts, cable sizing and protection settings.`,
         check: `A 5 MWh container uses 3.2 V, 314 Ah cells. How many cells does it hold, and how many strings if each string is 416 cells? Answer: 4,976 cells and 12 strings.`
@@ -295,7 +296,8 @@
         formula: 'DC block: batteries only → external PCS\nAC block: batteries + PCS + MV transformer → AC out',
         example: {
           title: 'Worked example — the anchor plant both ways',
-          body: `At 100 MW / 400 MWh with 5 MWh containers you need 87 containers either way. As AC blocks each might be 5 MW / 20 MWh, giving 20 blocks of four hours. As DC blocks you still need about 20 PCS units of 5 MW, but now each PCS needs its own DC cabling from four or five containers — more cable, more joints, more to inspect.`
+          steps: [`At 100 MW / 400 MWh with 5 MWh containers you need 87 containers either way.`, `As AC blocks each might be 5 MW / 20 MWh, giving 20 blocks of four hours.`],
+          result: `As DC blocks you still need about 20 PCS units of 5 MW, but now each PCS needs its own DC cabling from four or five containers — more cable, more joints, more to inspect.`
         },
         mistake: `Ordering DC blocks and planning to add converters later without reserving space and cable routes for them. The PCS yard, the DC cable trench and the protection scheme all have to exist in the layout from day one.`,
         check: `Which architecture needs a DC collection system, and why does that increase the number of things that can fail? Answer: the DC block — every DC cable, joint and fuse between container and converter is another failure point.`
@@ -310,7 +312,8 @@
         formula: 'PCS: DC ↔ AC, ~97–98.5 % round-trip · Q without cycling, within converter headroom',
         example: {
           title: 'Worked example — where 2 MW goes',
-          body: `At 100 MW output through a 98 % converter, 2 MW becomes heat. Over a four-hour discharge that is 8 MWh that never reaches the grid, plus 2 MW of continuous cooling load. On a hot day auxiliary consumption alone can reach 1.5 % of throughput — which is why quoted RTE figures differ depending on whether auxiliaries are counted.`
+          steps: [`At 100 MW output through a 98 % converter, 2 MW becomes heat.`, `Over a four-hour discharge that is 8 MWh that never reaches the grid, plus 2 MW of continuous cooling load.`],
+          result: `On a hot day auxiliary consumption alone can reach 1.5 % of throughput — which is why quoted RTE figures differ depending on whether auxiliaries are counted.`
         },
         mistake: `Sizing the PCS to exactly the plant rating and ignoring reactive capability. At unity power factor you have the full rating for active power; ask for reactive support at the same moment and you must either oversize the converter or curtail active output.`,
         check: `A 100 MW plant with a 97.5 % converter: how much heat per hour at full output? Answer: 2.5 MW, so 2.5 MWh of heat per hour.`
@@ -325,7 +328,8 @@
         formula: 'RTE = η₁ × η₂ × … × ηₙ   (never 100 − Σ(100 − ηᵢ))',
         example: {
           title: 'Worked example — the anchor plant end to end',
-          body: `435 MWh leaves the DC terminals. Multiply through: 435 × 0.94 × 0.97 × 0.99 × 0.995 × 0.995 × 0.985 = 382.9 MWh at the POI. 52.1 MWh became heat. Half a percentage point of RTE is 2.2 MWh per cycle — about 800 MWh a year at one cycle a day, roughly €32,000 a year at a €40/MWh spread, for twenty years.`
+          steps: [`435 MWh leaves the DC terminals.`, `Multiply through: 435 × 0.94 × 0.97 × 0.99 × 0.995 × 0.995 × 0.985 = 382.9 MWh at the POI.`, `52.1 MWh became heat.`],
+          result: `Half a percentage point of RTE is 2.2 MWh per cycle — about 800 MWh a year at one cycle a day, roughly €32,000 a year at a €40/MWh spread, for twenty years.`
         },
         mistake: `Quoting a PCS datasheet efficiency as the plant RTE. A 98.5 % converter becomes an 88 % plant once the battery, transformers, cabling and auxiliary load are counted — and the contract is measured at the POI, not at the converter terminals.`,
         check: `The transformer stage falls from 99 % to 98 %. How much does the anchor plant lose per year at one cycle a day? Answer: about 3.9 MWh per cycle, roughly 1,430 MWh a year — around €57,000 at a €40/MWh spread.`
@@ -341,7 +345,8 @@
         formula: 'Contract measured at the POI · design specified at the DC terminals',
         example: {
           title: 'Worked example — the same plant, two numbers',
-          body: `A contract for 400 MWh at the POI with 8 % losses requires 434.8 MWh at the DC terminals. If the commissioning test measures 435 MWh at DC, the plant is exactly compliant — 400.0 MWh at the POI. Compare 435 against 400 without accounting for losses and it looks like 8.75 % of headroom that does not exist. One percentage point of measurement boundary on 400 MWh a day is 1,460 MWh a year, roughly €58,000.`
+          steps: [`A contract for 400 MWh at the POI with 8 % losses requires 434.8 MWh at the DC terminals.`, `If the commissioning test measures 435 MWh at DC, the plant is exactly compliant — 400.0 MWh at the POI.`, `Compare 435 against 400 without accounting for losses and it looks like 8.75 % of headroom that does not exist.`],
+          result: `One percentage point of measurement boundary on 400 MWh a day is 1,460 MWh a year, roughly €58,000.`
         },
         mistake: `Billing from BMS or PCS current readings. They are uncalibrated, not independently certified, and not at the contractual measurement point — an investigator will reject them and a lender will treat the revenue as unverified.`,
         check: `You must deliver 400 MWh at the POI and losses are 8 %. What must the battery hold at the DC terminals? Answer: 434.8 MWh.`

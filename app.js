@@ -70,8 +70,16 @@
       s.p.forEach(function (p) { html += '<p>' + p + '</p>'; });
       if (s.formula) html += '<pre class="formula">' + s.formula + '</pre>';
       if (s.example) {
-        html += '<div class="card-example"><p class="ex-title">' + s.example.title + '</p>' +
-                '<p>' + s.example.body + '</p></div>';
+        html += '<div class="card-example"><p class="ex-title">' + s.example.title + '</p>';
+        if (s.example.steps && s.example.steps.length) {
+          html += '<ol class="ex-steps">' + s.example.steps.map(function (t) {
+            return '<li>' + t + '</li>';
+          }).join('') + '</ol>';
+        } else if (s.example.body) {
+          html += '<p>' + s.example.body + '</p>';
+        }
+        if (s.example.result) html += '<p class="ex-result">' + s.example.result + '</p>';
+        html += '</div>';
       }
       if (s.mistake) html += '<p class="card-mistake"><strong>The mistake to avoid.</strong> ' + s.mistake + '</p>';
       if (s.check) html += '<p class="card-check"><strong>Check yourself.</strong> ' + s.check + '</p>';

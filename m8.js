@@ -262,7 +262,8 @@
         formula: 'Isolate → break → measure → distribute',
         example: {
           title: 'Worked example — the sequence under fault',
-          body: `A fault on the transformer bay is detected by the CT, cleared by the breaker in tens of milliseconds, and only then is the disconnector opened to create a visible gap for the maintenance team. If the disconnector had to break the fault itself, the bay would be destroyed and the operator would be standing next to it. What makes the bay safe to work on is that the isolation is visible and the proof of dead is physical, not inferred from a lamp on a panel.`
+          steps: [`A fault on the transformer bay is detected by the CT, cleared by the breaker in tens of milliseconds, and only then is the disconnector opened to create a visible gap for the maintenance team.`, `If the disconnector had to break the fault itself, the bay would be destroyed and the operator would be standing next to it.`],
+          result: `What makes the bay safe to work on is that the isolation is visible and the proof of dead is physical, not inferred from a lamp on a panel.`
         },
         mistake: `Designing the bay around the equipment list rather than the operating sequence, then discovering at commissioning that there is no way to isolate the breaker for maintenance without taking the busbar out.`,
         check: `Which device may break fault current? Answer: the circuit breaker.`
@@ -277,7 +278,8 @@
         formula: 'AIS: space and visibility · GIS: compact and enclosed',
         example: {
           title: 'Worked example — why the footprint decides early',
-          body: `A 110 kV AIS substation for a 100 MW plant occupies a significant fraction of the site, and its clearances set the fence line, the access road and the cable routes. Choosing GIS later to save space means redesigning everything that was laid out around the yard — which is why the switchgear decision is made in the first month, not the sixth. In practice the yard is sized before the equipment is ordered, which means the switchgear type is effectively chosen by the site layout drawing. It also fixes the fence line, and a fence line moved after permitting is a new application.`
+          steps: [`A 110 kV AIS substation for a 100 MW plant occupies a significant fraction of the site, and its clearances set the fence line, the access road and the cable routes.`, `Choosing GIS later to save space means redesigning everything that was laid out around the yard — which is why the switchgear decision is made in the first month, not the sixth.`, `In practice the yard is sized before the equipment is ordered, which means the switchgear type is effectively chosen by the site layout drawing.`],
+          result: `It also fixes the fence line, and a fence line moved after permitting is a new application.`
         },
         mistake: `Treating the switchgear choice as a procurement decision. It is a site-planning decision that happens to be bought from a supplier.`,
         check: `Which type is used where space is tight? Answer: GIS, gas-insulated.`
@@ -292,7 +294,8 @@
         formula: 'Single → double → sectionalised: availability bought with copper',
         example: {
           title: 'Worked example — what an outage costs',
-          body: `A plant earning most of its revenue from capacity payments loses that revenue the moment it is unavailable, and may owe liquidated damages on top. If a busbar maintenance outage would cost more than the double-busbar arrangement, the redundancy pays for itself before the first fault — that is the calculation, not a preference for robustness. The number to compute is not the cost of the extra bay but the revenue lost per day of unavailability, multiplied by the days the arrangement saves.`
+          steps: [`A plant earning most of its revenue from capacity payments loses that revenue the moment it is unavailable, and may owe liquidated damages on top.`, `If a busbar maintenance outage would cost more than the double-busbar arrangement, the redundancy pays for itself before the first fault — that is the calculation, not a preference for robustness.`],
+          result: `The number to compute is not the cost of the extra bay but the revenue lost per day of unavailability, multiplied by the days the arrangement saves.`
         },
         mistake: `Buying redundancy for the busbar while leaving a single transformer, a single auxiliary supply or a single protection battery as the actual single point of failure.`,
         check: `What does a double busbar let you do? Answer: maintain a bar or breaker without an outage.`
@@ -307,7 +310,8 @@
         formula: 'I_k = S / (√3 · U · u_k)   ·   100 MVA at 110 kV, u_k 12 % → 4.37 kA',
         example: {
           title: 'Worked example — the same transformer at two impedances',
-          body: `100 MVA at 110 kV with u_k = 12 % gives 4.37 kA; at 24 % it gives 2.19 kA. The second transformer costs less downstream and regulates worse. That single number is the lever that decides what the LV switchgear has to withstand, so it is worth arguing about before the order is placed. Ask the supplier for the impedance tolerance as well as the nominal value, because a 10 % band on 12 % moves the fault current by more than the difference between two designs.`
+          steps: [`100 MVA at 110 kV with u_k = 12 % gives 4.37 kA; at 24 % it gives 2.19 kA.`, `The second transformer costs less downstream and regulates worse.`, `That single number is the lever that decides what the LV switchgear has to withstand, so it is worth arguing about before the order is placed.`],
+          result: `Ask the supplier for the impedance tolerance as well as the nominal value, because a 10 % band on 12 % moves the fault current by more than the difference between two designs.`
         },
         mistake: `Specifying impedance for losses rather than for fault level. The loss difference between 12 % and 24 % is real but small; the switchgear difference is a category.`,
         check: `What does doubling u_k do to the LV fault current? Answer: it halves it.`
@@ -322,7 +326,8 @@
         formula: '0.2S for money · 5P/10P for protection · burden decides honesty',
         example: {
           title: 'Worked example — two cores, one CT',
-          body: `A 600/1 CT with a 15 VA burden at 1 A is rated for 15 Ω. If the panel wiring and relay present 18 Ω, the protection core saturates before the fault current and the relay reads low — so the breaker trips late, or not at all, on precisely the fault the design was meant to clear. The same arithmetic applies to the VT: a fuse that has blown silently removes the voltage reference and disables every protection that depends on it. Specify the burden with the wiring included, not just the relay's VA.`
+          steps: [`A 600/1 CT with a 15 VA burden at 1 A is rated for 15 Ω.`, `If the panel wiring and relay present 18 Ω, the protection core saturates before the fault current and the relay reads low — so the breaker trips late, or not at all, on precisely the fault the design was meant to clear.`, `The same arithmetic applies to the VT: a fuse that has blown silently removes the voltage reference and disables every protection that depends on it.`],
+          result: `Specify the burden with the wiring included, not just the relay's VA.`
         },
         mistake: `Using the metering core for protection because it is "the accurate one". Accuracy near rated current and fidelity at fault current are different specifications.`,
         check: `Which class is used for billing? Answer: 0.2S (or 0.5S).`
@@ -337,7 +342,8 @@
         formula: 'Clearances fix the layout early · protection interface agreed in writing',
         example: {
           title: 'Worked example — the interface that delays energisation',
-          body: `The DSO's protection engineer wants a signal your PCS does not output by default. It is a firmware option, available in six weeks. Everything else is complete and the plant sits idle, because a written interface list was not agreed before the hardware was ordered. The fix is a one-page interface schedule, agreed with the DSO's protection engineer, listing every signal in each direction and who supplies the terminal. Ask for it in writing at the connection study stage, when the DSO still has an incentive to answer. Every week of delay is revenue lost and, in a contracted plant, availability penalties.`
+          steps: [`The DSO's protection engineer wants a signal your PCS does not output by default.`, `It is a firmware option, available in six weeks.`, `Everything else is complete and the plant sits idle, because a written interface list was not agreed before the hardware was ordered.`, `The fix is a one-page interface schedule, agreed with the DSO's protection engineer, listing every signal in each direction and who supplies the terminal.`, `Ask for it in writing at the connection study stage, when the DSO still has an incentive to answer.`],
+          result: `Every week of delay is revenue lost and, in a contracted plant, availability penalties.`
         },
         mistake: `Leaving the protection interface to commissioning. It is a design deliverable, usually owned by nobody, and it is on the critical path.`,
         check: `Which document sets the local clearance and interface requirements? Answer: the DSO's TAB.`

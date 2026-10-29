@@ -280,7 +280,8 @@
         formula: 'Ik = c · Un / (√3 · Z)   with c = 1.1',
         example: {
           title: 'Worked example — 20 kV and 110 kV',
-          body: `At 20 kV with 0.5 Ω source impedance: 1.1 × 20,000 ÷ (√3 × 0.5) = 25.4 kA. At 110 kV with 2 Ω: 1.1 × 110,000 ÷ (√3 × 2) = 34.9 kA. Higher voltage means higher fault level for the same impedance — which is why HV switchgear is rated in tens of kA and costs accordingly.`
+          steps: [`At 20 kV with 0.5 Ω source impedance: 1.1 × 20,000 ÷ (√3 × 0.5) = 25.4 kA.`, `At 110 kV with 2 Ω: 1.1 × 110,000 ÷ (√3 × 2) = 34.9 kA.`],
+          result: `Higher voltage means higher fault level for the same impedance — which is why HV switchgear is rated in tens of kA and costs accordingly.`
         },
         mistake: `Using c = 1.0 because it is "the nominal case". The maximum fault current is what equipment must withstand, and the 1.1 factor exists precisely for that calculation.`,
         check: `20 kV, 1.2 Ω: what is the fault current? Answer: 10.6 kA.`
@@ -314,7 +315,8 @@
         formula: 'I_sec = I_pri × (ratio)  ·  Z_burden = S / I²',
         example: {
           title: 'Worked example — ratio and burden',
-          body: `A 600/1 CT carrying 480 A primary delivers 0.8 A secondary. Its rated burden of 15 VA at 1 A corresponds to 15 Ω. If the wiring plus relay actually presents 18 Ω, the CT saturates before the fault current and the protection becomes optimistic at exactly the wrong moment.`
+          steps: [`A 600/1 CT carrying 480 A primary delivers 0.8 A secondary.`, `Its rated burden of 15 VA at 1 A corresponds to 15 Ω.`],
+          result: `If the wiring plus relay actually presents 18 Ω, the CT saturates before the fault current and the protection becomes optimistic at exactly the wrong moment.`
         },
         mistake: `Ignoring the lead resistance on a long run from the CT to the relay panel. In a substation that is easily several ohms, and it consumes the burden margin that the CT was specified with.`,
         check: `A CT is 200/5 and the primary carries 120 A. What is the secondary current? Answer: 3 A.`
@@ -331,7 +333,8 @@
         formula: 't_upstream(I) − t_downstream(I) ≥ 0.3 s for all I',
         example: {
           title: 'Worked example — the margin at one point',
-          body: `At a 2,000 A fault, the downstream relay (SI, TMS 0.10, pickup 200 A) trips in 0.30 s and the upstream (SI, TMS 0.30, pickup 400 A) in 1.28 s. Margin 0.98 s — comfortable. Drop the upstream TMS to 0.02 and it trips in 0.09 s: faster than the downstream, so the wrong breaker opens.`
+          steps: [`At a 2,000 A fault, the downstream relay (SI, TMS 0.10, pickup 200 A) trips in 0.30 s and the upstream (SI, TMS 0.30, pickup 400 A) in 1.28 s.`, `Margin 0.98 s — comfortable.`],
+          result: `Drop the upstream TMS to 0.02 and it trips in 0.09 s: faster than the downstream, so the wrong breaker opens.`
         },
         mistake: `Grading by pickup current instead of by time. Two relays with different pickups can still be badly graded, because what matters is the trip time at the fault current they both see.`,
         check: `Downstream clears in 0.4 s. What is the minimum upstream time with a 0.3 s margin? Answer: 0.7 s.`
@@ -348,7 +351,8 @@
         formula: 'DC side: fuses protect the circuit, nothing protects the cell',
         example: {
           title: 'Worked example — why the DC breaker matters',
-          body: `A 1,500 V DC rack can deliver several thousand amps into a bolted fault. An AC-rated breaker may open the contacts and then arc across them, because there is no zero crossing to extinguish it. The device must be rated for 1,500 V DC at the circuit's time constant — and the datasheet will say so if you ask the right question.`
+          steps: [`A 1,500 V DC rack can deliver several thousand amps into a bolted fault.`, `An AC-rated breaker may open the contacts and then arc across them, because there is no zero crossing to extinguish it.`],
+          result: `The device must be rated for 1,500 V DC at the circuit's time constant — and the datasheet will say so if you ask the right question.`
         },
         mistake: `Using an AC miniature circuit breaker on a DC string because the current rating matches. The current rating is the least interesting number on the label for a DC application.`,
         check: `What protects a cell from an internal short circuit? Answer: nothing — which is why containment matters.`

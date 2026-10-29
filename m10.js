@@ -173,7 +173,8 @@
         formula: '110 kV regional → 20 kV MV → 400 V LV',
         example: {
           title: 'Worked example — why the direction matters',
-          body: `A 5 MW factory on a 20 kV feeder is unremarkable: the DSO modelled it as load and the feeder voltage profile expects it. A 5 MW battery at the same point injects instead, raising the voltage at every node between it and the substation. The network did not change; the direction did. The DSO studies your connection against the feeder as it will be, not as it was when the load was connected.`
+          steps: [`A 5 MW factory on a 20 kV feeder is unremarkable: the DSO modelled it as load and the feeder voltage profile expects it.`, `A 5 MW battery at the same point injects instead, raising the voltage at every node between it and the substation.`, `The network did not change; the direction did.`],
+          result: `The DSO studies your connection against the feeder as it will be, not as it was when the load was connected.`
         },
         mistake: `Assuming the plant's size is the only thing the DSO cares about. What it cares about is the effect on the voltage profile and the fault level at every node on the feeder, not at your terminal alone.`,
         check: `At which voltage do most C&I storage plants connect? Answer: medium voltage, typically 20 kV.`
@@ -189,7 +190,8 @@
         formula: 'Built as a ring · operated radially · one open point',
         example: {
           title: 'Worked example — the open point moves the fault level',
-          body: `Close the open point at one end and the source impedance to your connection point changes, so the fault level at your terminals changes with it. A protection study done for one switching state can be wrong for the other — which is why the DSO studies both and why your relay settings must work in both. Ask the DSO which switching states were studied; if the answer is one, ask again.`
+          steps: [`Close the open point at one end and the source impedance to your connection point changes, so the fault level at your terminals changes with it.`, `A protection study done for one switching state can be wrong for the other — which is why the DSO studies both and why your relay settings must work in both.`],
+          result: `Ask the DSO which switching states were studied; if the answer is one, ask again.`
         },
         mistake: `Treating the ring as a redundancy feature that has nothing to do with you. It is the reason your protection has to be valid in two network configurations.`,
         check: `Why is an MV ring operated with one open point? Answer: to avoid circulating current and keep protection unambiguous.`
@@ -204,7 +206,8 @@
         formula: 'ΔU = (P·R + Q·X) / U   ·   5 MW, 1 Ω, 20 kV → 1.25 %',
         example: {
           title: 'Worked example — the same five megawatts',
-          body: `Five megawatts at the end of a feeder with 1 Ω gives 250 V, or 1.25 % of 20 kV. Add 2 MVar of reactive injection with X = 2 Ω and the rise becomes 2.25 % — three quarters of a 2 % allowance spent on reactive power nobody asked for. Absorbing Q instead would buy headroom without giving up a kilowatt of active output.`
+          steps: [`Five megawatts at the end of a feeder with 1 Ω gives 250 V, or 1.25 % of 20 kV.`, `Add 2 MVar of reactive injection with X = 2 Ω and the rise becomes 2.25 % — three quarters of a 2 % allowance spent on reactive power nobody asked for.`],
+          result: `Absorbing Q instead would buy headroom without giving up a kilowatt of active output.`
         },
         mistake: `Calculating the voltage rise at the plant terminals only. The constraint is the highest node on the feeder, which may be kilometres away and is not on your site.`,
         check: `5 MW at 20 kV through 1 Ω: what is the rise? Answer: 1.25 %.`
@@ -235,7 +238,8 @@
         formula: 'Isolated · resonant (Petersen) · low-impedance — three different fault behaviours',
         example: {
           title: 'Worked example — one fault, two outcomes',
-          body: `On a resonant-earthed 20 kV network a single earth fault may not trip anything: the coil compensates the capacitive current and the network continues. On a low-impedance-earthed network the same fault produces a large current and trips immediately. Identical plant, identical fault, completely different protection behaviour. Confirm the earthing philosophy before specifying the transformer's neutral arrangement, because the two decisions are the same decision.`
+          steps: [`On a resonant-earthed 20 kV network a single earth fault may not trip anything: the coil compensates the capacitive current and the network continues.`, `On a low-impedance-earthed network the same fault produces a large current and trips immediately.`, `Identical plant, identical fault, completely different protection behaviour.`],
+          result: `Confirm the earthing philosophy before specifying the transformer's neutral arrangement, because the two decisions are the same decision.`
         },
         mistake: `Specifying earth-fault protection by copying a previous project. The earthing philosophy of the network decides what protection is even possible.`,
         check: `Which earthing method uses a coil to compensate capacitive current? Answer: resonant earthing (Petersen coil).`
@@ -251,7 +255,8 @@
         formula: '§14a: controllability in exchange for reduced grid fees',
         example: {
           title: 'Worked example — what an hour of dimming costs',
-          body: `A 100 MW plant earning €100/kW/yr needs those hours to exist. If §14a removes 400 hours a year at the top of the price curve, the lost arbitrage can be a six-figure sum — against a grid-fee saving that is usually five figures. The comparison is the whole negotiation. Put the avoided grid fee and the lost revenue in the same spreadsheet, at the same discount rate, or the comparison is theatre.`
+          steps: [`A 100 MW plant earning €100/kW/yr needs those hours to exist.`, `If §14a removes 400 hours a year at the top of the price curve, the lost arbitrage can be a six-figure sum — against a grid-fee saving that is usually five figures.`, `The comparison is the whole negotiation.`],
+          result: `Put the avoided grid fee and the lost revenue in the same spreadsheet, at the same discount rate, or the comparison is theatre.`
         },
         mistake: `Treating grid-fee reduction as free money. It is paid for with controllability, and controllability is exactly what a merchant revenue model assumes you keep.`,
         check: `What does §14a let the DSO do? Answer: dim controllable consumption devices.`

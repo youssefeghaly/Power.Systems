@@ -163,7 +163,8 @@
         formula: 'E = S · H   ·   droop ≈ 5 %   ·   AVR holds voltage',
         example: {
           title: 'Worked example — the energy in a rotor',
-          body: `A 1 GW machine with H = 5 s stores 5,000 MW·s. If 3,000 MW of generation is lost, that stored energy is what slows the frequency decline for the first seconds — before governors respond at all. Multiply it across the fleet and you have the system inertia that decides how fast RoCoF develops.`
+          steps: [`A 1 GW machine with H = 5 s stores 5,000 MW·s.`, `If 3,000 MW of generation is lost, that stored energy is what slows the frequency decline for the first seconds — before governors respond at all.`],
+          result: `Multiply it across the fleet and you have the system inertia that decides how fast RoCoF develops.`
         },
         mistake: `Assuming a battery provides the same thing because it responds quickly. Fast response acts on a deviation that has already happened; inertia determines how fast that deviation develops in the first place.`,
         check: `A 500 MW machine with H = 4 s: what is the stored energy? Answer: 2,000 MW·s.`
@@ -178,7 +179,8 @@
         formula: 'Slow to start · minimum load · response for free',
         example: {
           title: 'Worked example — why the coal plant stays on',
-          body: `A 500 MW coal unit with a 40 % minimum load must stay above 200 MW whenever it is running, even when the market price says zero. That is 200 MW of must-run capacity sitting under the renewables, which is why negative prices appear before the coal fleet has switched off. The same logic explains why a gas plant can be running while the price is below its own short-run marginal cost: it is being kept warm for a later peak, and the cost of being warm is a line item someone has to justify.`
+          steps: [`A 500 MW coal unit with a 40 % minimum load must stay above 200 MW whenever it is running, even when the market price says zero.`, `That is 200 MW of must-run capacity sitting under the renewables, which is why negative prices appear before the coal fleet has switched off.`],
+          result: `The same logic explains why a gas plant can be running while the price is below its own short-run marginal cost: it is being kept warm for a later peak, and the cost of being warm is a line item someone has to justify.`
         },
         mistake: `Reading merit-order charts as if every plant can start and stop freely. The chart describes marginal cost; the constraints behind it describe what can actually happen.`,
         check: `What happens to price when must-run output exceeds demand? Answer: it goes to zero or negative.`
@@ -193,7 +195,8 @@
         formula: 'Zero marginal cost · forecast error · no inertia',
         example: {
           title: 'Worked example — the midday collapse',
-          body: `On a sunny Sunday, 25 GW of solar against 55 GW of demand pushes the marginal plant down the stack to a zero-cost unit, so the clearing price goes to zero. Add strong wind and the price crosses into negative territory: generators pay to keep running rather than shut down, and a battery is paid to charge. Note that the battery is not competing with the solar farm; it is buying its output at the moment the solar farm cannot give it away.`
+          steps: [`On a sunny Sunday, 25 GW of solar against 55 GW of demand pushes the marginal plant down the stack to a zero-cost unit, so the clearing price goes to zero.`, `Add strong wind and the price crosses into negative territory: generators pay to keep running rather than shut down, and a battery is paid to charge.`],
+          result: `Note that the battery is not competing with the solar farm; it is buying its output at the moment the solar farm cannot give it away.`
         },
         mistake: `Assuming negative prices are temporary anomalies. In high-renewable systems they are a structural feature, and a storage business case that ignores them is ignoring its cheapest charging hours.`,
         check: `What is the marginal cost of wind generation? Answer: essentially zero.`
@@ -208,7 +211,8 @@
         formula: 'Follow the grid · no inertia · stability becomes a control problem',
         example: {
           title: 'Worked example — what a weak grid does to a converter',
-          body: `At a low short-circuit ratio the voltage at the converter terminals moves as the converter injects current, so a control loop tuned for a stiff grid becomes unstable. That is why grid-forming inverters and careful tuning are required on weak parts of the network, and why a plant that worked on one site may oscillate on another. The short-circuit ratio at the connection point is therefore a design parameter, not a network curiosity, and it belongs in the PCS specification, right next to the efficiency figures nobody argues about.`
+          steps: [`At a low short-circuit ratio the voltage at the converter terminals moves as the converter injects current, so a control loop tuned for a stiff grid becomes unstable.`, `That is why grid-forming inverters and careful tuning are required on weak parts of the network, and why a plant that worked on one site may oscillate on another.`],
+          result: `The short-circuit ratio at the connection point is therefore a design parameter, not a network curiosity, and it belongs in the PCS specification, right next to the efficiency figures nobody argues about.`
         },
         mistake: `Assuming a grid-following inverter is a drop-in replacement for a synchronous machine. It replaces the energy, not the behaviour — and the behaviour was free before.`,
         check: `What does grid-forming control establish? Answer: voltage and frequency, without needing an existing reference.`
@@ -223,7 +227,8 @@
         formula: 'Price = marginal cost of the marginal plant',
         example: {
           title: 'Worked example — who sets the price at 55 GW',
-          body: `Stack: 30 GW wind and 25 GW solar at zero, then lignite at 35 €/MWh. At 55 GW demand the zero-cost capacity is exactly exhausted, so the first lignite unit is marginal and sets 35 €/MWh — for every megawatt-hour sold, including the 55 GW of renewables that cost nothing to run. That gap between cost and price is the money that funds the whole fleet, and it is the reason merit-order charts are studied by investors as closely as by engineers.`
+          steps: [`Stack: 30 GW wind and 25 GW solar at zero, then lignite at 35 €/MWh.`, `At 55 GW demand the zero-cost capacity is exactly exhausted, so the first lignite unit is marginal and sets 35 €/MWh — for every megawatt-hour sold, including the 55 GW of renewables that cost nothing to run.`],
+          result: `That gap between cost and price is the money that funds the whole fleet, and it is the reason merit-order charts are studied by investors as closely as by engineers.`
         },
         mistake: `Thinking the price reflects the average cost of generation. It reflects the cost of the last unit needed, which can be far above or below the average.`,
         check: `Who sets the price when demand exceeds all zero-cost capacity? Answer: the cheapest fossil unit that must run.`
@@ -238,7 +243,8 @@
         formula: 'Feed-in tariff → market premium → market exposure',
         example: {
           title: 'Worked example — the same plant under two regimes',
-          body: `Under a fixed feed-in tariff a PV plant runs whenever the sun shines, because every kilowatt-hour is paid the same. Under direct marketing with a sliding premium it faces the market price, so on a negative-price afternoon it may curtail. Same asset, same sun, different behaviour — driven entirely by the settlement mechanism. Any storage business case therefore needs a view on policy, not just on price spreads — and it should state that view explicitly so it can be argued with — and revisited when the next amendment lands.`
+          steps: [`Under a fixed feed-in tariff a PV plant runs whenever the sun shines, because every kilowatt-hour is paid the same.`, `Under direct marketing with a sliding premium it faces the market price, so on a negative-price afternoon it may curtail.`, `Same asset, same sun, different behaviour — driven entirely by the settlement mechanism.`],
+          result: `Any storage business case therefore needs a view on policy, not just on price spreads — and it should state that view explicitly so it can be argued with — and revisited when the next amendment lands.`
         },
         mistake: `Learning the current subsidy rules as if they were engineering constants. They are policy, they change with governments, and any business case older than a year should be treated as a draft.`,
         check: `What replaced the fixed feed-in tariff for larger plants? Answer: direct marketing with a sliding market premium.`

@@ -237,7 +237,8 @@
         formula: 'DSO network → switchgear → metering → transformer → LV board → plant',
         example: {
           title: 'Worked example — the ownership line',
-          body: `In a typical German configuration the customer builds and owns the transfer station; the DSO specifies it, inspects it and seals the protection. That means the switchgear, the transformer and the building are your capital cost and your maintenance burden for twenty years — even though the DSO told you exactly what to install. Write the maintenance obligations into the O&M contract at financial close, while the DSO is still in the room and before anyone has an incentive to forget. It is also why the earthing and the building fabric deserve the same attention as the battery.`
+          steps: [`In a typical German configuration the customer builds and owns the transfer station; the DSO specifies it, inspects it and seals the protection.`, `That means the switchgear, the transformer and the building are your capital cost and your maintenance burden for twenty years — even though the DSO told you exactly what to install.`, `Write the maintenance obligations into the O&M contract at financial close, while the DSO is still in the room and before anyone has an incentive to forget.`],
+          result: `It is also why the earthing and the building fabric deserve the same attention as the battery.`
         },
         mistake: `Assuming the DSO owns and maintains the station because it specified it. Specification is not ownership, and the maintenance contract is yours to write.`,
         check: `Who owns the transfer station in the usual German arrangement? Answer: the customer.`
@@ -252,7 +253,8 @@
         formula: 'RMU: switches + fuses · CB panel: relay + breaker',
         example: {
           title: 'Worked example — where the threshold bites',
-          body: `A 630 kVA transformer behind a ring-main unit is a common, accepted arrangement. Ask for 2,000 kVA behind the same RMU and the DSO will require a breaker panel with overcurrent and earth-fault protection — a different switchgear type, a different protection concept and a different price. The practical lesson is to confirm the transformer rating before releasing the switchgear order, because the two decisions are coupled through a threshold most people never read. A short written confirmation of the threshold from the DSO is worth more than a catalogue page. Confirm it in writing before the order, and keep the reply.`
+          steps: [`A 630 kVA transformer behind a ring-main unit is a common, accepted arrangement.`, `Ask for 2,000 kVA behind the same RMU and the DSO will require a breaker panel with overcurrent and earth-fault protection — a different switchgear type, a different protection concept and a different price.`, `The practical lesson is to confirm the transformer rating before releasing the switchgear order, because the two decisions are coupled through a threshold most people never read.`, `A short written confirmation of the threshold from the DSO is worth more than a catalogue page.`],
+          result: `Confirm it in writing before the order, and keep the reply.`
         },
         mistake: `Ordering the RMU before confirming the transformer size, then having to replace the switchgear when the load grows during detailed design.`,
         check: `What protects a large transformer at MV? Answer: a circuit-breaker panel with a relay, not fuses.`
@@ -267,7 +269,8 @@
         formula: 'RLM above 100,000 kWh/yr · meter at the boundary, always',
         example: {
           title: 'Worked example — two meters, two stories',
-          body: `A 5 MW plant with a 5 MVA transformer loses roughly 1 % in the transformer and a little more in the MV cabling. On 20 GWh a year of throughput that is over 200 MWh — about €8,000 at a €40/MWh spread, every year, from a boundary that was drawn without thinking. The same boundary decides which losses are yours and which are the DSO's, so it belongs in the loss budget as a line item rather than a footnote. Ask which register each number comes from before you build a business case on it. The meter is a contract instrument, and it deserves a contract-level review.`
+          steps: [`A 5 MW plant with a 5 MVA transformer loses roughly 1 % in the transformer and a little more in the MV cabling.`, `On 20 GWh a year of throughput that is over 200 MWh — about €8,000 at a €40/MWh spread, every year, from a boundary that was drawn without thinking.`, `The same boundary decides which losses are yours and which are the DSO's, so it belongs in the loss budget as a line item rather than a footnote.`, `Ask which register each number comes from before you build a business case on it.`],
+          result: `The meter is a contract instrument, and it deserves a contract-level review.`
         },
         mistake: `Assuming the meter the DSO installs is the meter your settlement uses. Check which register, which direction and which tariff each measurement belongs to.`,
         check: `From what annual consumption does metering become RLM? Answer: 100,000 kWh.`
@@ -282,7 +285,8 @@
         formula: 'Central NA protection + coupling switch, sealed by the DSO',
         example: {
           title: 'Worked example — the seal matters',
-          body: `During commissioning, a firmware update on the PCS restarts the converter every few minutes. Someone disables the NA protection to finish the test. The plant is energised, the grid has a fault nearby, and the plant keeps feeding an isolated section — which is exactly the scenario the device exists to prevent. The seal exists precisely so that a temporary bypass leaves a physical trace, and breaking it is a reportable event rather than a maintenance decision. Record who broke the seal, when, and on whose authority; that record is the difference between a finding and a prosecution.`
+          steps: [`During commissioning, a firmware update on the PCS restarts the converter every few minutes.`, `Someone disables the NA protection to finish the test.`, `The plant is energised, the grid has a fault nearby, and the plant keeps feeding an isolated section — which is exactly the scenario the device exists to prevent.`, `The seal exists precisely so that a temporary bypass leaves a physical trace, and breaking it is a reportable event rather than a maintenance decision.`],
+          result: `Record who broke the seal, when, and on whose authority; that record is the difference between a finding and a prosecution.`
         },
         mistake: `Assuming the PCS anti-islanding function satisfies the requirement. The DSO requires a certified device at the boundary, not a function inside a converter they have not certified for that purpose.`,
         check: `Is PCS anti-islanding equivalent to NA protection? Answer: no — a separate certified device is required.`
@@ -297,7 +301,8 @@
         formula: 'I_LV = S / (√3 · U_LV · u_k)',
         example: {
           title: 'Worked example — 120 kA at 400 V',
-          body: `5 MVA with u_k = 6 % at 400 V: 5,000 ÷ (√3 × 0.4 × 0.06) = 120 kA. No standard LV board is rated for that, so the design either raises the LV voltage to 690 V (halving the current), increases u_k, or splits the transformer into smaller units. That is why the LV voltage level is a design decision taken with the transformer, not a given that arrives with the building.`
+          steps: [`5 MVA with u_k = 6 % at 400 V: 5,000 ÷ (√3 × 0.4 × 0.06) = 120 kA.`, `No standard LV board is rated for that, so the design either raises the LV voltage to 690 V (halving the current), increases u_k, or splits the transformer into smaller units.`],
+          result: `That is why the LV voltage level is a design decision taken with the transformer, not a given that arrives with the building.`
         },
         mistake: `Upsizing the transformer during detailed design without re-checking the LV board rating — the single most expensive "small change" in the whole project.`,
         check: `What is the LV fault current behind 5 MVA at 400 V with 6 % impedance? Answer: about 120 kA.`
@@ -312,7 +317,8 @@
         formula: 'One earth reference · sealed entries · Eca inside buildings',
         example: {
           title: 'Worked example — the entry that fails first',
-          body: `A duct that was sealed with foam instead of a proper gland lets water into the switchgear basement. Two winters later the earth bar has corroded to half its cross-section, which no routine inspection looks for because it is below floor level and behind a panel. Photograph every entry at commissioning, sealed and labelled, and keep those images with the as-built drawings. Photograph the entries at commissioning, sealed and labelled, and keep the images with the as-built drawings; they are the only record of what was actually installed.`
+          steps: [`A duct that was sealed with foam instead of a proper gland lets water into the switchgear basement.`, `Two winters later the earth bar has corroded to half its cross-section, which no routine inspection looks for because it is below floor level and behind a panel.`, `Photograph every entry at commissioning, sealed and labelled, and keep those images with the as-built drawings.`],
+          result: `Photograph the entries at commissioning, sealed and labelled, and keep the images with the as-built drawings; they are the only record of what was actually installed.`
         },
         mistake: `Treating cable sealing and fire stopping as finishing works. They are inspected items, and they are the first things to be value-engineered out by a contractor under pressure.`,
         check: `What fire class is required for cables inside a building? Answer: Eca, as a minimum.`
